@@ -1,5 +1,6 @@
 package com.proyecto.proyectoSpringBoot.model.entity;
 
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaEntityListener;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -10,7 +11,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "productos")
+@EntityListeners(AuditoriaEntityListener.class)
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Producto {
 
     @Id
@@ -22,14 +25,19 @@ public class Producto {
     @Column(nullable = false, length = 150)
     private String nombre;
 
-    @NotBlank
-    @Size(max = 100)
-    @Column(nullable = false, length = 100)
-    private String categoria;
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
+    @Builder.Default
     @Min(0)
     @Column(nullable = false)
     private Integer stock = 0;
+
+    @Builder.Default
+    @Column(name="stock_minimo", nullable=false)
+    private Integer stockMinimo = 10;
 
     @DecimalMin("0.0")
     @Column(nullable = false, precision = 10, scale = 2)
@@ -39,6 +47,7 @@ public class Producto {
     @Column(length = 500)
     private String descripcion;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean activo = true;
 
@@ -48,9 +57,11 @@ public class Producto {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
     private List<MovimientoDetalle> detalles;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
     private List<InventarioBodega> inventarios;
 

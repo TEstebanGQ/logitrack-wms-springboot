@@ -40,6 +40,14 @@ public class Movimiento {
     @JoinColumn(name = "bodega_destino_id")
     private Bodega bodegaDestino;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "proveedor_id")
+    private Proveedor proveedor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
     @OneToMany(mappedBy = "movimiento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MovimientoDetalle> detalles;
 

@@ -1,5 +1,6 @@
 package com.proyecto.proyectoSpringBoot.model.entity;
 
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaEntityListener;
 import com.proyecto.proyectoSpringBoot.model.enums.RolUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
+@EntityListeners(AuditoriaEntityListener.class)
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Usuario implements UserDetails {
 
@@ -38,6 +40,7 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @NotBlank
     @Column(nullable = false)
     private String password;
@@ -46,6 +49,7 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, length = 20)
     private RolUsuario rol;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean activo = true;
 
@@ -70,6 +74,7 @@ public class Usuario implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
     }
 
+    @Override public String getPassword()                  { return password; }
     @Override public String getUsername()                  { return email; }
     @Override public boolean isAccountNonExpired()         { return true; }
     @Override public boolean isAccountNonLocked()          { return true; }

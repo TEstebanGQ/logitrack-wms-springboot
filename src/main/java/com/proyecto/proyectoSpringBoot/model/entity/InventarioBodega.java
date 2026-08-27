@@ -23,6 +23,7 @@ public class InventarioBodega {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
+    @Builder.Default
     @Column(name = "stock_actual", nullable = false)
     private Integer stockActual = 0;
 

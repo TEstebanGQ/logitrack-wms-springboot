@@ -1,0 +1,55 @@
+services:
+  # -------------------------------------------------------------
+  # Base de Datos PostgreSQL
+  # -------------------------------------------------------------
+  postgres:
+    image: postgres:15
+    container_name: logitrack_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: logitrack_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d logitrack_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - logitrack_network
+
+  # -------------------------------------------------------------
+  # Aplicación Backend Spring Boot + Frontend Web
+  # -------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logitrack_app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/logitrack_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      PORT: 8081
+    ports:
+      - "8081:8081"
+    networks:
+      - logitrack_network
+
+volumes:
+  postgres_data:
+    name: logitrack_postgres_data
+
+networks:
+  logitrack_network:
+    name: logitrack_network
+    driver: bridge

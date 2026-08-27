@@ -44,11 +44,31 @@ spring.datasource.driver-class-name=org.postgresql.Driver
 ```
 
 ### 3. Compilación y Ejecución Backend
-Ejecuta el siguiente comando en la raíz del proyecto para iniciar la aplicación en el puerto `8081`:
+
+#### Opción A: Con Docker Compose (Recomendado - Todo el Stack)
+Si tienes Docker instalado, puedes iniciar todo el sistema (PostgreSQL + Spring Boot) con un solo comando sin necesidad de instalar Java ni PostgreSQL:
 
 ```bash
-./mvnw spring-boot:run
+docker compose up --build
 ```
+
+#### Opción B: Solo Base de Datos en Docker + Ejecución Local
+Si deseas programar y depurar desde tu IDE o terminal:
+
+1. Iniciar el contenedor de PostgreSQL:
+   ```bash
+   docker compose up -d postgres
+   ```
+2. Ejecutar la aplicación Spring Boot:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+#### Detener y Limpiar Contenedores
+```bash
+docker compose down
+```
+*(Para eliminar también los datos de la base de datos, agrega `-v`: `docker compose down -v`)*
 
 ---
 

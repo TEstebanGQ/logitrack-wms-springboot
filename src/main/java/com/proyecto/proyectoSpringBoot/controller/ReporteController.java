@@ -18,7 +18,7 @@ public class ReporteController {
 
     private final IReporteService reporteService;
 
-    @GetMapping("/general")
+    @GetMapping({"/general", "/resumen"})
     @Operation(summary = "Reporte general: stock por bodega y productos más movidos")
     public ResponseEntity<ReporteStockResponse> reporteGeneral() {
         return ResponseEntity.ok(reporteService.generarReporteGeneral());

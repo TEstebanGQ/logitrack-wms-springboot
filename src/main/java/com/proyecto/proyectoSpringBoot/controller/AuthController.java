@@ -51,9 +51,9 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Registrar un nuevo usuario")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("El email ya está en uso");
+            return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "El email ya está en uso"));
         }
         Usuario usuario = Usuario.builder()
                 .nombre(request.getNombre())
@@ -64,6 +64,6 @@ public class AuthController {
                 .activo(true)
                 .build();
         usuarioRepository.save(usuario);
-        return ResponseEntity.ok("Usuario registrado exitosamente");
+        return ResponseEntity.ok(java.util.Map.of("mensaje", "Usuario registrado exitosamente"));
     }
 }

@@ -12,5 +12,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long>,
         JpaSpecificationExecutor<Producto> {
     List<Producto> findByActivoTrue();
     List<Producto> findByStockLessThan(int umbral);
-    List<Producto> findByCategoriaIgnoreCase(String categoria);
+    List<Producto> findByCategoriaNombreIgnoreCase(String categoria);
 }

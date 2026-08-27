@@ -11,6 +11,10 @@ const BodegaService = {
         return ApiService.get(`/bodegas/${id}`);
     },
 
+    getInventario(id) {
+        return ApiService.get(`/bodegas/${id}/inventario`);
+    },
+
     create(bodegaData) {
         return ApiService.post('/bodegas', bodegaData);
     },

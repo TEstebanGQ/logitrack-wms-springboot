@@ -2,10 +2,12 @@ package com.proyecto.proyectoSpringBoot.service.impl;
 
 import com.proyecto.proyectoSpringBoot.dto.request.CrearBodegaRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.BodegaResponse;
+import com.proyecto.proyectoSpringBoot.dto.response.InventarioBodegaResponse;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
 import com.proyecto.proyectoSpringBoot.mapper.BodegaMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.Bodega;
 import com.proyecto.proyectoSpringBoot.repository.BodegaRepository;
+import com.proyecto.proyectoSpringBoot.repository.InventarioBodegaRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IBodegaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class BodegaServiceImpl implements IBodegaService {
 
     private final BodegaRepository bodegaRepository;
+    private final InventarioBodegaRepository inventarioRepository;
     private final BodegaMapper bodegaMapper;
 
     @Override
@@ -46,6 +49,21 @@ public class BodegaServiceImpl implements IBodegaService {
     public List<BodegaResponse> listarActivas() {
         return bodegaRepository.findByActivoTrue().stream()
                 .map(bodegaMapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InventarioBodegaResponse> obtenerInventarioPorBodega(Long bodegaId) {
+        Bodega bodega = findById(bodegaId);
+        return inventarioRepository.findByBodegaId(bodega.getId()).stream()
+                .map(inv -> InventarioBodegaResponse.builder()
+                        .bodegaId(bodega.getId())
+                        .bodegaNombre(bodega.getNombre())
+                        .productoId(inv.getProducto().getId())
+                        .productoNombre(inv.getProducto().getNombre())
+                        .stockActual(inv.getStockActual())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override

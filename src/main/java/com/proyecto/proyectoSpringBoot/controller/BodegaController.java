@@ -2,6 +2,7 @@ package com.proyecto.proyectoSpringBoot.controller;
 
 import com.proyecto.proyectoSpringBoot.dto.request.CrearBodegaRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.BodegaResponse;
+import com.proyecto.proyectoSpringBoot.dto.response.InventarioBodegaResponse;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IBodegaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/bodegas")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Bodegas", description = "CRUD de bodegas")
+@Tag(name = "Bodegas", description = "CRUD de bodegas e inventario por bodega")
 public class BodegaController {
 
     private final IBodegaService bodegaService;
@@ -45,6 +46,12 @@ public class BodegaController {
     @Operation(summary = "Obtener bodega por ID")
     public ResponseEntity<BodegaResponse> obtener(@PathVariable Long id) {
         return ResponseEntity.ok(bodegaService.obtenerPorId(id));
+    }
+
+    @GetMapping("/{id}/inventario")
+    @Operation(summary = "Obtener inventario específico de productos en una bodega por ID")
+    public ResponseEntity<List<InventarioBodegaResponse>> obtenerInventario(@PathVariable Long id) {
+        return ResponseEntity.ok(bodegaService.obtenerInventarioPorBodega(id));
     }
 
     @PutMapping("/{id}")

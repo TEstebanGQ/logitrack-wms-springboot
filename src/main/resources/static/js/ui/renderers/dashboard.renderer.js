@@ -34,9 +34,12 @@ const DashboardRenderer = {
                     <div class="gauge">
                         <div class="gauge-fill ${capUsadaPct > 85 ? 'warn' : ''}" style="width: ${capUsadaPct}%"></div>
                     </div>
-                    <div class="bodega-foot">
+                    <div class="bodega-foot" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>ENC: ${b.encargado || 'Operador'}</span>
-                        <span>${unidadesUsadas.toLocaleString()} / ${capTotal.toLocaleString()}</span>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.edit(${b.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.delete(${b.id})">Eliminar</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -106,12 +109,16 @@ const DashboardRenderer = {
         }
 
         const rows = productos.slice(0, 5).map(p => `
-            <div class="alert-row">
+            <div class="alert-row" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div class="alert-name"><strong>${p.nombre}</strong></div>
                     <div class="alert-cat">${p.categoriaNombre || 'General'} · B-01</div>
                 </div>
-                <div class="alert-stock">${p.stock} u.</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="alert-stock" style="margin-right: 4px;">${p.stock} u.</div>
+                    <button class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 11px;" onclick="ProductoModuleController.edit(${p.id})">Editar</button>
+                    <button class="btn btn-danger btn-sm" style="padding: 3px 8px; font-size: 11px;" onclick="ProductoModuleController.delete(${p.id})">Eliminar</button>
+                </div>
             </div>
         `).join('');
 

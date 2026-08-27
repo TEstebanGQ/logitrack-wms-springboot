@@ -88,3 +88,97 @@ CREATE TABLE IF NOT EXISTS auditoria (
     descripcion         VARCHAR(500)                        NULL,
     CONSTRAINT fk_aud_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );
+
+
+CREATE TABLE IF NOT EXISTS categorias (
+    id          BIGSERIAL PRIMARY KEY,
+    nombre      VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(500),
+    activo      BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS proveedores (
+    id          BIGSERIAL PRIMARY KEY,
+    nombre      VARCHAR(150) NOT NULL,
+    ruc         VARCHAR(50),
+    telefono    VARCHAR(20),
+    email       VARCHAR(150),
+    direccion   VARCHAR(300),
+    activo      BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS clientes (
+    id          BIGSERIAL PRIMARY KEY,
+    nombre      VARCHAR(150) NOT NULL,
+    ruc         VARCHAR(50),
+    telefono    VARCHAR(20),
+    email       VARCHAR(150),
+    direccion   VARCHAR(300),
+    activo      BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS configuracion (
+    id          BIGSERIAL PRIMARY KEY,
+    clave       VARCHAR(100) NOT NULL UNIQUE,
+    valor       VARCHAR(500) NOT NULL,
+    descripcion VARCHAR(500),
+    updated_at  TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS alertas_stock (
+    id              BIGSERIAL PRIMARY KEY,
+    producto_id     BIGINT NOT NULL REFERENCES productos(id),
+    bodega_id       BIGINT NOT NULL REFERENCES bodegas(id),
+    stock_actual    INT NOT NULL,
+    stock_minimo    INT NOT NULL,
+    estado          VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+    fecha_generada  TIMESTAMP NOT NULL DEFAULT NOW(),
+    fecha_resuelta  TIMESTAMP,
+    resuelta_por_id BIGINT REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS notificaciones (
+    id              BIGSERIAL PRIMARY KEY,
+    usuario_id      BIGINT NOT NULL REFERENCES usuarios(id),
+    titulo          VARCHAR(200) NOT NULL,
+    mensaje         VARCHAR(1000) NOT NULL,
+    tipo            VARCHAR(20) NOT NULL DEFAULT 'INFO',
+    leida           BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha_creacion  TIMESTAMP NOT NULL DEFAULT NOW(),
+    fecha_lectura   TIMESTAMP,
+    url_accion      VARCHAR(500)
+);
+
+CREATE TABLE IF NOT EXISTS solicitudes_transferencia (
+    id                  BIGSERIAL PRIMARY KEY,
+    bodega_origen_id    BIGINT NOT NULL REFERENCES bodegas(id),
+    bodega_destino_id   BIGINT NOT NULL REFERENCES bodegas(id),
+    solicitante_id      BIGINT NOT NULL REFERENCES usuarios(id),
+    aprobador_id        BIGINT REFERENCES usuarios(id),
+    estado              VARCHAR(30) NOT NULL DEFAULT 'PENDIENTE',
+    observaciones       VARCHAR(500),
+    motivo_rechazo      VARCHAR(500),
+    total_unidades      INT NOT NULL DEFAULT 0,
+    fecha_solicitud     TIMESTAMP NOT NULL DEFAULT NOW(),
+    fecha_resolucion    TIMESTAMP,
+    fecha_expiracion    TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS solicitud_detalle_transferencia (
+    id              BIGSERIAL PRIMARY KEY,
+    solicitud_id    BIGINT NOT NULL REFERENCES solicitudes_transferencia(id) ON DELETE CASCADE,
+    producto_id     BIGINT NOT NULL REFERENCES productos(id),
+    cantidad        INT NOT NULL
+);
+
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS categoria_id BIGINT REFERENCES categorias(id);
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS stock_minimo INT NOT NULL DEFAULT 10;
+ALTER TABLE movimientos ADD COLUMN IF NOT EXISTS proveedor_id BIGINT REFERENCES proveedores(id);
+ALTER TABLE movimientos ADD COLUMN IF NOT EXISTS cliente_id BIGINT REFERENCES clientes(id);
+

@@ -24,6 +24,8 @@ public class MovimientoMapper {
                         ? m.getUsuario().getNombre() + " " + m.getUsuario().getApellido() : null)
                 .bodegaOrigen(m.getBodegaOrigen() != null ? m.getBodegaOrigen().getNombre() : null)
                 .bodegaDestino(m.getBodegaDestino() != null ? m.getBodegaDestino().getNombre() : null)
+                .proveedorNombre(m.getProveedor() != null ? m.getProveedor().getNombre() : null)
+                .clienteNombre(m.getCliente() != null ? m.getCliente().getNombre() : null)
                 .detalles(detalles)
                 .build();
     }

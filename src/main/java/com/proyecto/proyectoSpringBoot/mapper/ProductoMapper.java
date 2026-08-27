@@ -11,7 +11,7 @@ public class ProductoMapper {
     public Producto toEntity(CrearProductoRequest req) {
         return Producto.builder()
                 .nombre(req.getNombre())
-                .categoria(req.getCategoria())
+                // .categoria(req.getCategoriaId()) // will be set in service
                 .stock(req.getStock() != null ? req.getStock() : 0)
                 .precio(req.getPrecio())
                 .descripcion(req.getDescripcion())
@@ -23,8 +23,10 @@ public class ProductoMapper {
         return ProductoResponse.builder()
                 .id(p.getId())
                 .nombre(p.getNombre())
-                .categoria(p.getCategoria())
+                .categoriaId(p.getCategoria() != null ? p.getCategoria().getId() : null)
+                .categoriaNombre(p.getCategoria() != null ? p.getCategoria().getNombre() : null)
                 .stock(p.getStock())
+                .stockMinimo(p.getStockMinimo())
                 .precio(p.getPrecio())
                 .descripcion(p.getDescripcion())
                 .activo(p.isActivo())
@@ -34,7 +36,6 @@ public class ProductoMapper {
 
     public void updateEntity(Producto producto, CrearProductoRequest req) {
         producto.setNombre(req.getNombre());
-        producto.setCategoria(req.getCategoria());
         producto.setStock(req.getStock() != null ? req.getStock() : producto.getStock());
         producto.setPrecio(req.getPrecio());
         producto.setDescripcion(req.getDescripcion());

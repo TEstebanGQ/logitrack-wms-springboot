@@ -14,7 +14,7 @@ public class BodegaMapper {
                 .ubicacion(req.getUbicacion())
                 .capacidad(req.getCapacidad())
                 .encargado(req.getEncargado())
-                .activo(true)
+                .activo(req.getActivo() != null ? req.getActivo() : true)
                 .build();
     }
 
@@ -35,5 +35,8 @@ public class BodegaMapper {
         bodega.setUbicacion(req.getUbicacion());
         bodega.setCapacidad(req.getCapacidad());
         bodega.setEncargado(req.getEncargado());
+        if (req.getActivo() != null) {
+            bodega.setActivo(req.getActivo());
+        }
     }
 }

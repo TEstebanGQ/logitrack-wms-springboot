@@ -82,14 +82,41 @@ const ProductoModuleController = {
         }
     },
 
+    openCrearCategoriaModal() {
+        const form = document.getElementById('form-categoria');
+        if (form) form.reset();
+        App.openModal('modal-categoria');
+    },
+
+    async guardarCategoria(formData) {
+        try {
+            const nuevaCat = await CategoriaService.create(formData);
+            Toast.success(`Categoría '${nuevaCat.nombre}' creada con éxito`);
+            App.closeModal('modal-categoria');
+            await this.populateCategoriaSelect(nuevaCat.id);
+        } catch (err) {
+            Toast.error(err.message || 'Error al crear la categoría');
+        }
+    },
+
     async populateCategoriaSelect(selectedId = null) {
         try {
             const categorias = await CategoriaService.getAll().catch(() => []);
             const catSelect = document.getElementById('producto-categoria-id');
             if (catSelect) {
-                catSelect.innerHTML = categorias.map(c =>
+                if (!categorias || categorias.length === 0) {
+                    catSelect.innerHTML = '<option value="">-- No hay categorías registradas --</option>';
+                    return;
+                }
+                const opts = categorias.map(c =>
                     `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.nombre}</option>`
                 ).join('');
+                catSelect.innerHTML = opts;
+
+                // Si hay un id seleccionado explícito, forzar el valor en el elemento select
+                if (selectedId) {
+                    catSelect.value = selectedId;
+                }
             }
         } catch (err) {
             console.error('Error cargando categorías:', err);

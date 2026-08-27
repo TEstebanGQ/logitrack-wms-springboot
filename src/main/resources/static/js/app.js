@@ -83,6 +83,19 @@ const App = {
             });
         }
 
+        // Formulario Categoria Modal
+        const categoriaForm = document.getElementById('form-categoria');
+        if (categoriaForm) {
+            categoriaForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = {
+                    nombre: document.getElementById('categoria-nombre').value,
+                    descripcion: document.getElementById('categoria-descripcion').value
+                };
+                await ProductoModuleController.guardarCategoria(data);
+            });
+        }
+
         // Formulario Movimiento Modal
         const movimientoForm = document.getElementById('form-movimiento');
         if (movimientoForm) {

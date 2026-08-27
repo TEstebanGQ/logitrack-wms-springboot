@@ -475,7 +475,10 @@
                 <input type="text" id="producto-nombre" class="form-input" required placeholder="Laptop Dell XPS 15">
             </div>
             <div class="form-group">
-                <label class="form-label" for="producto-categoria-id">Categoría</label>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <label class="form-label" for="producto-categoria-id" style="margin-bottom:0;">Categoría</label>
+                    <button type="button" class="btn btn-secondary btn-sm" style="padding:2px 8px; font-size:11px;" onclick="ProductoModuleController.openCrearCategoriaModal()">+ Nueva Categoría</button>
+                </div>
                 <select id="producto-categoria-id" class="form-select" required></select>
             </div>
             <div class="form-group">
@@ -493,6 +496,30 @@
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-producto')">Cancelar</button>
                 <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Nueva Categoría -->
+<div id="modal-categoria" class="modal-overlay">
+    <div class="modal-content" style="max-width: 440px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Nueva Categoría</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-categoria')">&times;</button>
+        </div>
+        <form id="form-categoria">
+            <div class="form-group">
+                <label class="form-label" for="categoria-nombre">Nombre de la Categoría</label>
+                <input type="text" id="categoria-nombre" class="form-input" required placeholder="Ej: Audio, Herramientas, Calzado...">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="categoria-descripcion">Descripción (Opcional)</label>
+                <input type="text" id="categoria-descripcion" class="form-input" placeholder="Descripción breve...">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-categoria')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Categoría</button>
             </div>
         </form>
     </div>

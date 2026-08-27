@@ -12,7 +12,7 @@ const Router = {
 
     handleHashChange() {
         const hash = window.location.hash.replace('#/', '') || 'dashboard';
-        
+
         if (!AuthService.isAuthenticated() && hash !== 'auth') {
             this.navigate('auth');
             return;
@@ -32,44 +32,39 @@ const Router = {
 
     showView(viewId) {
         this.currentView = viewId;
-        const appLayout = document.getElementById('app-layout');
+        const appLayout  = document.getElementById('app-layout');
         const authLayout = document.getElementById('auth-layout');
-        
+
         if (viewId === 'auth') {
-            if (appLayout) appLayout.style.display = 'none';
-            if (authLayout) authLayout.style.display = 'flex';
+            if (appLayout)  appLayout.style.display  = 'none';
+            if (authLayout) authLayout.style.display = 'grid';
             return;
         }
 
-        if (appLayout) appLayout.style.display = 'flex';
+        // Mostrar dashboard layout
+        if (appLayout)  appLayout.style.display  = 'flex';
         if (authLayout) authLayout.style.display = 'none';
 
-        // Ocultar todas las secciones de vista
-        const views = document.querySelectorAll('.view-section');
-        views.forEach(v => v.style.display = 'none');
-
-        // Mostrar la vista seleccionada
+        // Ocultar todas las vistas y mostrar la activa
+        document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
         const targetView = document.getElementById(`view-${viewId}`);
-        if (targetView) {
-            targetView.style.display = 'block';
-        }
+        if (targetView) targetView.style.display = 'block';
 
-        // Actualizar links de navegación activa
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
+        // Actualizar estado activo en navegación
+        document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.toggle('active', link.getAttribute('data-view') === viewId);
         });
 
-        // Actualizar título en topbar
+        // Actualizar título topbar
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) {
             const titles = {
-                dashboard: 'Panel Principal',
-                bodegas: 'Gestión de Bodegas',
-                productos: 'Gestión de Productos',
-                movimientos: 'Movimientos de Inventario',
+                dashboard:  'Panel de Bodegas',
+                bodegas:    'Gestión de Bodegas',
+                productos:  'Gestión de Productos',
+                movimientos:'Movimientos de Inventario',
                 auditorias: 'Registros de Auditoría',
-                reportes: 'Reportes y Métricas'
+                reportes:   'Reportes y Métricas'
             };
             pageTitle.innerText = titles[viewId] || 'LogiTrack S.A.';
         }

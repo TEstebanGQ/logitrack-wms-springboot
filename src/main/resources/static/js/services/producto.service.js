@@ -12,7 +12,7 @@ const ProductoService = {
     },
 
     getBajoStock() {
-        return ApiService.get('/productos/bajo-stock');
+        return ApiService.get('/productos/stock-bajo');
     },
 
     create(productoData) {

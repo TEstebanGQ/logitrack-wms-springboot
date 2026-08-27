@@ -3,332 +3,619 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiTrack S.A. - Gestión & Auditoría de Bodegas</title>
-    
-    <!-- Fuentes Google -->
+    <title>LogiTrack S.A. — Gestión & Auditoría de Bodegas</title>
+    <meta name="description" content="Sistema de gestión de bodegas e inventario con auditoría completa en tiempo real. Entradas, salidas y transferencias trazadas al 100%.">
+
+    <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Hojas de Estilo Modular -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Hojas de estilo modulares -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/dashboard.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-    <!-- ==================== PANTALLA DE AUTENTICACIÓN ==================== -->
-    <div id="auth-layout" class="auth-wrapper" style="display: flex;">
+<!-- ============================================================
+     AUTH LAYOUT
+     Grid: hero (izquierda) | ticket login (derecha)
+     ============================================================ -->
+<div id="auth-layout">
+
+    <!-- === HERO (panel izquierdo) === -->
+    <div class="login-hero">
+
+        <!-- Mapa de bodegas animado (fondo) -->
+        <div class="baymap" aria-hidden="true">
+            <svg viewBox="0 0 700 900" preserveAspectRatio="xMidYMid slice">
+                <rect class="bay-cell" x="40"  y="380" width="90" height="70"/>
+                <rect class="bay-cell" x="150" y="380" width="90" height="70"/>
+                <rect class="bay-cell" x="40"  y="470" width="90" height="70"/>
+                <rect class="bay-cell" x="150" y="470" width="90" height="70"/>
+                <rect class="bay-cell" x="480" y="120" width="90" height="70"/>
+                <rect class="bay-cell" x="590" y="120" width="90" height="70"/>
+                <rect class="bay-cell" x="480" y="210" width="90" height="70"/>
+                <rect class="bay-cell" x="300" y="600" width="90" height="70"/>
+                <rect class="bay-cell" x="410" y="600" width="90" height="70"/>
+                <rect class="bay-cell" x="300" y="690" width="90" height="70"/>
+                <line class="bay-link" x1="130" y1="415" x2="525" y2="155"/>
+                <line class="bay-link" x1="130" y1="415" x2="345" y2="635"/>
+                <line class="bay-link" x1="525" y1="155" x2="345" y2="635"/>
+                <line class="bay-link" x1="195" y1="505" x2="455" y2="635"/>
+                <circle class="bay-node n1" cx="85"  cy="415" r="4" fill="var(--accent)"/>
+                <circle class="bay-node n2" cx="525" cy="155" r="4" fill="var(--accent)"/>
+                <circle class="bay-node n3" cx="345" cy="635" r="4" fill="var(--accent)"/>
+                <circle class="bay-node n4" cx="195" cy="505" r="4" fill="var(--accent-2)"/>
+                <circle class="bay-node n5" cx="455" cy="635" r="4" fill="var(--accent-2)"/>
+            </svg>
+        </div>
+
+        <!-- Contenido hero -->
+        <div class="login-hero-content">
+            <div class="brand-lockup">
+                <div class="brand-mark"><span>LT</span></div>
+                <div class="brand-name">Logi<b>Track</b> S.A.</div>
+            </div>
+            <div class="eyebrow">Sistema de gestión de bodegas · Acceso restringido</div>
+            <h1 class="hero-headline">
+                Cada movimiento,<br><em>trazado.</em><br>Cada bodega,<br>bajo control.
+            </h1>
+            <p class="hero-sub">
+                Entradas, salidas y transferencias entre bodegas registradas y auditadas en tiempo real.
+                Ningún cambio queda sin firma.
+            </p>
+
+            <div class="hero-telemetry">
+                <div class="tele-item">
+                    <span class="tele-dot"></span>
+                    <span class="tele-label">AUDITORÍA JPA ACTIVA</span>
+                </div>
+                <div class="tele-item">
+                    <span class="tele-dot warning"></span>
+                    <span class="tele-label">TRANSFERENCIAS DÍARIAS (150 MAX)</span>
+                </div>
+                <div class="tele-item">
+                    <span class="tele-dot info"></span>
+                    <span class="tele-label">SEGURIDAD JWT BEARER</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas footer -->
+        <div class="hero-footer">
+            <div class="hero-stat">
+                <div class="num">08 <span>bodegas</span></div>
+                <div class="label">Activas a nivel nacional</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">100<span>%</span></div>
+                <div class="label">Movimientos auditados</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">JWT</div>
+                <div class="label">Autenticación segura</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === AUTH PANEL (panel derecho) === -->
+    <div class="login-panel">
+
+        <!-- Tarjeta Iniciar Sesión -->
         <div id="auth-login-card" class="auth-card">
-            <div class="auth-header">
-                <div class="brand-icon" style="margin: 0 auto 1rem;">📦</div>
-                <h1 class="brand-name">LogiTrack S.A.</h1>
-                <p class="auth-title">Iniciar Sesión</p>
+            <div class="auth-card-header">
+                <div class="eyebrow">Manifiesto de acceso</div>
+                <h2 class="auth-card-title">Iniciar Sesión</h2>
+                <p class="auth-card-sub">Ingresa tus credenciales autorizadas para acceder al sistema</p>
             </div>
-            <form id="login-form">
-                <div class="form-group">
-                    <label class="form-label">Correo Electrónico</label>
-                    <input type="email" id="login-email" class="form-input" placeholder="admin@logitrack.com" required value="admin@logitrack.com">
+            <div class="auth-card-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Correo electrónico</label>
+                        <input type="email" id="login-email" class="form-input"
+                               placeholder="empleado@logitrack.com" required
+                               value="admin@logitrack.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Contraseña</label>
+                        <input type="password" id="login-password" class="form-input"
+                               placeholder="••••••••••" required value="admin123">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">
+                        Autenticar &amp; Ingresar →
+                    </button>
+                </form>
+                <div class="auth-footer-meta">
+                    <span class="sys-status">● SERVIDOR LOGITRACK ONLINE</span>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Contraseña</label>
-                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required value="admin123">
+                <div class="auth-toggle">
+                    ¿No tienes una cuenta aún?
+                    <a href="#" onclick="App.toggleAuthMode('register'); return false;">Regístrate aquí</a>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Ingresar al Sistema</button>
-            </form>
-            <div class="auth-toggle">
-                ¿No tienes cuenta? <a href="#" onclick="App.toggleAuthMode('register'); return false;">Regístrate aquí</a>
             </div>
         </div>
 
+        <!-- Tarjeta Crear Cuenta -->
         <div id="auth-register-card" class="auth-card" style="display: none;">
-            <div class="auth-header">
-                <div class="brand-icon" style="margin: 0 auto 1rem;">📦</div>
-                <h1 class="brand-name">LogiTrack S.A.</h1>
-                <p class="auth-title">Crear Cuenta</p>
+            <div class="auth-card-header">
+                <div class="eyebrow">Manifiesto de registro</div>
+                <h2 class="auth-card-title">Crear Cuenta</h2>
+                <p class="auth-card-sub">Completa tus datos para darte de alta en el sistema</p>
             </div>
-            <form id="register-form">
-                <div class="form-group">
-                    <label class="form-label">Nombre</label>
-                    <input type="text" id="reg-nombre" class="form-input" placeholder="Juan" required>
+            <div class="auth-card-body">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label class="form-label" for="reg-nombre">Nombre</label>
+                        <input type="text" id="reg-nombre" class="form-input" placeholder="Juan" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-apellido">Apellido</label>
+                        <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-email">Correo electrónico</label>
+                        <input type="email" id="reg-email" class="form-input" placeholder="juan@logitrack.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-password">Contraseña</label>
+                        <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-rol">Rol asignado</label>
+                        <select id="reg-rol" class="form-select">
+                            <option value="EMPLEADO">EMPLEADO</option>
+                            <option value="ADMIN">ADMINISTRADOR</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">
+                        Completar Registro ✓
+                    </button>
+                </form>
+                <div class="auth-toggle">
+                    ¿Ya posees una cuenta?
+                    <a href="#" onclick="App.toggleAuthMode('login'); return false;">Inicia sesión</a>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Apellido</label>
-                    <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Correo Electrónico</label>
-                    <input type="email" id="reg-email" class="form-input" placeholder="juan@logitrack.com" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Contraseña</label>
-                    <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Rol</label>
-                    <select id="reg-rol" class="form-select">
-                        <option value="EMPLEADO">EMPLEADO</option>
-                        <option value="ADMIN">ADMINISTRADOR</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Registrarme</button>
-            </form>
-            <div class="auth-toggle">
-                ¿Ya tienes cuenta? <a href="#" onclick="App.toggleAuthMode('login'); return false;">Inicia sesión</a>
             </div>
         </div>
-    </div>
 
-    <!-- ==================== APLICACIÓN DASHBOARD PRINCIPAL ==================== -->
-    <div id="app-layout" class="app-layout" style="display: none;">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="brand-icon">📦</div>
-                <div class="brand-name">LogiTrack</div>
-            </div>
-            <ul class="nav-list">
-                <li><a href="#/dashboard" class="nav-link" data-view="dashboard">📊 Dashboard</a></li>
-                <li><a href="#/bodegas" class="nav-link" data-view="bodegas">🏬 Bodegas</a></li>
-                <li><a href="#/productos" class="nav-link" data-view="productos">📱 Productos</a></li>
-                <li><a href="#/movimientos" class="nav-link" data-view="movimientos">🔄 Movimientos</a></li>
-                <li><a href="#/auditorias" class="nav-link" data-view="auditorias">📜 Auditorías</a></li>
-                <li><a href="#/reportes" class="nav-link" data-view="reportes">📈 Reportes</a></li>
-            </ul>
+    </div><!-- /login-panel -->
+</div><!-- /#auth-layout -->
+
+
+<!-- ============================================================
+     APP LAYOUT (Dashboard)
+     Grid: sidebar | main-wrapper
+     ============================================================ -->
+<div id="app-layout" style="display: none;">
+
+    <!-- === SIDEBAR === -->
+    <aside class="sidebar">
+        <div class="brand-lockup">
+            <div class="brand-mark"><span>LT</span></div>
+            <div class="brand-name">Logi<b>Track</b></div>
+        </div>
+
+        <span class="nav-group-label">Operación</span>
+        <ul class="nav-list">
+            <li>
+                <a href="#/dashboard" class="nav-link" data-view="dashboard">
+                    <span class="nav-code">01</span>Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="#/bodegas" class="nav-link" data-view="bodegas">
+                    <span class="nav-code">02</span>Bodegas
+                </a>
+            </li>
+            <li>
+                <a href="#/productos" class="nav-link" data-view="productos">
+                    <span class="nav-code">03</span>Productos
+                </a>
+            </li>
+            <li>
+                <a href="#/movimientos" class="nav-link" data-view="movimientos">
+                    <span class="nav-code">04</span>Movimientos
+                </a>
+            </li>
+        </ul>
+
+        <span class="nav-group-label">Control</span>
+        <ul class="nav-list">
+            <li>
+                <a href="#/auditorias" class="nav-link" data-view="auditorias">
+                    <span class="nav-code">05</span>Auditoría
+                </a>
+            </li>
+            <li>
+                <a href="#/reportes" class="nav-link" data-view="reportes">
+                    <span class="nav-code">06</span>Reportes
+                </a>
+            </li>
+        </ul>
+
+        <span class="nav-group-label">Sistema</span>
+        <ul class="nav-list">
+            <li>
+                <a href="http://localhost:8081/swagger-ui.html" target="_blank" class="nav-link">
+                    <span class="nav-code">·</span>API Docs
+                </a>
+            </li>
+        </ul>
+
+        <!-- User chip -->
+        <div class="sidebar-foot">
             <div class="user-profile">
-                <div class="user-info">
-                    <span id="user-display-name" class="user-name">Usuario</span>
-                    <span id="user-display-role" class="user-role">ROL</span>
+                <div class="user-chip">
+                    <div class="user-avatar" id="user-avatar-initials">--</div>
+                    <div class="user-info">
+                        <span id="user-display-name" class="user-name">Usuario</span>
+                        <span id="user-display-role" class="user-role">ROL</span>
+                    </div>
                 </div>
-                <button class="btn btn-secondary btn-sm" onclick="AuthService.logout()" title="Cerrar Sesión">🚪</button>
+                <button class="btn btn-sm btn-secondary" onclick="AuthService.logout()" title="Cerrar sesión">✕</button>
             </div>
-        </aside>
-
-        <!-- Main Content -->
-        <div class="main-wrapper">
-            <header class="topbar">
-                <h2 id="page-title" class="page-title">Panel Principal</h2>
-                <a href="http://localhost:8081/swagger-ui.html" target="_blank" class="btn btn-secondary btn-sm">📖 Swagger Docs</a>
-            </header>
-
-            <main class="content-area">
-                <!-- Vista Dashboard -->
-                <section id="view-dashboard" class="view-section">
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <div class="metric-header"><span>Total Bodegas</span><span>🏬</span></div>
-                            <div id="metric-total-bodegas" class="metric-value">0</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header"><span>Total Productos</span><span>📱</span></div>
-                            <div id="metric-total-productos" class="metric-value">0</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header"><span>Productos Stock Bajo</span><span>⚠️</span></div>
-                            <div id="metric-bajo-stock" class="metric-value" style="color: var(--danger);">0</div>
-                        </div>
-                    </div>
-
-                    <h3 style="margin-bottom: 1rem;">🚨 Alerta de Productos con Stock Bajo (< 10 unidades)</h3>
-                    <div id="dashboard-bajo-stock-container"></div>
-                </section>
-
-                <!-- Vista Bodegas -->
-                <section id="view-bodegas" class="view-section" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h3>Lista de Bodegas Registradas</h3>
-                        <button class="btn btn-primary" onclick="App.openBodegaModal()">➕ Nueva Bodega</button>
-                    </div>
-                    <div id="bodegas-list-container"></div>
-                </section>
-
-                <!-- Vista Productos -->
-                <section id="view-productos" class="view-section" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h3>Catálogo de Productos</h3>
-                        <button class="btn btn-primary" onclick="App.openProductoModal()">➕ Nuevo Producto</button>
-                    </div>
-                    <div id="productos-list-container"></div>
-                </section>
-
-                <!-- Vista Movimientos -->
-                <section id="view-movimientos" class="view-section" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h3>Historial de Movimientos de Inventario</h3>
-                        <button class="btn btn-primary" onclick="App.openModal('modal-movimiento')">🔄 Registrar Movimiento</button>
-                    </div>
-                    <div id="movimientos-list-container"></div>
-                </section>
-
-                <!-- Vista Auditorías -->
-                <section id="view-auditorias" class="view-section" style="display: none;">
-                    <h3 style="margin-bottom: 1.5rem;">Logs de Auditoría de Cambios</h3>
-                    <div id="auditorias-list-container"></div>
-                </section>
-
-                <!-- Vista Reportes -->
-                <section id="view-reportes" class="view-section" style="display: none;">
-                    <h3 style="margin-bottom: 1.5rem;">📈 Reportes y Estadísticas Generales</h3>
-                    <div id="reportes-list-container"></div>
-                </section>
-            </main>
         </div>
-    </div>
+    </aside>
 
-    <!-- ==================== MODALES ==================== -->
-    <!-- Modal Bodega -->
-    <div id="modal-bodega" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-bodega-title" class="modal-title">Nueva Bodega</h3>
-                <button class="modal-close" onclick="App.closeModal('modal-bodega')">&times;</button>
+    <!-- === MAIN WRAPPER === -->
+    <div class="main-wrapper">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <h1 id="page-title" class="page-title">Panel de Bodegas</h1>
+            <div class="topbar-meta">
+                <span id="clock">--:--:--</span>
+                <span>·</span>
+                <span id="topbar-date">--</span>
             </div>
-            <form id="form-bodega">
-                <input type="hidden" id="bodega-id">
-                <div class="form-group">
-                    <label class="form-label">Nombre</label>
-                    <input type="text" id="bodega-nombre" class="form-input" required placeholder="Bodega Central">
+        </header>
+
+        <!-- Content area -->
+        <div class="content-area">
+
+            <!-- ===== VISTA: DASHBOARD ===== -->
+            <section id="view-dashboard" class="view-section">
+
+                <!-- KPI Stats (4 tarjetas) -->
+                <div class="stat-row metrics-grid">
+                    <div class="stat-card metric-card">
+                        <div class="eyebrow">Bodegas activas</div>
+                        <div id="metric-total-bodegas" class="stat-value metric-value">—</div>
+                    </div>
+                    <div class="stat-card metric-card">
+                        <div class="eyebrow">Stock total</div>
+                        <div id="metric-stock-total" class="stat-value metric-value">—</div>
+                    </div>
+                    <div class="stat-card metric-card">
+                        <div class="eyebrow">Movimientos hoy</div>
+                        <div id="metric-total-movimientos" class="stat-value metric-value">—</div>
+                    </div>
+                    <div class="stat-card metric-card">
+                        <div class="eyebrow">Alertas de stock bajo</div>
+                        <div id="metric-bajo-stock" class="stat-value metric-value" style="color:var(--danger)">—</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Ubicación</label>
-                    <input type="text" id="bodega-ubicacion" class="form-input" required placeholder="Bogotá, Cundinamarca">
+
+                <!-- Sección: Bodegas (Grid de tarjetas) -->
+                <div class="section-title" style="margin-top:16px; margin-bottom:12px;">
+                    <h2>Bodegas</h2>
+                    <a href="#/bodegas">Ver todas →</a>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Capacidad (unidades)</label>
-                    <input type="number" id="bodega-capacidad" class="form-input" required min="1" placeholder="5000">
+                <div id="dashboard-bodegas-container" class="bodegas-grid" style="margin-bottom:28px;"></div>
+
+                <!-- Sección Dividida: Movimientos Recientes (izq) y Stock Bajo (der) -->
+                <div class="split-row">
+                    <!-- Movimientos Recientes (Columna izquierda 65%) -->
+                    <div>
+                        <div class="section-title" style="margin-bottom:12px;">
+                            <h2>Movimientos recientes</h2>
+                            <a href="#/movimientos">Ver bitácora →</a>
+                        </div>
+                        <div id="dashboard-movimientos-container" class="table-wrap"></div>
+                    </div>
+
+                    <!-- Stock Bajo (Columna derecha 35%) -->
+                    <div>
+                        <div class="section-title" style="margin-bottom:12px;">
+                            <h2>Stock bajo</h2>
+                            <a href="#/productos">Reponer →</a>
+                        </div>
+                        <div id="dashboard-bajo-stock-container" class="alerts-panel"></div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Encargado</label>
-                    <input type="text" id="bodega-encargado" class="form-input" required placeholder="Carlos González">
+
+            </section>
+
+            <!-- ===== VISTA: BODEGAS ===== -->
+            <section id="view-bodegas" class="view-section" style="display:none;">
+                <div class="section-title" style="margin-bottom:18px;">
+                    <h2>Bodegas registradas</h2>
+                    <button class="btn btn-primary btn-sm" onclick="App.openBodegaModal()">+ Nueva Bodega</button>
                 </div>
-                <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
+                <div id="bodegas-list-container"></div>
+            </section>
+
+            <!-- ===== VISTA: PRODUCTOS ===== -->
+            <section id="view-productos" class="view-section" style="display:none;">
+                <div class="section-title" style="margin-bottom:18px;">
+                    <h2>Catálogo de productos</h2>
+                    <button class="btn btn-primary btn-sm" onclick="App.openProductoModal()">+ Nuevo Producto</button>
+                </div>
+                <div id="productos-list-container"></div>
+            </section>
+
+            <!-- ===== VISTA: MOVIMIENTOS ===== -->
+            <section id="view-movimientos" class="view-section" style="display:none;">
+                <div class="section-title" style="margin-bottom:18px;">
+                    <h2>Historial de movimientos</h2>
+                    <button class="btn btn-primary btn-sm" onclick="App.openModal('modal-movimiento')">+ Registrar Movimiento</button>
+                </div>
+                <div id="movimientos-list-container"></div>
+            </section>
+
+            <!-- ===== VISTA: AUDITORÍAS ===== -->
+            <section id="view-auditorias" class="view-section" style="display:none;">
+                <div class="section-title" style="margin-bottom:18px;">
+                    <h2>Logs de auditoría</h2>
+                </div>
+                <div id="auditorias-list-container"></div>
+            </section>
+
+            <!-- ===== VISTA: REPORTES ===== -->
+            <section id="view-reportes" class="view-section" style="display:none;">
+                <div class="section-title" style="margin-bottom:18px;">
+                    <h2>Reportes y estadísticas</h2>
+                </div>
+                <div id="reportes-list-container"></div>
+
+                <!-- Exportación -->
+                <div class="export-section" style="margin-top:28px;">
+                    <h3 class="export-section__title">Exportar Reportes</h3>
+                    <div class="export-buttons">
+                        <button id="btn-export-excel-resumen" class="btn btn-export btn-export--excel">
+                            <span class="btn-export__icon">📊</span>
+                            <div>
+                                <div class="btn-export__label">Resumen General</div>
+                                <div class="btn-export__format">Excel .xlsx</div>
+                            </div>
+                        </button>
+                        <button id="btn-export-pdf-resumen" class="btn btn-export btn-export--pdf">
+                            <span class="btn-export__icon">📄</span>
+                            <div>
+                                <div class="btn-export__label">Resumen General</div>
+                                <div class="btn-export__format">PDF</div>
+                            </div>
+                        </button>
+                        <button id="btn-export-excel-mov" class="btn btn-export btn-export--excel">
+                            <span class="btn-export__icon">📊</span>
+                            <div>
+                                <div class="btn-export__label">Movimientos (30 días)</div>
+                                <div class="btn-export__format">Excel .xlsx</div>
+                            </div>
+                        </button>
+                        <button id="btn-export-pdf-mov" class="btn btn-export btn-export--pdf">
+                            <span class="btn-export__icon">📄</span>
+                            <div>
+                                <div class="btn-export__label">Movimientos (30 días)</div>
+                                <div class="btn-export__format">PDF</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div><!-- /content-area -->
+    </div><!-- /main-wrapper -->
+</div><!-- /#app-layout -->
+
+
+<!-- ============================================================
+     MODALES
+     ============================================================ -->
+
+<!-- Modal Bodega -->
+<div id="modal-bodega" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-bodega-title" class="modal-title">Nueva Bodega</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-bodega')">&times;</button>
+        </div>
+        <form id="form-bodega">
+            <input type="hidden" id="bodega-id">
+            <div class="form-group">
+                <label class="form-label" for="bodega-nombre">Nombre</label>
+                <input type="text" id="bodega-nombre" class="form-input" required placeholder="Bodega Central">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="bodega-ubicacion">Ubicación</label>
+                <input type="text" id="bodega-ubicacion" class="form-input" required placeholder="Bogotá, Cundinamarca">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="bodega-capacidad">Capacidad (unidades)</label>
+                <input type="number" id="bodega-capacidad" class="form-input" required min="1" placeholder="5000">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="bodega-encargado">Encargado</label>
+                <input type="text" id="bodega-encargado" class="form-input" required placeholder="Carlos González">
+            </div>
+            <div class="toggle-group" onclick="document.getElementById('bodega-activo').click();">
+                <label class="toggle-switch" onclick="event.stopPropagation();">
                     <input type="checkbox" id="bodega-activo" checked>
-                    <label for="bodega-activo" class="form-label" style="margin: 0;">Bodega Activa</label>
+                    <span class="toggle-slider"></span>
+                </label>
+                <div class="toggle-label-text">
+                    <span class="toggle-title">Bodega Activa</span>
+                    <span class="toggle-sub">Habilita esta bodega para operaciones e inventario</span>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-                    <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-bodega')">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                </div>
-            </form>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-bodega')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Producto -->
+<div id="modal-producto" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-producto-title" class="modal-title">Nuevo Producto</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-producto')">&times;</button>
+        </div>
+        <form id="form-producto">
+            <input type="hidden" id="producto-id">
+            <div class="form-group">
+                <label class="form-label" for="producto-nombre">Nombre del Producto</label>
+                <input type="text" id="producto-nombre" class="form-input" required placeholder="Laptop Dell XPS 15">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="producto-categoria-id">Categoría</label>
+                <select id="producto-categoria-id" class="form-select" required></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="producto-stock">Stock Inicial</label>
+                <input type="number" id="producto-stock" class="form-input" required min="0" placeholder="50">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="producto-precio">Precio Unitario ($)</label>
+                <input type="number" id="producto-precio" class="form-input" required step="0.01" min="0" placeholder="4500000">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="producto-descripcion">Descripción</label>
+                <textarea id="producto-descripcion" class="form-textarea" rows="3" placeholder="Especificaciones del producto..."></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-producto')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Movimiento -->
+<div id="modal-movimiento" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Registrar Movimiento</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-movimiento')">&times;</button>
+        </div>
+        <form id="form-movimiento">
+            <div class="form-group">
+                <label class="form-label" for="mov-tipo">Tipo de Movimiento</label>
+                <select id="mov-tipo" class="form-select" required>
+                    <option value="ENTRADA">ENTRADA</option>
+                    <option value="SALIDA">SALIDA</option>
+                    <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="mov-origen">Bodega Origen</label>
+                <select id="mov-origen" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="mov-destino">Bodega Destino</label>
+                <select id="mov-destino" class="form-select"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="mov-producto">Producto</label>
+                <select id="mov-producto" class="form-select" required></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="mov-cantidad">Cantidad</label>
+                <input type="number" id="mov-cantidad" class="form-input" required min="1" placeholder="10">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="mov-obs">Observaciones</label>
+                <input type="text" id="mov-obs" class="form-input" placeholder="Transferencia mensual de mercancía">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-movimiento')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Auditoría -->
+<div id="modal-auditoria" class="modal-overlay">
+    <div class="modal-content" style="max-width:640px;">
+        <div class="modal-header">
+            <h3 id="aud-modal-title" class="modal-title">Inspección de Auditoría</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-auditoria')">&times;</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px; margin-top:6px;">
+            <div>
+                <p class="form-label" style="margin-bottom:6px;">Valores Anteriores (JSON)</p>
+                <pre id="aud-json-anteriores" class="json-viewer"></pre>
+            </div>
+            <div>
+                <p class="form-label" style="margin-bottom:6px;">Valores Nuevos (JSON)</p>
+                <pre id="aud-json-nuevos" class="json-viewer"></pre>
+            </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:18px;">
+            <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-auditoria')">Cerrar</button>
         </div>
     </div>
+</div>
 
-    <!-- Modal Producto -->
-    <div id="modal-producto" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-producto-title" class="modal-title">Nuevo Producto</h3>
-                <button class="modal-close" onclick="App.closeModal('modal-producto')">&times;</button>
-            </div>
-            <form id="form-producto">
-                <input type="hidden" id="producto-id">
-                <div class="form-group">
-                    <label class="form-label">Nombre del Producto</label>
-                    <input type="text" id="producto-nombre" class="form-input" required placeholder="Laptop Dell XPS 15">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Categoría</label>
-                    <input type="text" id="producto-categoria" class="form-input" required placeholder="Electrónica">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Stock Inicial</label>
-                    <input type="number" id="producto-stock" class="form-input" required min="0" placeholder="50">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Precio Unitario ($)</label>
-                    <input type="number" id="producto-precio" class="form-input" required step="0.01" min="0" placeholder="4500000">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Descripción</label>
-                    <textarea id="producto-descripcion" class="form-textarea" rows="3" placeholder="Especificaciones del producto..."></textarea>
-                </div>
-                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-                    <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-producto')">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<!-- Toast container -->
+<div id="toast-container"></div>
 
-    <!-- Modal Movimiento -->
-    <div id="modal-movimiento" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Registrar Movimiento de Inventario</h3>
-                <button class="modal-close" onclick="App.closeModal('modal-movimiento')">&times;</button>
-            </div>
-            <form id="form-movimiento">
-                <div class="form-group">
-                    <label class="form-label">Tipo de Movimiento</label>
-                    <select id="mov-tipo" class="form-select" required>
-                        <option value="ENTRADA">ENTRADA</option>
-                        <option value="SALIDA">SALIDA</option>
-                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Bodega Origen</label>
-                    <select id="mov-origen" class="form-select"></select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Bodega Destino</label>
-                    <select id="mov-destino" class="form-select"></select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Producto</label>
-                    <select id="mov-producto" class="form-select" required></select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Cantidad</label>
-                    <input type="number" id="mov-cantidad" class="form-input" required min="1" placeholder="10">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Observaciones</label>
-                    <input type="text" id="mov-obs" class="form-input" placeholder="Transferencia mensual de mercancía">
-                </div>
-                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-                    <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-movimiento')">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Modal Inspección Auditoría -->
-    <div id="modal-auditoria" class="modal-overlay">
-        <div class="modal-content" style="max-width: 650px;">
-            <div class="modal-header">
-                <h3 id="aud-modal-title" class="modal-title">Inspección de Registro de Auditoría</h3>
-                <button class="modal-close" onclick="App.closeModal('modal-auditoria')">&times;</button>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
-                <div>
-                    <h5 style="color: var(--text-muted); margin-bottom: 0.5rem;">⏮️ Valores Anteriores (JSON)</h5>
-                    <pre id="aud-json-anteriores" class="json-viewer"></pre>
-                </div>
-                <div>
-                    <h5 style="color: var(--text-muted); margin-bottom: 0.5rem;">⏭️ Valores Nuevos (JSON)</h5>
-                    <pre id="aud-json-nuevos" class="json-viewer"></pre>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-auditoria')">Cerrar</button>
-            </div>
-        </div>
-    </div>
+<!-- ============================================================
+     SCRIPTS (orden de dependencias)
+     ============================================================ -->
+<script src="js/config.js"></script>
+<script src="js/services/api.js"></script>
+<script src="js/services/auth.service.js"></script>
+<script src="js/services/bodega.service.js"></script>
+<script src="js/services/categoria.service.js"></script>
+<script src="js/services/producto.service.js"></script>
+<script src="js/services/movimiento.service.js"></script>
+<script src="js/services/auditoria.service.js"></script>
+<script src="js/services/reporte.service.js"></script>
+<script src="js/ui/toast.js"></script>
+<script src="js/ui/renderers.js"></script>
+<script src="js/ui/router.js"></script>
+<script src="js/ui/charts.js"></script>
+<script src="js/services/export.service.js"></script>
+<script src="js/app.js"></script>
 
-    <!-- Scripts JavaScript Modulares -->
-    <script src="js/config.js"></script>
-    <script src="js/services/api.js"></script>
-    <script src="js/services/auth.service.js"></script>
-    <script src="js/services/bodega.service.js"></script>
-    <script src="js/services/producto.service.js"></script>
-    <script src="js/services/movimiento.service.js"></script>
-    <script src="js/services/auditoria.service.js"></script>
-    <script src="js/services/reporte.service.js"></script>
-    <script src="js/ui/toast.js"></script>
-    <script src="js/ui/renderers.js"></script>
-    <script src="js/ui/router.js"></script>
-    <script src="js/app.js"></script>
+<!-- Clock + gauge animation init -->
+<script>
+(function () {
+    // Reloj
+    function tick() {
+        var now = new Date();
+        var pad = function(n){ return String(n).padStart(2,'0'); };
+        var clockEl = document.getElementById('clock');
+        if (clockEl) clockEl.textContent = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+        var dateEl = document.getElementById('topbar-date');
+        if (dateEl) {
+            var months = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+            dateEl.textContent = pad(now.getDate())+' '+months[now.getMonth()]+' '+now.getFullYear();
+        }
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Gauge fill animación — se llama desde app.js o dashboard loader
+    window.animateGauges = function () {
+        document.querySelectorAll('.gauge-fill[data-fill]').forEach(function(el) {
+            requestAnimationFrame(function() {
+                el.style.width = el.getAttribute('data-fill') + '%';
+            });
+        });
+    };
+})();
+</script>
+
 </body>
 </html>

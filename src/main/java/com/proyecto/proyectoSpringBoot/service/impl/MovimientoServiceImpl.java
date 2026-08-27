@@ -8,6 +8,7 @@ import com.proyecto.proyectoSpringBoot.mapper.MovimientoMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.*;
 import com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento;
 import com.proyecto.proyectoSpringBoot.repository.*;
+import com.proyecto.proyectoSpringBoot.service.interfaces.IAlertaStockService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IMovimientoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class MovimientoServiceImpl implements IMovimientoService {
     private final UsuarioRepository usuarioRepository;
     private final InventarioBodegaRepository inventarioRepository;
     private final MovimientoMapper movimientoMapper;
+    private final ProveedorRepository proveedorRepository;
+    private final ClienteRepository clienteRepository;
+    private final IAlertaStockService alertaStockService;
 
     @Override
     public MovimientoResponse registrar(MovimientoRequest request, String emailUsuario) {
@@ -38,6 +42,9 @@ public class MovimientoServiceImpl implements IMovimientoService {
         Bodega origen  = request.getBodegaOrigenId()  != null ? findBodega(request.getBodegaOrigenId())  : null;
         Bodega destino = request.getBodegaDestinoId() != null ? findBodega(request.getBodegaDestinoId()) : null;
 
+        Proveedor proveedor = request.getProveedorId() != null ? proveedorRepository.findById(request.getProveedorId()).orElse(null) : null;
+        Cliente cliente = request.getClienteId() != null ? clienteRepository.findById(request.getClienteId()).orElse(null) : null;
+
         Movimiento movimiento = Movimiento.builder()
                 .tipoMovimiento(request.getTipoMovimiento())
                 .fecha(LocalDateTime.now())
@@ -45,6 +52,8 @@ public class MovimientoServiceImpl implements IMovimientoService {
                 .usuario(usuario)
                 .bodegaOrigen(origen)
                 .bodegaDestino(destino)
+                .proveedor(proveedor)
+                .cliente(cliente)
                 .detalles(new ArrayList<>())
                 .build();
 
@@ -79,14 +88,16 @@ public class MovimientoServiceImpl implements IMovimientoService {
                 if (origen == null) throw new IllegalArgumentException("SALIDA requiere bodega origen");
                 validarStockSuficiente(producto, origen, cantidad);
                 producto.setStock(producto.getStock() - cantidad);
-                ajustarInventarioBodega(origen, producto, -cantidad);
+                InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
+                alertaStockService.verificarYGenerarAlerta(producto, origen, inv.getStockActual());
             }
             case TRANSFERENCIA -> {
                 if (origen == null || destino == null)
                     throw new IllegalArgumentException("TRANSFERENCIA requiere bodega origen y destino");
                 validarStockSuficiente(producto, origen, cantidad);
-                ajustarInventarioBodega(origen, producto, -cantidad);
+                InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
                 ajustarInventarioBodega(destino, producto, cantidad);
+                alertaStockService.verificarYGenerarAlerta(producto, origen, inv.getStockActual());
             }
         }
     }
@@ -101,13 +112,13 @@ public class MovimientoServiceImpl implements IMovimientoService {
                     "Stock insuficiente. Disponible: " + inv.getStockActual() + ", solicitado: " + cantidad);
     }
 
-    private void ajustarInventarioBodega(Bodega bodega, Producto producto, int delta) {
+    private InventarioBodega ajustarInventarioBodega(Bodega bodega, Producto producto, int delta) {
         InventarioBodega inv = inventarioRepository
                 .findByBodegaIdAndProductoId(bodega.getId(), producto.getId())
                 .orElseGet(() -> InventarioBodega.builder()
                         .bodega(bodega).producto(producto).stockActual(0).build());
         inv.setStockActual(inv.getStockActual() + delta);
-        inventarioRepository.save(inv);
+        return inventarioRepository.save(inv);
     }
 
     @Override

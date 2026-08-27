@@ -5,6 +5,8 @@ import com.proyecto.proyectoSpringBoot.dto.response.ProductoResponse;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
 import com.proyecto.proyectoSpringBoot.mapper.ProductoMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.Producto;
+import com.proyecto.proyectoSpringBoot.model.entity.Categoria;
+import com.proyecto.proyectoSpringBoot.repository.CategoriaRepository;
 import com.proyecto.proyectoSpringBoot.repository.ProductoRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IProductoService;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,14 @@ public class ProductoServiceImpl implements IProductoService {
 
     private final ProductoRepository productoRepository;
     private final ProductoMapper productoMapper;
+    private final CategoriaRepository categoriaRepository;
 
     @Override
     public ProductoResponse crear(CrearProductoRequest request) {
+        Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
+            .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         Producto producto = productoMapper.toEntity(request);
+        producto.setCategoria(categoria);
         return productoMapper.toResponse(productoRepository.save(producto));
     }
 
@@ -58,14 +64,17 @@ public class ProductoServiceImpl implements IProductoService {
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorCategoria(String categoria) {
-        return productoRepository.findByCategoriaIgnoreCase(categoria).stream()
+        return productoRepository.findByCategoriaNombreIgnoreCase(categoria).stream()
                 .map(productoMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
     public ProductoResponse actualizar(Long id, CrearProductoRequest request) {
         Producto producto = findById(id);
+        Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
+            .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         productoMapper.updateEntity(producto, request);
+        producto.setCategoria(categoria);
         return productoMapper.toResponse(productoRepository.save(producto));
     }
 

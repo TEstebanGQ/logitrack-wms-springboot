@@ -565,6 +565,21 @@
     </div>
 </div>
 
+<!-- Modal Confirmación Personalizado (Dark Glassmorphism) -->
+<div id="modal-confirm" class="modal-overlay">
+    <div class="modal-content" style="max-width: 420px; text-align: center; border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
+        <div style="font-size: 2.8rem; margin-bottom: 0.5rem;" id="confirm-modal-icon">⚠️</div>
+        <h3 id="confirm-modal-title" class="modal-title" style="font-size: 1.2rem; margin-bottom: 0.5rem; justify-content: center;">¿Confirmar Acción?</h3>
+        <p id="confirm-modal-message" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">
+            ¿Estás seguro de realizar esta acción? Esta operación no se puede deshacer.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+            <button type="button" id="btn-confirm-cancel" class="btn btn-secondary" style="min-width: 110px;">Cancelar</button>
+            <button type="button" id="btn-confirm-action" class="btn btn-danger" style="min-width: 130px;">Sí, Eliminar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Toast container -->
 <div id="toast-container"></div>
 
@@ -583,6 +598,7 @@
 <script src="js/services/reporte.service.js"></script>
 <script src="js/services/export.service.js"></script>
 <script src="js/ui/toast.js"></script>
+<script src="js/ui/confirm.js"></script>
 <script src="js/ui/renderers/bodega.renderer.js"></script>
 <script src="js/ui/renderers/producto.renderer.js"></script>
 <script src="js/ui/renderers/movimiento.renderer.js"></script>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LogiTrack — Dashboard</title>
+  <meta name="description" content="Panel de control LogiTrack S.A. - Gestión de bodegas e inventario"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>"/>
+</head>
+<body>
+
+<!-- ========== TOAST ========== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ========== MODAL GENÉRICO ========== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Modal</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">📦</div>
+        <div class="sidebar-logo-name">Logi<span>Track</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebarName">Cargando...</div>
+        <div class="sidebar-user-role" id="sidebarRole">ROL</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">Principal</div>
+      <div class="nav-item active" data-section="dashboard" onclick="navigate('dashboard')">
+        <span class="nav-icon">🏠</span> Dashboard
+      </div>
+
+      <div class="sidebar-section-title">Gestión</div>
+      <div class="nav-item" data-section="bodegas" onclick="navigate('bodegas')">
+        <span class="nav-icon">🏭</span> Bodegas
+      </div>
+      <div class="nav-item" data-section="productos" onclick="navigate('productos')">
+        <span class="nav-icon">📦</span> Productos
+      </div>
+      <div class="nav-item" data-section="movimientos" onclick="navigate('movimientos')">
+        <span class="nav-icon">🔄</span> Movimientos
+      </div>
+
+      <div class="sidebar-section-title">Análisis</div>
+      <div class="nav-item" data-section="reportes" onclick="navigate('reportes')">
+        <span class="nav-icon">📊</span> Reportes
+      </div>
+      <div class="nav-item admin-only" data-section="auditorias" onclick="navigate('auditorias')">
+        <span class="nav-icon">🔍</span> Auditorías
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="logout()">🚪 Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      </div>
+      <div class="topbar-actions">
+        <span class="topbar-badge" id="topbarPort">puerto: 8081</span>
+        <span class="topbar-badge" id="topbarDate"></span>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ===== SECTION: DASHBOARD ===== -->
+      <div class="section active" id="sec-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card" style="--stat-color:var(--primary)">
+            <div class="stat-icon">🏭</div>
+            <div class="stat-value" id="stat-bodegas">—</div>
+            <div class="stat-label">Bodegas activas</div>
+          </div>
+          <div class="stat-card" style="--stat-color:var(--secondary)">
+            <div class="stat-icon">📦</div>
+            <div class="stat-value" id="stat-productos">—</div>
+            <div class="stat-label">Productos registrados</div>
+          </div>
+          <div class="stat-card" style="--stat-color:var(--success)">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-value" id="stat-movimientos">—</div>
+            <div class="stat-label">Movimientos totales</div>
+          </div>
+          <div class="stat-card" style="--stat-color:var(--warning)">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-value" id="stat-stockbajo">—</div>
+            <div class="stat-label">Stock bajo (&lt;10)</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+          <div class="card">
+            <div class="card-header"><h3>Últimos movimientos</h3></div>
+            <div class="card-body">
+              <div class="table-container">
+                <table>
+                  <thead><tr><th>Tipo</th><th>Fecha</th><th>Usuario</th></tr></thead>
+                  <tbody id="dashMovTable"><tr><td colspan="3" class="loading-overlay"><div class="spinner"></div></td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Productos con stock bajo</h3></div>
+            <div class="card-body">
+              <div class="table-container">
+                <table>
+                  <thead><tr><th>Producto</th><th>Stock</th><th>Precio</th></tr></thead>
+                  <tbody id="dashStockTable"><tr><td colspan="3" class="loading-overlay"><div class="spinner"></div></td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: BODEGAS ===== -->
+      <div class="section" id="sec-bodegas">
+        <div class="page-header">
+          <div><h2>🏭 Bodegas</h2><p>Administra las instalaciones de almacenamiento</p></div>
+          <button class="btn btn-primary btn-sm admin-only" onclick="openModalBodega()">+ Nueva Bodega</button>
+        </div>
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchBodegas" placeholder="Buscar bodega..." oninput="filterBodegas()"/>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead><tr><th>ID</th><th>Nombre</th><th>Ubicación</th><th>Capacidad</th><th>Encargado</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody id="bodegasTable"><tr><td colspan="7" class="loading-overlay"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: PRODUCTOS ===== -->
+      <div class="section" id="sec-productos">
+        <div class="page-header">
+          <div><h2>📦 Productos</h2><p>Catálogo completo de productos e inventario</p></div>
+          <button class="btn btn-primary btn-sm admin-only" onclick="openModalProducto()">+ Nuevo Producto</button>
+        </div>
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchProductos" placeholder="Buscar producto..." oninput="filterProductos()"/>
+          </div>
+          <div class="chip-row" id="categoriaChips"></div>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead><tr><th>ID</th><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody id="productosTable"><tr><td colspan="7" class="loading-overlay"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: MOVIMIENTOS ===== -->
+      <div class="section" id="sec-movimientos">
+        <div class="page-header">
+          <div><h2>🔄 Movimientos</h2><p>Entradas, salidas y transferencias de inventario</p></div>
+          <button class="btn btn-primary btn-sm" onclick="openModalMovimiento()">+ Registrar Movimiento</button>
+        </div>
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchMovimientos" placeholder="Buscar..." oninput="filterMovimientos()"/>
+          </div>
+          <select class="select-filter" id="filterTipoMov" onchange="filterMovimientos()">
+            <option value="">Todos los tipos</option>
+            <option value="ENTRADA">ENTRADA</option>
+            <option value="SALIDA">SALIDA</option>
+            <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead><tr><th>ID</th><th>Tipo</th><th>Fecha</th><th>Usuario</th><th>Origen</th><th>Destino</th><th>Productos</th></tr></thead>
+              <tbody id="movimientosTable"><tr><td colspan="7" class="loading-overlay"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: REPORTES ===== -->
+      <div class="section" id="sec-reportes">
+        <div class="page-header">
+          <div><h2>📊 Reportes</h2><p>Estadísticas generales del sistema</p></div>
+          <button class="btn btn-info btn-sm" onclick="loadReportes()">↻ Actualizar</button>
+        </div>
+        <div class="report-grid" id="reportGrid">
+          <div class="loading-overlay"><div class="spinner"></div> Cargando reporte...</div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION: AUDITORÍAS ===== -->
+      <div class="section" id="sec-auditorias">
+        <div class="page-header">
+          <div><h2>🔍 Auditorías</h2><p>Registro completo de cambios del sistema</p></div>
+          <button class="btn btn-info btn-sm" onclick="loadAuditorias()">↻ Actualizar</button>
+        </div>
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchAuditorias" placeholder="Buscar auditoría..." oninput="filterAuditorias()"/>
+          </div>
+          <select class="select-filter" id="filterTipoAud" onchange="filterAuditorias()">
+            <option value="">Todas las operaciones</option>
+            <option value="INSERT">INSERT</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead><tr><th>ID</th><th>Entidad</th><th>Operación</th><th>Fecha y hora</th><th>Usuario</th><th>Descripción</th></tr></thead>
+              <tbody id="auditoriasTable"><tr><td colspan="6" class="loading-overlay"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

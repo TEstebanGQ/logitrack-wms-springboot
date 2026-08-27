@@ -20,7 +20,9 @@ import java.time.LocalDateTime;
 public class AuditoriaEntityListener {
 
     private static final ObjectMapper mapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
+            .registerModule(new JavaTimeModule())
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
     @PostPersist
     public void afterInsert(Object entity) {
@@ -45,7 +47,6 @@ public class AuditoriaEntityListener {
                     ? toJson(entity) : null;
 
             // Se persiste vía ApplicationContext - configurado como Spring Bean en producción
-            // Para evitar dependencia circular, se usa ApplicationContextHolder
             AuditoriaRegistrar.registrar(
                     entity.getClass().getSimpleName(),
                     obtenerIdEntidad(entity),
@@ -54,7 +55,7 @@ public class AuditoriaEntityListener {
                     valoresAnteriores,
                     valoresNuevos
             );
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // Log silencioso para no interrumpir la operación principal
             System.err.println("[AUDITORIA] Error al registrar: " + e.getMessage());
         }
@@ -80,10 +81,11 @@ public class AuditoriaEntityListener {
     }
 
     private String toJson(Object entity) {
+        if (entity == null) return null;
         try {
             return mapper.writeValueAsString(entity);
-        } catch (JsonProcessingException e) {
-            return entity.toString();
+        } catch (Throwable e) {
+            return "{\"id\":" + obtenerIdEntidad(entity) + "}";
         }
     }
 }

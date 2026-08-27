@@ -1,10 +1,10 @@
 /* ==========================================
-   LogiTrack S.A. - Main Application Controller
+   LogiTrack S.A. - Main Application Orchestrator
    ========================================== */
 
 const App = {
     init() {
-        console.log('LogiTrack Frontend Inicializado...');
+        console.log('LogiTrack S.A. Frontend Orquestado Inicializado...');
         this.bindEvents();
         Router.init();
         this.updateUserInfo();
@@ -55,7 +55,6 @@ const App = {
         if (bodegaForm) {
             bodegaForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const id = document.getElementById('bodega-id').value;
                 const data = {
                     nombre: document.getElementById('bodega-nombre').value,
                     ubicacion: document.getElementById('bodega-ubicacion').value,
@@ -63,20 +62,7 @@ const App = {
                     encargado: document.getElementById('bodega-encargado').value,
                     activo: document.getElementById('bodega-activo').checked
                 };
-
-                try {
-                    if (id) {
-                        await BodegaService.update(id, data);
-                        Toast.success('Bodega actualizada correctamente');
-                    } else {
-                        await BodegaService.create(data);
-                        Toast.success('Bodega creada correctamente');
-                    }
-                    this.closeModal('modal-bodega');
-                    this.loadViewData('bodegas');
-                } catch (err) {
-                    Toast.error(err.message);
-                }
+                await BodegaModuleController.save(data);
             });
         }
 
@@ -85,7 +71,6 @@ const App = {
         if (productoForm) {
             productoForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const id = document.getElementById('producto-id').value;
                 const catIdVal = document.getElementById('producto-categoria-id').value;
                 const data = {
                     nombre: document.getElementById('producto-nombre').value,
@@ -94,20 +79,7 @@ const App = {
                     precio: parseFloat(document.getElementById('producto-precio').value),
                     descripcion: document.getElementById('producto-descripcion').value
                 };
-
-                try {
-                    if (id) {
-                        await ProductoService.update(id, data);
-                        Toast.success('Producto actualizado correctamente');
-                    } else {
-                        await ProductoService.create(data);
-                        Toast.success('Producto creado correctamente');
-                    }
-                    this.closeModal('modal-producto');
-                    this.loadViewData('productos');
-                } catch (err) {
-                    Toast.error(err.message);
-                }
+                await ProductoModuleController.save(data);
             });
         }
 
@@ -136,15 +108,7 @@ const App = {
                         }
                     ]
                 };
-
-                try {
-                    await MovimientoService.registrar(data);
-                    Toast.success('Movimiento de inventario registrado con éxito');
-                    this.closeModal('modal-movimiento');
-                    this.loadViewData('movimientos');
-                } catch (err) {
-                    Toast.error(err.message);
-                }
+                await MovimientoModuleController.registrar(data);
             });
         }
     },
@@ -184,21 +148,15 @@ const App = {
             if (view === 'dashboard') {
                 this.loadDashboardData();
             } else if (view === 'reportes') {
-                const reporte = await ReporteService.getResumenGeneral().catch(() => null);
-                Renderers.renderReportesSection(reporte, 'reportes-list-container');
-                this.initExportButtons();
+                await ReporteModuleController.load();
             } else if (view === 'bodegas') {
-                const bodegas = await BodegaService.getAll();
-                Renderers.renderBodegasTable(bodegas, 'bodegas-list-container');
+                await BodegaModuleController.load();
             } else if (view === 'productos') {
-                const productos = await ProductoService.getAll();
-                Renderers.renderProductosTable(productos, 'productos-list-container');
+                await ProductoModuleController.load();
             } else if (view === 'movimientos') {
-                const movimientos = await MovimientoService.getAll();
-                Renderers.renderMovimientosTable(movimientos, 'movimientos-list-container');
+                await MovimientoModuleController.load();
             } else if (view === 'auditorias') {
-                const auditorias = await AuditoriaService.getAll();
-                Renderers.renderAuditoriasTable(auditorias, 'auditorias-list-container');
+                await AuditoriaModuleController.load();
             }
         } catch (err) {
             console.error(`Error al cargar datos de vista [${view}]:`, err);
@@ -213,7 +171,6 @@ const App = {
                 MovimientoService.getAll().catch(() => [])
             ]);
 
-            // Filtrar únicamente bodegas activas para las métricas y tarjetas
             const bodegasActivas = bodegas.filter(b => b.activo !== false);
 
             const totalBodegasEl = document.getElementById('metric-total-bodegas');
@@ -222,7 +179,6 @@ const App = {
             const totalMovimientosEl = document.getElementById('metric-total-movimientos');
             if (totalMovimientosEl) totalMovimientosEl.innerText = movimientos.length || 0;
 
-            // Stock total global
             const stockTotal = productos.reduce((sum, p) => sum + (p.stock || 0), 0);
             const stockEl = document.getElementById('metric-stock-total');
             if (stockEl) stockEl.innerText = stockTotal.toLocaleString('es-CO');
@@ -231,17 +187,10 @@ const App = {
             const bajoStockMetricEl = document.getElementById('metric-bajo-stock');
             if (bajoStockMetricEl) bajoStockMetricEl.innerText = String(lowStockCount).padStart(2, '0');
 
-            // Renderizar únicamente tarjetas de bodegas activas
-            Renderers.renderDashboardBodegasCards(bodegasActivas, 'dashboard-bodegas-container');
+            DashboardRenderer.renderBodegasCards(bodegasActivas);
+            DashboardRenderer.renderMovimientosRecientes(movimientos);
+            DashboardRenderer.renderBajoStockList(productos.filter(p => p.stock < 10));
 
-            // Renderizar movimientos recientes (tabla compacta)
-            Renderers.renderDashboardMovimientosRecientes(movimientos, 'dashboard-movimientos-container');
-
-            // Renderizar lista lateral de stock bajo
-            const bajoStockProductos = productos.filter(p => p.stock < 10);
-            Renderers.renderDashboardBajoStockList(bajoStockProductos, 'dashboard-bajo-stock-container');
-
-            // Animar gauges si existen en el DOM
             if (typeof window.animateGauges === 'function') window.animateGauges();
         } catch (err) {
             console.error('Error cargando dashboard:', err);
@@ -267,56 +216,12 @@ const App = {
         }
     },
 
-    initExportButtons() {
-        if (typeof ExportService === 'undefined') return;
-        const map = {
-            'btn-export-excel-resumen': () => ExportService.exportarResumenExcel(),
-            'btn-export-pdf-resumen':   () => ExportService.exportarResumenPdf(),
-            'btn-export-excel-mov':     () => ExportService.exportarMovimientosExcel(),
-            'btn-export-pdf-mov':       () => ExportService.exportarMovimientosPdf(),
-        };
-        Object.entries(map).forEach(([id, fn]) => {
-            const btn = document.getElementById(id);
-            if (btn) {
-                // Prevenir múltiples listeners si se llama repetidamente
-                btn.removeEventListener('click', fn);
-                btn.addEventListener('click', fn);
-            }
-        });
-    },
-
-    inspectAuditoria(id) {
-        const store = window.auditoriaDataStore || [];
-        const item = store.find(a => a.id === id);
-        if (!item) return;
-
-        const prevEl = document.getElementById('aud-json-anteriores');
-        const newEl = document.getElementById('aud-json-nuevos');
-        const titleEl = document.getElementById('aud-modal-title');
-
-        if (titleEl) titleEl.innerText = `Auditoría #${item.id} - ${item.entidad} (${item.tipoOperacion})`;
-
-        try {
-            prevEl.innerText = item.valoresAnteriores ? JSON.stringify(JSON.parse(item.valoresAnteriores), null, 2) : '(Sin valores previos)';
-        } catch(e) {
-            prevEl.innerText = item.valoresAnteriores || '(Sin valores previos)';
-        }
-
-        try {
-            newEl.innerText = item.valoresNuevos ? JSON.stringify(JSON.parse(item.valoresNuevos), null, 2) : '(Sin valores nuevos)';
-        } catch(e) {
-            newEl.innerText = item.valoresNuevos || '(Sin valores nuevos)';
-        }
-
-        this.openModal('modal-auditoria');
-    },
-
-    // Modal Control Functions
+    // Shortcuts para modales
     openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) modal.classList.add('active');
         if (modalId === 'modal-movimiento') {
-            this.populateMovimientoSelects();
+            MovimientoModuleController.populateSelects();
         }
     },
 
@@ -326,111 +231,11 @@ const App = {
     },
 
     openBodegaModal() {
-        document.getElementById('form-bodega').reset();
-        document.getElementById('bodega-id').value = '';
-        document.getElementById('modal-bodega-title').innerText = 'Nueva Bodega';
-        this.openModal('modal-bodega');
+        BodegaModuleController.openCreateModal();
     },
 
-    async editBodega(id) {
-        try {
-            const bodega = await BodegaService.getById(id);
-            document.getElementById('bodega-id').value = bodega.id;
-            document.getElementById('bodega-nombre').value = bodega.nombre;
-            document.getElementById('bodega-ubicacion').value = bodega.ubicacion;
-            document.getElementById('bodega-capacidad').value = bodega.capacidad;
-            document.getElementById('bodega-encargado').value = bodega.encargado;
-            document.getElementById('bodega-activo').checked = bodega.activo;
-            document.getElementById('modal-bodega-title').innerText = 'Editar Bodega';
-            this.openModal('modal-bodega');
-        } catch (err) {
-            Toast.error('No se pudo cargar la bodega');
-        }
-    },
-
-    async deleteBodega(id) {
-        if (!confirm('¿Estás seguro de desactivar/eliminar esta bodega?')) return;
-        try {
-            await BodegaService.delete(id);
-            Toast.success('Bodega eliminada correctamente');
-            this.loadViewData('bodegas');
-        } catch (err) {
-            Toast.error(err.message);
-        }
-    },
-
-    async openProductoModal() {
-        document.getElementById('form-producto').reset();
-        document.getElementById('producto-id').value = '';
-        document.getElementById('modal-producto-title').innerText = 'Nuevo Producto';
-        await this.populateCategoriaSelect();
-        this.openModal('modal-producto');
-    },
-
-    async editProducto(id) {
-        try {
-            const producto = await ProductoService.getById(id);
-            await this.populateCategoriaSelect(producto.categoriaId);
-            document.getElementById('producto-id').value = producto.id;
-            document.getElementById('producto-nombre').value = producto.nombre;
-            if (document.getElementById('producto-categoria-id')) {
-                document.getElementById('producto-categoria-id').value = producto.categoriaId || '';
-            }
-            document.getElementById('producto-stock').value = producto.stock;
-            document.getElementById('producto-precio').value = producto.precio;
-            document.getElementById('producto-descripcion').value = producto.descripcion || '';
-            document.getElementById('modal-producto-title').innerText = 'Editar Producto';
-            this.openModal('modal-producto');
-        } catch (err) {
-            Toast.error('No se pudo cargar el producto');
-        }
-    },
-
-    async populateCategoriaSelect(selectedId = null) {
-        try {
-            const categorias = await CategoriaService.getAll().catch(() => []);
-            const catSelect = document.getElementById('producto-categoria-id');
-            if (catSelect) {
-                catSelect.innerHTML = categorias.map(c =>
-                    `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.nombre}</option>`
-                ).join('');
-            }
-        } catch (err) {
-            console.error('Error cargando categorías:', err);
-        }
-    },
-
-    async deleteProducto(id) {
-        if (!confirm('¿Estás seguro de desactivar/eliminar este producto?')) return;
-        try {
-            await ProductoService.delete(id);
-            Toast.success('Producto eliminado correctamente');
-            this.loadViewData('productos');
-        } catch (err) {
-            Toast.error(err.message);
-        }
-    },
-
-    async populateMovimientoSelects() {
-        try {
-            const [bodegas, productos] = await Promise.all([
-                BodegaService.getAll(true),
-                ProductoService.getAll()
-            ]);
-
-            const origenSelect = document.getElementById('mov-origen');
-            const destinoSelect = document.getElementById('mov-destino');
-            const prodSelect = document.getElementById('mov-producto');
-
-            const bodegaOpts = bodegas.map(b => `<option value="${b.id}">${b.nombre} (${b.ubicacion})</option>`).join('');
-            const prodOpts = productos.map(p => `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`).join('');
-
-            origenSelect.innerHTML = `<option value="">-- Ninguna --</option>` + bodegaOpts;
-            destinoSelect.innerHTML = `<option value="">-- Ninguna --</option>` + bodegaOpts;
-            prodSelect.innerHTML = prodOpts;
-        } catch (err) {
-            console.error('Error cargando selects para movimiento:', err);
-        }
+    openProductoModal() {
+        ProductoModuleController.openCreateModal();
     }
 };
 

@@ -5,6 +5,10 @@
 const CategoriaService = {
     getAll() {
         return ApiService.get('/categorias');
+    },
+
+    create(categoriaData) {
+        return ApiService.post('/categorias', categoriaData);
     }
 };
 

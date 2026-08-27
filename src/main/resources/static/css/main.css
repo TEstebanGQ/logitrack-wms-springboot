@@ -1,71 +1,124 @@
 /* ==========================================
    LogiTrack S.A. - Main CSS (Design System)
+   Estilo industrial: Oswald + JetBrains Mono
    ========================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root {
-    --bg-primary: #0b0f19;
-    --bg-secondary: #111827;
-    --bg-card: rgba(31, 41, 55, 0.7);
-    --bg-card-hover: rgba(55, 65, 81, 0.8);
-    
-    --primary: #6366f1;
-    --primary-hover: #4f46e5;
-    --primary-light: rgba(99, 102, 241, 0.15);
-    
-    --accent: #06b6d4;
-    --accent-hover: #0891b2;
-    
-    --success: #10b981;
-    --success-bg: rgba(16, 185, 129, 0.15);
-    --warning: #f59e0b;
-    --warning-bg: rgba(245, 158, 11, 0.15);
-    --danger: #ef4444;
-    --danger-bg: rgba(239, 68, 68, 0.15);
-    
-    --text-primary: #f9fafb;
-    --text-secondary: #9ca3af;
-    --text-muted: #6b7280;
-    
-    --border-color: rgba(75, 85, 99, 0.4);
-    --border-focus: #6366f1;
-    
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-full: 9999px;
-    
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.35);
-    
-    --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Backgrounds */
+    --bg: #12161d;
+    --panel: #1b212c;
+    --panel-2: #232a37;
+    --panel-3: #2a3241;
+
+    /* Borders */
+    --border: #313a4c;
+
+    /* Text */
+    --text: #e9ecf2;
+    --text-muted: #8993a8;
+    --text-dim: #5c6478;
+
+    /* Accent Colors */
+    --accent: #ff6a2b;
+    --accent-2: #ffb020;
+    --accent-dim: rgba(255, 106, 43, 0.2);
+
+    /* Status */
+    --success: #33d6a6;
+    --success-dim: rgba(51, 214, 166, 0.12);
+    --danger: #ff4d5e;
+    --danger-dim: rgba(255, 77, 94, 0.12);
+    --info: #4ea1ff;
+    --info-dim: rgba(78, 161, 255, 0.12);
+    --warning: #ffb020;
+    --warning-dim: rgba(255, 176, 32, 0.12);
+
+    /* Legacy compat aliases */
+    --bg-primary: var(--bg);
+    --bg-secondary: var(--panel);
+    --bg-card: var(--panel);
+    --bg-card-hover: var(--panel-2);
+    --primary: var(--accent);
+    --primary-hover: #e55d22;
+    --primary-light: var(--accent-dim);
+    --text-primary: var(--text);
+    --text-secondary: var(--text-muted);
+    --border-color: var(--border);
+    --border-focus: var(--accent);
+    --danger-bg: var(--danger-dim);
+    --success-bg: var(--success-dim);
+    --warning-bg: var(--warning-dim);
+
+    /* Shapes */
+    --radius: 3px;
+    --radius-sm: 2px;
+    --radius-md: 3px;
+    --radius-lg: 4px;
+    --radius-full: 2px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+    --shadow-glow: 0 0 20px rgba(255,106,43,0.25);
+
+    /* Typography */
+    --font-display: 'Oswald', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-family: var(--font-body);
+
+    /* Transitions */
+    --transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* {
+/* ===== Reset ===== */
+*, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: var(--font-family);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    font-family: var(--font-body);
+    background-color: var(--bg);
+    color: var(--text);
     line-height: 1.5;
     min-height: 100vh;
     overflow-x: hidden;
+    /* Grid background */
+    background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-attachment: fixed;
+    position: relative;
+}
+
+/* Radial glow overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,106,43,0.07), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 a {
-    color: var(--primary);
+    color: var(--accent-2);
     text-decoration: none;
     transition: var(--transition);
 }
 
 a:hover {
-    color: var(--primary-hover);
+    color: var(--accent);
 }
 
 button {
@@ -77,4 +130,59 @@ button {
 
 input, select, textarea {
     font-family: inherit;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-2);
+    outline-offset: 2px;
+}
+
+/* ===== Utility ===== */
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.eyebrow::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ===== Shared Animations ===== */
+@keyframes slideIn {
+    from { transform: translateX(110%); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes fadeUp {
+    from { transform: translateY(14px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.25; }
+    50%       { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
 }

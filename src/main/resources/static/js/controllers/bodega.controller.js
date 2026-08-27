@@ -55,7 +55,15 @@ const BodegaModuleController = {
     },
 
     async delete(id) {
-        if (!confirm('¿Estás seguro de desactivar/eliminar esta bodega?')) return;
+        const confirmed = await ConfirmDialog.show({
+            title: 'Desactivar Bodega',
+            message: '¿Estás seguro de desactivar/eliminar esta bodega? Quedará inactiva en el sistema.',
+            confirmText: 'Desactivar Bodega',
+            cancelText: 'Cancelar',
+            type: 'danger'
+        });
+        if (!confirmed) return;
+
         try {
             await BodegaService.delete(id);
             Toast.success('Bodega eliminada correctamente');

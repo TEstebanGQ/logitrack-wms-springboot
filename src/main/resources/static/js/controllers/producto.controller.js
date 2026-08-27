@@ -64,7 +64,15 @@ const ProductoModuleController = {
     },
 
     async delete(id) {
-        if (!confirm('¿Estás seguro de desactivar/eliminar este producto?')) return;
+        const confirmed = await ConfirmDialog.show({
+            title: 'Desactivar Producto',
+            message: '¿Estás seguro de desactivar/eliminar este producto del catálogo?',
+            confirmText: 'Eliminar Producto',
+            cancelText: 'Cancelar',
+            type: 'danger'
+        });
+        if (!confirmed) return;
+
         try {
             await ProductoService.delete(id);
             Toast.success('Producto eliminado correctamente');

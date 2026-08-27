@@ -6,11 +6,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MovimientoRequest {
 
     @NotNull
@@ -29,6 +32,9 @@ public class MovimientoRequest {
     private List<DetalleRequest> detalles;
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class DetalleRequest {
         @NotNull
         private Long productoId;

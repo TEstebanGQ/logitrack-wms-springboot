@@ -78,14 +78,18 @@ public class MovimientoServiceImpl implements IMovimientoService {
 
     private void procesarStock(TipoMovimiento tipo, Producto producto,
                                Bodega origen, Bodega destino, int cantidad) {
+        if (cantidad <= 0) {
+            throw new IllegalArgumentException("La cantidad debe ser mayor a cero");
+        }
+
         switch (tipo) {
             case ENTRADA -> {
-                if (destino == null) throw new IllegalArgumentException("ENTRADA requiere bodega destino");
+                if (destino == null) throw new IllegalArgumentException("ENTRADA requiere especificar una bodega destino");
                 producto.setStock(producto.getStock() + cantidad);
                 ajustarInventarioBodega(destino, producto, cantidad);
             }
             case SALIDA -> {
-                if (origen == null) throw new IllegalArgumentException("SALIDA requiere bodega origen");
+                if (origen == null) throw new IllegalArgumentException("SALIDA requiere especificar una bodega origen");
                 validarStockSuficiente(producto, origen, cantidad);
                 producto.setStock(producto.getStock() - cantidad);
                 InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
@@ -93,7 +97,10 @@ public class MovimientoServiceImpl implements IMovimientoService {
             }
             case TRANSFERENCIA -> {
                 if (origen == null || destino == null)
-                    throw new IllegalArgumentException("TRANSFERENCIA requiere bodega origen y destino");
+                    throw new IllegalArgumentException("TRANSFERENCIA requiere especificar bodega origen y bodega destino");
+                if (origen.getId().equals(destino.getId()))
+                    throw new IllegalArgumentException("La bodega origen y la bodega destino no pueden ser la misma");
+
                 validarStockSuficiente(producto, origen, cantidad);
                 InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
                 ajustarInventarioBodega(destino, producto, cantidad);
@@ -106,10 +113,10 @@ public class MovimientoServiceImpl implements IMovimientoService {
         InventarioBodega inv = inventarioRepository
                 .findByBodegaIdAndProductoId(bodega.getId(), producto.getId())
                 .orElseThrow(() -> new StockInsuficienteException(
-                        "No hay inventario del producto en la bodega: " + bodega.getNombre()));
+                        "No hay inventario registrado del producto '" + producto.getNombre() + "' en la bodega '" + bodega.getNombre() + "'"));
         if (inv.getStockActual() < cantidad)
             throw new StockInsuficienteException(
-                    "Stock insuficiente. Disponible: " + inv.getStockActual() + ", solicitado: " + cantidad);
+                    "Stock insuficiente en " + bodega.getNombre() + ". Disponible: " + inv.getStockActual() + " u., solicitado: " + cantidad + " u.");
     }
 
     private InventarioBodega ajustarInventarioBodega(Bodega bodega, Producto producto, int delta) {

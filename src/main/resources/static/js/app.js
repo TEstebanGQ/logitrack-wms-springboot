@@ -86,13 +86,13 @@ const App = {
             productoForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const id = document.getElementById('producto-id').value;
+                const catIdVal = document.getElementById('producto-categoria-id').value;
                 const data = {
                     nombre: document.getElementById('producto-nombre').value,
-                    categoria: document.getElementById('producto-categoria').value,
+                    categoriaId: catIdVal ? parseInt(catIdVal) : null,
                     stock: parseInt(document.getElementById('producto-stock').value),
                     precio: parseFloat(document.getElementById('producto-precio').value),
-                    descripcion: document.getElementById('producto-descripcion').value,
-                    activo: true
+                    descripcion: document.getElementById('producto-descripcion').value
                 };
 
                 try {
@@ -163,11 +163,19 @@ const App = {
 
     updateUserInfo() {
         const user = AuthService.getCurrentUser();
-        const userNameEl = document.getElementById('user-display-name');
-        const userRoleEl = document.getElementById('user-display-role');
+        const userNameEl    = document.getElementById('user-display-name');
+        const userRoleEl    = document.getElementById('user-display-role');
+        const userAvatarEl  = document.getElementById('user-avatar-initials');
         if (user && userNameEl) {
-            userNameEl.innerText = user.nombre || user.email;
-            userRoleEl.innerText = user.rol || 'EMPLEADO';
+            const displayName = user.nombre
+                ? `${user.nombre} ${user.apellido || ''}`.trim()
+                : user.email;
+            userNameEl.innerText = displayName;
+            userRoleEl.innerText = (user.rol || 'EMPLEADO') + ' · LOGITRACK';
+            if (userAvatarEl) {
+                const parts = displayName.split(' ');
+                userAvatarEl.textContent = ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || 'LT';
+            }
         }
     },
 
@@ -178,6 +186,7 @@ const App = {
             } else if (view === 'reportes') {
                 const reporte = await ReporteService.getResumenGeneral().catch(() => null);
                 Renderers.renderReportesSection(reporte, 'reportes-list-container');
+                this.initExportButtons();
             } else if (view === 'bodegas') {
                 const bodegas = await BodegaService.getAll();
                 Renderers.renderBodegasTable(bodegas, 'bodegas-list-container');
@@ -198,23 +207,82 @@ const App = {
 
     async loadDashboardData() {
         try {
-            const [bodegas, productos, resumen] = await Promise.all([
+            const [bodegas, productos, movimientos] = await Promise.all([
                 BodegaService.getAll().catch(() => []),
                 ProductoService.getAll().catch(() => []),
-                ReporteService.getResumenGeneral().catch(() => null)
+                MovimientoService.getAll().catch(() => [])
             ]);
 
-            document.getElementById('metric-total-bodegas').innerText = bodegas.length || 0;
-            document.getElementById('metric-total-productos').innerText = productos.length || 0;
-            
-            const lowStockCount = productos.filter(p => p.stock < 10).length;
-            document.getElementById('metric-bajo-stock').innerText = lowStockCount;
+            // Filtrar únicamente bodegas activas para las métricas y tarjetas
+            const bodegasActivas = bodegas.filter(b => b.activo !== false);
 
-            const bajoStockProductos = await ProductoService.getBajoStock().catch(() => []);
-            Renderers.renderProductosTable(bajoStockProductos, 'dashboard-bajo-stock-container');
+            const totalBodegasEl = document.getElementById('metric-total-bodegas');
+            if (totalBodegasEl) totalBodegasEl.innerText = String(bodegasActivas.length || 0).padStart(2, '0');
+
+            const totalMovimientosEl = document.getElementById('metric-total-movimientos');
+            if (totalMovimientosEl) totalMovimientosEl.innerText = movimientos.length || 0;
+
+            // Stock total global
+            const stockTotal = productos.reduce((sum, p) => sum + (p.stock || 0), 0);
+            const stockEl = document.getElementById('metric-stock-total');
+            if (stockEl) stockEl.innerText = stockTotal.toLocaleString('es-CO');
+
+            const lowStockCount = productos.filter(p => p.stock < 10).length;
+            const bajoStockMetricEl = document.getElementById('metric-bajo-stock');
+            if (bajoStockMetricEl) bajoStockMetricEl.innerText = String(lowStockCount).padStart(2, '0');
+
+            // Renderizar únicamente tarjetas de bodegas activas
+            Renderers.renderDashboardBodegasCards(bodegasActivas, 'dashboard-bodegas-container');
+
+            // Renderizar movimientos recientes (tabla compacta)
+            Renderers.renderDashboardMovimientosRecientes(movimientos, 'dashboard-movimientos-container');
+
+            // Renderizar lista lateral de stock bajo
+            const bajoStockProductos = productos.filter(p => p.stock < 10);
+            Renderers.renderDashboardBajoStockList(bajoStockProductos, 'dashboard-bajo-stock-container');
+
+            // Animar gauges si existen en el DOM
+            if (typeof window.animateGauges === 'function') window.animateGauges();
         } catch (err) {
             console.error('Error cargando dashboard:', err);
         }
+    },
+
+    async loadCharts() {
+        try {
+            if (typeof Charts !== 'undefined') {
+                Charts.mostrarEstadoCargando();
+                const reporte = await ReporteService.getResumenGeneral().catch(() => null);
+                if (reporte && reporte.stockPorBodega) {
+                    Charts.renderStockBodegas(reporte.stockPorBodega);
+                }
+                if (reporte && reporte.productosMasMovidos) {
+                    Charts.renderProductosMovidos(reporte.productosMasMovidos);
+                }
+                const movimientos = await MovimientoService.getAll().catch(() => []);
+                Charts.renderTiposMovimiento(movimientos);
+            }
+        } catch (e) {
+            console.error('Error cargando gráficas:', e);
+        }
+    },
+
+    initExportButtons() {
+        if (typeof ExportService === 'undefined') return;
+        const map = {
+            'btn-export-excel-resumen': () => ExportService.exportarResumenExcel(),
+            'btn-export-pdf-resumen':   () => ExportService.exportarResumenPdf(),
+            'btn-export-excel-mov':     () => ExportService.exportarMovimientosExcel(),
+            'btn-export-pdf-mov':       () => ExportService.exportarMovimientosPdf(),
+        };
+        Object.entries(map).forEach(([id, fn]) => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                // Prevenir múltiples listeners si se llama repetidamente
+                btn.removeEventListener('click', fn);
+                btn.addEventListener('click', fn);
+            }
+        });
     },
 
     inspectAuditoria(id) {
@@ -264,13 +332,6 @@ const App = {
         this.openModal('modal-bodega');
     },
 
-    openProductoModal() {
-        document.getElementById('form-producto').reset();
-        document.getElementById('producto-id').value = '';
-        document.getElementById('modal-producto-title').innerText = 'Nuevo Producto';
-        this.openModal('modal-producto');
-    },
-
     async editBodega(id) {
         try {
             const bodega = await BodegaService.getById(id);
@@ -298,12 +359,23 @@ const App = {
         }
     },
 
+    async openProductoModal() {
+        document.getElementById('form-producto').reset();
+        document.getElementById('producto-id').value = '';
+        document.getElementById('modal-producto-title').innerText = 'Nuevo Producto';
+        await this.populateCategoriaSelect();
+        this.openModal('modal-producto');
+    },
+
     async editProducto(id) {
         try {
             const producto = await ProductoService.getById(id);
+            await this.populateCategoriaSelect(producto.categoriaId);
             document.getElementById('producto-id').value = producto.id;
             document.getElementById('producto-nombre').value = producto.nombre;
-            document.getElementById('producto-categoria').value = producto.categoria;
+            if (document.getElementById('producto-categoria-id')) {
+                document.getElementById('producto-categoria-id').value = producto.categoriaId || '';
+            }
             document.getElementById('producto-stock').value = producto.stock;
             document.getElementById('producto-precio').value = producto.precio;
             document.getElementById('producto-descripcion').value = producto.descripcion || '';
@@ -311,6 +383,20 @@ const App = {
             this.openModal('modal-producto');
         } catch (err) {
             Toast.error('No se pudo cargar el producto');
+        }
+    },
+
+    async populateCategoriaSelect(selectedId = null) {
+        try {
+            const categorias = await CategoriaService.getAll().catch(() => []);
+            const catSelect = document.getElementById('producto-categoria-id');
+            if (catSelect) {
+                catSelect.innerHTML = categorias.map(c =>
+                    `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.nombre}</option>`
+                ).join('');
+            }
+        } catch (err) {
+            console.error('Error cargando categorías:', err);
         }
     },
 
@@ -328,7 +414,7 @@ const App = {
     async populateMovimientoSelects() {
         try {
             const [bodegas, productos] = await Promise.all([
-                BodegaService.getAll(),
+                BodegaService.getAll(true),
                 ProductoService.getAll()
             ]);
 

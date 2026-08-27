@@ -32,9 +32,13 @@ public class BodegaController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todas las bodegas activas")
-    public ResponseEntity<List<BodegaResponse>> listar() {
-        return ResponseEntity.ok(bodegaService.listarActivas());
+    @Operation(summary = "Listar bodegas (por defecto todas o solo activas)")
+    public ResponseEntity<List<BodegaResponse>> listar(
+            @RequestParam(required = false, defaultValue = "false") boolean soloActivas) {
+        if (soloActivas) {
+            return ResponseEntity.ok(bodegaService.listarActivas());
+        }
+        return ResponseEntity.ok(bodegaService.listarTodas());
     }
 
     @GetMapping("/{id}")

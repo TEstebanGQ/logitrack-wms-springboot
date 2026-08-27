@@ -3,8 +3,8 @@
    ========================================== */
 
 const BodegaService = {
-    getAll() {
-        return ApiService.get('/bodegas');
+    getAll(soloActivas = false) {
+        return ApiService.get(soloActivas ? '/bodegas?soloActivas=true' : '/bodegas');
     },
 
     getById(id) {

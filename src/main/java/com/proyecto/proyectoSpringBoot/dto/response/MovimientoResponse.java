@@ -19,6 +19,8 @@ public class MovimientoResponse {
     private String usuarioNombre;
     private String bodegaOrigen;
     private String bodegaDestino;
+    private String proveedorNombre;
+    private String clienteNombre;
     private List<DetalleResponse> detalles;
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor

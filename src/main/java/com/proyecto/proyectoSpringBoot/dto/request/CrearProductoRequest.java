@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 public class CrearProductoRequest {
     @NotBlank @Size(max = 150)
     private String nombre;
-    @NotBlank @Size(max = 100)
-    private String categoria;
+    @NotNull
+    private Long categoriaId;
     @Min(0)
     private Integer stock = 0;
     @NotNull @DecimalMin("0.0")

@@ -15,4 +15,5 @@ public class CrearBodegaRequest {
     private Integer capacidad;
     @NotBlank @Size(max = 150)
     private String encargado;
+    private Boolean activo;
 }

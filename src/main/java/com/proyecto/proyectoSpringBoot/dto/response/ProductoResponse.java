@@ -12,8 +12,10 @@ import java.time.LocalDateTime;
 public class ProductoResponse {
     private Long id;
     private String nombre;
-    private String categoria;
+    private Long categoriaId;
+    private String categoriaNombre;
     private Integer stock;
+    private Integer stockMinimo;
     private BigDecimal precio;
     private String descripcion;
     private boolean activo;

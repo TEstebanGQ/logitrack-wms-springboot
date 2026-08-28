@@ -74,5 +74,27 @@ export const ordenCompraController = {
         }
       }
     });
+
+    const btnExport = document.getElementById('btn-exportar-ordenes-csv');
+    btnExport?.addEventListener('click', async () => {
+      try {
+        const ordenes = await ordenCompraService.listar();
+        const headers = [
+          { label: 'Código', key: 'codigoOrden' },
+          { label: 'Fecha Solicitud', key: (o) => o.fechaSolicitud ? new Date(o.fechaSolicitud).toLocaleDateString() : '' },
+          { label: 'Proveedor', key: 'proveedorNombre' },
+          { label: 'Bodega Destino', key: 'bodegaDestinoNombre' },
+          { label: 'Total Estimado', key: 'totalEstimado' },
+          { label: 'Estado', key: 'estado' },
+          { label: 'Fecha Entrega', key: 'fechaEntregaEsperada' },
+          { label: 'Solicitante', key: 'usuarioSolicitante' }
+        ];
+        if (typeof ExportService !== 'undefined') {
+          ExportService.exportarCSV(ordenes, headers, `logitrack-ordenes-compra-${new Date().toISOString().split('T')[0]}.csv`);
+        }
+      } catch (err) {
+        toast.error('Error al exportar órdenes de compra');
+      }
+    });
   }
 };

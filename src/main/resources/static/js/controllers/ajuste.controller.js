@@ -54,5 +54,29 @@ export const ajusteController = {
 
     filtroBodega?.addEventListener('change', aplicarFiltros);
     filtroTipo?.addEventListener('change', aplicarFiltros);
+
+    const btnExport = document.getElementById('btn-exportar-ajustes-csv');
+    btnExport?.addEventListener('click', async () => {
+      try {
+        const ajustes = await ajusteService.listar();
+        const headers = [
+          { label: 'ID', key: 'id' },
+          { label: 'Fecha', key: (a) => a.fecha ? new Date(a.fecha).toLocaleString() : '' },
+          { label: 'Bodega', key: 'bodegaNombre' },
+          { label: 'Producto', key: 'productoNombre' },
+          { label: 'Tipo', key: 'tipoAjuste' },
+          { label: 'Stock Anterior', key: 'cantidadAnterior' },
+          { label: 'Stock Nuevo', key: 'cantidadNueva' },
+          { label: 'Diferencia', key: 'diferencia' },
+          { label: 'Justificación', key: 'justificacion' },
+          { label: 'Usuario', key: 'usuarioNombre' }
+        ];
+        if (typeof ExportService !== 'undefined') {
+          ExportService.exportarCSV(ajustes, headers, `logitrack-ajustes-${new Date().toISOString().split('T')[0]}.csv`);
+        }
+      } catch (err) {
+        toast.error('Error al exportar ajustes');
+      }
+    });
   }
 };

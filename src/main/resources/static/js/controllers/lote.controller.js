@@ -68,5 +68,27 @@ export const loteController = {
         }
       }
     });
+
+    const btnExport = document.getElementById('btn-exportar-lotes-csv');
+    btnExport?.addEventListener('click', async () => {
+      try {
+        const lotes = await loteService.listar();
+        const headers = [
+          { label: 'Código Lote', key: 'codigoLote' },
+          { label: 'Producto', key: 'productoNombre' },
+          { label: 'Bodega', key: 'bodegaNombre' },
+          { label: 'Stock Actual', key: 'stockActual' },
+          { label: 'Stock Inicial', key: 'stockInicial' },
+          { label: 'Fecha Fabricación', key: 'fechaFabricacion' },
+          { label: 'Fecha Vencimiento', key: 'fechaVencimiento' },
+          { label: 'Estado', key: 'estado' }
+        ];
+        if (typeof ExportService !== 'undefined') {
+          ExportService.exportarCSV(lotes, headers, `logitrack-lotes-${new Date().toISOString().split('T')[0]}.csv`);
+        }
+      } catch (err) {
+        toast.error('Error al exportar lotes');
+      }
+    });
   }
 };

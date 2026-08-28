@@ -35,7 +35,32 @@ const ExportService = {
     return this.descargar(`/api/reportes/movimientos/exportar/pdf?desde=${desde}&hasta=${hasta}`, 'logitrack-movimientos.pdf');
   },
   exportarAuditoriasExcel() { return this.descargar('/api/reportes/auditorias/exportar/excel', 'logitrack-auditoria.xlsx'); },
-  exportarAuditoriasPdf()   { return this.descargar('/api/reportes/auditorias/exportar/pdf', 'logitrack-auditoria.pdf'); }
+  exportarAuditoriasPdf()   { return this.descargar('/api/reportes/auditorias/exportar/pdf', 'logitrack-auditoria.pdf'); },
+
+  exportarCSV(datos, encabezados, nombreArchivo) {
+    if (!datos || !datos.length) {
+      Toast.error('No hay datos disponibles para exportar');
+      return;
+    }
+    const lineas = [];
+    lineas.push(encabezados.map(h => `"${h.label}"`).join(','));
+
+    datos.forEach(item => {
+      const fila = encabezados.map(h => {
+        let val = typeof h.key === 'function' ? h.key(item) : item[h.key];
+        if (val === null || val === undefined) val = '';
+        return `"${String(val).replace(/"/g, '""')}"`;
+      });
+      lineas.push(fila.join(','));
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(lineas.join('\n'));
+    const link = document.createElement('a');
+    link.href = csvContent;
+    link.download = nombreArchivo;
+    link.click();
+    Toast.success(`Exportación CSV '${nombreArchivo}' completada`);
+  }
 };
 
 window.ExportService = ExportService;

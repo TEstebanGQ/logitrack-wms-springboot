@@ -1,25 +1,24 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiTrack S.A. - Reportes y Estadísticas</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="../css/components/cards.css">
-</head>
-<body>
-
-    <!-- ===== VISTA: REPORTES ===== -->
-    <section id="view-reportes" class="view-section">
-        <div class="section-title" style="margin-bottom:18px;">
-            <h2>Reportes y estadísticas</h2>
+<section id="view-reportes" class="view-section">
+    <div class="view-header">
+        <div class="view-title">
+            <h2>Módulo de Reportes y Analítica REST</h2>
+            <p>Consultas consolidadas con filtros JPA Specification, auditorías en tiempo real y matriz ABC.</p>
         </div>
+        <div class="view-actions">
+            <button id="btn-tab-resumen" class="btn btn-primary btn-sm btn-reporte-tab active" onclick="ReporteModuleController.switchTab('resumen')">📊 Resumen General</button>
+            <button id="btn-tab-movimientos" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('movimientos')">🔄 Consulta Movimientos</button>
+            <button id="btn-tab-auditoria" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('auditoria')">🕵️ Consulta Auditoría</button>
+            <button id="btn-tab-abc" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('abc')">🏆 Matriz ABC</button>
+        </div>
+    </div>
+
+    <!-- ===== TAB 1: RESUMEN GENERAL & EXPORTACIÓN ===== -->
+    <div id="tab-content-resumen" class="reporte-tab-content">
         <div id="reportes-list-container"></div>
 
         <!-- Exportación -->
         <div class="export-section" style="margin-top:28px;">
-            <h3 class="export-section__title">Exportar Reportes</h3>
+            <h3 class="export-section__title">Exportar Informes Oficiales</h3>
             <div class="export-buttons">
                 <button id="btn-export-excel-resumen" class="btn btn-export btn-export--excel" onclick="ExportService.exportarResumenExcel()">
                     <span class="btn-export__icon">📊</span>
@@ -51,7 +50,126 @@
                 </button>
             </div>
         </div>
-    </section>
+    </div>
 
-</body>
-</html>
+    <!-- ===== TAB 2: CONSULTA DE MOVIMIENTOS REST FILTRADOS ===== -->
+    <div id="tab-content-movimientos" class="reporte-tab-content" style="display:none;">
+        <div class="filters-bar card" style="margin-bottom:1.5rem; padding:1.25rem;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; align-items:flex-end;">
+                <div class="filter-group">
+                    <label>Bodega:</label>
+                    <select id="filtro-rep-mov-bodega" class="form-control">
+                        <option value="">Todas las bodegas</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Producto:</label>
+                    <select id="filtro-rep-mov-producto" class="form-control">
+                        <option value="">Todos los productos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Tipo Movimiento:</label>
+                    <select id="filtro-rep-mov-tipo" class="form-control">
+                        <option value="">Todos los tipos</option>
+                        <option value="ENTRADA">ENTRADA</option>
+                        <option value="SALIDA">SALIDA</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Fecha Desde:</label>
+                    <input type="date" id="filtro-rep-mov-desde" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <label>Fecha Hasta:</label>
+                    <input type="date" id="filtro-rep-mov-hasta" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <button class="btn btn-primary" id="btn-ejecutar-filtro-mov" style="width:100%;">🔍 Filtrar REST</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Resultados de Consulta de Movimientos</h4>
+                <span id="contador-rep-mov" class="badge badge-info">0 registros</span>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Bodega Origen</th>
+                        <th>Bodega Destino</th>
+                        <th>Responsable / Contacto</th>
+                        <th>Productos / Detalles</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-rep-mov-body">
+                    <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">Usa los filtros superiores para consultar movimientos.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== TAB 3: CONSULTA DE AUDITORÍA REST FILTRADA ===== -->
+    <div id="tab-content-auditoria" class="reporte-tab-content" style="display:none;">
+        <div class="filters-bar card" style="margin-bottom:1.5rem; padding:1.25rem;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; align-items:flex-end;">
+                <div class="filter-group">
+                    <label>Producto Asociado:</label>
+                    <select id="filtro-rep-aud-producto" class="form-control">
+                        <option value="">Cualquier recurso</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Campo Modificado / Término:</label>
+                    <input type="text" id="filtro-rep-aud-campo" class="form-control" placeholder="Ej: stock, precio, nombre...">
+                </div>
+                <div class="filter-group">
+                    <label>Fecha Desde:</label>
+                    <input type="date" id="filtro-rep-aud-desde" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <label>Fecha Hasta:</label>
+                    <input type="date" id="filtro-rep-aud-hasta" class="form-control">
+                </div>
+                <div class="filter-group">
+                    <button class="btn btn-primary" id="btn-ejecutar-filtro-aud" style="width:100%;">🔍 Filtrar Auditoría</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Bitácora de Auditoría Filtrada</h4>
+                <span id="contador-rep-aud" class="badge badge-info">0 registros</span>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha y Hora</th>
+                        <th>Operación</th>
+                        <th>Entidad / Recurso</th>
+                        <th>Usuario</th>
+                        <th>Descripción del Cambio</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-rep-aud-body">
+                    <tr><td colspan="6" class="text-center py-4" style="color:var(--text-muted);">Usa los filtros superiores para consultar eventos de auditoría.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== TAB 4: MATRIZ DE CLASIFICACIÓN ABC ===== -->
+    <div id="tab-content-abc" class="reporte-tab-content" style="display:none;">
+        <div id="abc-container">
+            <p style="color:var(--text-muted); text-align:center; padding:2rem;">Cargando matriz de clasificación ABC...</p>
+        </div>
+    </div>
+</section>

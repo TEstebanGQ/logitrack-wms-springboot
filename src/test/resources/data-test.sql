@@ -64,6 +64,25 @@ INSERT INTO clientes (id, nombre, ruc, telefono, email, direccion, activo, creat
 (2, 'Inversiones Antioquia Ltda.',     '901333444-2', '604-3330202', 'admin@inversionesant.co',   'Cra 43A # 1S-50, Medellín',     true, CURRENT_TIMESTAMP),
 (3, 'Comercializadora del Pacífico',   '901555666-3', '602-4440303', 'gerencia@compacifico.co',   'Calle 5 # 38-20, Cali',         true, CURRENT_TIMESTAMP);
 
+-- TRANSPORTADORAS
+INSERT INTO transportadoras (id, nombre, ruc_nit, telefono, email, contacto, tipo_servicio, activo, created_at) VALUES
+(1, 'LogiExpress Colombia S.A.',   '900999888-1', '601-8881111', 'despachos@logiexpress.co', 'Fernando Vega', 'TERRESTRE',    true, CURRENT_TIMESTAMP),
+(2, 'AeroCarga Nacional Express',  '900777666-2', '601-8882222', 'operaciones@aerocarga.co', 'Claudia Rivas', 'AEREO',        true, CURRENT_TIMESTAMP),
+(3, 'Flota LogiTrack Distribución','900111000-3', '601-8883333', 'flota@logitrack.com',      'Mario Ruiz',    'FLOTA_PROPIA', true, CURRENT_TIMESTAMP);
+
+-- UNIDADES DE MEDIDA
+INSERT INTO unidades_medida (id, codigo, nombre, abreviatura, factor_conversion, activo, created_at) VALUES
+(1, 'UND', 'Unidad Individual', 'u.',  1.0,  true, CURRENT_TIMESTAMP),
+(2, 'CJ',  'Caja Estándar',     'cj.', 12.0, true, CURRENT_TIMESTAMP);
+
+-- TIPOS UBICACION
+INSERT INTO tipos_ubicacion (id, codigo, nombre, peso_maximo_kg, volumen_maximo_m3, descripcion, activo, created_at) VALUES
+(1, 'RCK-PESADO', 'Rack Industrial Pesado', 2500.0, 5.0, 'Rack pesado', true, CURRENT_TIMESTAMP);
+
+-- ZONAS BODEGA
+INSERT INTO zonas_bodega (id, codigo, nombre, tipo_zona, bodega_id, temperatura_controlada, descripcion, activo, created_at) VALUES
+(1, 'ZN-B1-REC', 'Zona Recepción', 'RECEPCION', 1, false, 'Recepción Bogotá', true, CURRENT_TIMESTAMP);
+
 ALTER TABLE categorias ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE usuarios ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE bodegas ALTER COLUMN id RESTART WITH 100;
@@ -76,5 +95,17 @@ ALTER TABLE ordenes_compra ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE ordenes_compra_detalles ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE lotes ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE ubicaciones_bodega ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE unidades_medida ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE producto_series ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE zonas_bodega ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE tipos_ubicacion ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE pedidos_cliente ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE pedido_cliente_detalles ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE transportadoras ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE guias_despacho ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE tareas_picking ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE conteos_ciclicos ALTER COLUMN id RESTART WITH 100;
+ALTER TABLE conteo_ciclico_detalles ALTER COLUMN id RESTART WITH 100;
+
 
 

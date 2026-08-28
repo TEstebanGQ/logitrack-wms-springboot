@@ -39,7 +39,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex,
                                                                HttpServletRequest req) {
-        return build(HttpStatus.UNAUTHORIZED, "Credenciales inválidas", req.getRequestURI(), null);
+        return build(HttpStatus.UNAUTHORIZED, "Credenciales inválidas: correo o contraseña incorrectos", req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
+    public ResponseEntity<ErrorResponse> handleDisabled(org.springframework.security.authentication.DisabledException ex,
+                                                         HttpServletRequest req) {
+        return build(HttpStatus.UNAUTHORIZED, "Tu cuenta se encuentra desactivada. Contacta al Administrador.", req.getRequestURI(), null);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

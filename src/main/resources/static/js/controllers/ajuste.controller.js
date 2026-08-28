@@ -55,6 +55,19 @@ export const ajusteController = {
     filtroBodega?.addEventListener('change', aplicarFiltros);
     filtroTipo?.addEventListener('change', aplicarFiltros);
 
+    const txtBuscar = document.getElementById('buscador-ajuste-texto');
+    txtBuscar?.addEventListener('input', async (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const todos = await ajusteService.listar();
+      const filtrados = todos.filter(a =>
+        (a.productoNombre && a.productoNombre.toLowerCase().includes(q)) ||
+        (a.bodegaNombre && a.bodegaNombre.toLowerCase().includes(q)) ||
+        (a.justificacion && a.justificacion.toLowerCase().includes(q)) ||
+        (a.usuarioNombre && a.usuarioNombre.toLowerCase().includes(q))
+      );
+      ajusteRenderer.renderTabla(filtrados);
+    });
+
     const btnExport = document.getElementById('btn-exportar-ajustes-csv');
     btnExport?.addEventListener('click', async () => {
       try {

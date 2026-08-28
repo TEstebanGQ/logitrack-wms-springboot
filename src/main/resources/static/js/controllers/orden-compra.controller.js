@@ -28,6 +28,19 @@ export const ordenCompraController = {
       }
     });
 
+    const txtBuscar = document.getElementById('buscador-orden-texto');
+    txtBuscar?.addEventListener('input', async (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const todas = await ordenCompraService.listar();
+      const filtradas = todas.filter(o =>
+        (o.codigoOrden && o.codigoOrden.toLowerCase().includes(q)) ||
+        (o.proveedorNombre && o.proveedorNombre.toLowerCase().includes(q)) ||
+        (o.bodegaDestinoNombre && o.bodegaDestinoNombre.toLowerCase().includes(q)) ||
+        (o.usuarioSolicitante && o.usuarioSolicitante.toLowerCase().includes(q))
+      );
+      ordenCompraRenderer.renderTabla(filtradas);
+    });
+
     const tbody = document.getElementById('tabla-ordenes-body');
     tbody?.addEventListener('click', async (e) => {
       const btnAprobar = e.target.closest('.btn-aprobar-orden');

@@ -40,6 +40,18 @@ export const loteController = {
       }
     });
 
+    const txtBuscar = document.getElementById('buscador-lote-texto');
+    txtBuscar?.addEventListener('input', async (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const todos = await loteService.listar();
+      const filtrados = todos.filter(l =>
+        (l.codigoLote && l.codigoLote.toLowerCase().includes(q)) ||
+        (l.productoNombre && l.productoNombre.toLowerCase().includes(q)) ||
+        (l.bodegaNombre && l.bodegaNombre.toLowerCase().includes(q))
+      );
+      loteRenderer.renderTabla(filtrados);
+    });
+
     const btnProximos = document.getElementById('btn-ver-proximos-vencer');
     btnProximos?.addEventListener('click', async () => {
       try {

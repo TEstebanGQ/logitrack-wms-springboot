@@ -8,6 +8,7 @@ const AuthService = {
         if (response && response.token) {
             ApiService.setToken(response.token);
             localStorage.setItem(CONFIG.USER_KEY, JSON.stringify({
+                id: response.id,
                 email: response.email,
                 nombre: response.nombre,
                 rol: response.rol
@@ -26,10 +27,22 @@ const AuthService = {
         });
     },
 
-    logout() {
-        ApiService.removeToken();
-        if (window.Router) {
-            window.Router.navigate('auth');
+    async logout() {
+        const confirmed = typeof ConfirmDialog !== 'undefined' 
+            ? await ConfirmDialog.show({
+                title: '¿Cerrar Sesión?',
+                message: '¿Estás seguro de que deseas salir del sistema?',
+                confirmText: 'Sí, Salir',
+                cancelText: 'Cancelar',
+                type: 'danger'
+            })
+            : window.confirm('¿Estás seguro de que deseas salir del sistema?');
+
+        if (confirmed) {
+            ApiService.removeToken();
+            if (window.Router) {
+                window.Router.navigate('auth');
+            }
         }
     },
 

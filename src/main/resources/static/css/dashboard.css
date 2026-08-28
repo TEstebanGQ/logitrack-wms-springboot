@@ -885,16 +885,16 @@
 @media (min-width: 901px) {
     #app-layout {
         display: grid;
-        grid-template-columns: 232px 1fr;
+        grid-template-columns: 245px 1fr;
     }
 
     .main-wrapper {
-        margin-left: 232px;
-        width: calc(100% - 232px);
+        margin-left: 245px;
+        width: calc(100% - 245px);
     }
 
     .sidebar {
-        width: 232px;
+        width: 245px;
         transform: translateX(0) !important;
         box-shadow: none;
         background: rgba(27, 33, 44, 0.65);
@@ -910,8 +910,8 @@
     }
 
     .topbar {
-        padding: 0 34px;
-        height: 62px;
+        padding: 0 40px;
+        height: 64px;
     }
 
     .topbar-meta #clock,
@@ -922,22 +922,48 @@
         display: inline-block !important;
     }
 
+    .content-area {
+        padding: 30px 42px 60px;
+    }
+
     .stat-row, .metrics-grid {
         grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
     }
 
     .bodegas-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+    }
+
+    .split-row {
+        gap: 24px;
     }
 }
 
 /* 2. Large Monitors (>= 1441px) */
 @media (min-width: 1441px) {
     .content-area {
-        max-width: 1680px;
-        margin: 0 auto;
-        padding: 32px 40px;
+        max-width: 100%;
+        padding: 36px 56px 80px;
     }
+
+    .stat-row, .metrics-grid {
+        gap: 28px;
+    }
+
+    .bodegas-grid {
+        gap: 28px;
+    }
+
+    .stat-card, .metric-card {
+        padding: 24px 30px;
+    }
+
+    .bodega-card {
+        padding: 24px 28px;
+    }
+}
 }
 
 /* 3. Mid-range Tablets (769px - 1100px) */

@@ -7,6 +7,7 @@ const App = {
         console.log('LogiTrack S.A. Frontend Orquestado Inicializado...');
         this.bindEvents();
         this.initCapsLockDetectors();
+        this.initGoogleSignIn();
         this.initCommandPalette();
         Router.init();
         this.updateUserInfo();
@@ -31,6 +32,91 @@ const App = {
         if (sidebar) sidebar.classList.remove('active');
         if (overlay) overlay.classList.remove('active');
         if (btn) btn.classList.remove('active');
+    },
+
+    openGoogleModal(email, nombre, apellido) {
+        const emailEl = document.getElementById('google-complete-email');
+        const nombreEl = document.getElementById('google-complete-nombre');
+        const apellidoEl = document.getElementById('google-complete-apellido');
+        const modal = document.getElementById('modal-google-complete');
+
+        if (emailEl) emailEl.value = email || '';
+        if (nombreEl) nombreEl.value = nombre || '';
+        if (apellidoEl) apellidoEl.value = apellido || '';
+        if (modal) modal.classList.add('active');
+    },
+
+    closeGoogleModal() {
+        const modal = document.getElementById('modal-google-complete');
+        if (modal) modal.classList.remove('active');
+    },
+
+    // Google Sign-In Initialization
+    initGoogleSignIn() {
+        window.handleGoogleCredentialResponse = async (response) => {
+            if (!response || !response.credential) return;
+            try {
+                const res = await AuthService.loginWithGoogle(response.credential);
+                if (res && res.registrado) {
+                    Toast.success('¡Autenticado con éxito usando tu cuenta de Google!');
+                    this.updateUserInfo();
+                    Router.navigate('dashboard');
+                } else if (res && !res.registrado) {
+                    Toast.info('Por favor completa tu rol y asigna una contraseña para finalizar el registro');
+                    this.openGoogleModal(res.email, res.nombre, res.apellido);
+                }
+            } catch (err) {
+                Toast.error(err.message || 'Error al autenticar con Google');
+            }
+        };
+
+        const renderGoogleBtns = async () => {
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                let googleClientId = "1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com";
+                try {
+                    const pubConfig = await ApiService.get('/config/public');
+                    if (pubConfig && pubConfig.googleClientId) {
+                        googleClientId = pubConfig.googleClientId;
+                    }
+                } catch (e) {
+                    console.warn('Usando Client ID por defecto para Google OAuth2');
+                }
+
+                google.accounts.id.initialize({
+                    client_id: googleClientId,
+                    callback: window.handleGoogleCredentialResponse,
+                    auto_select: false,
+                    ux_mode: 'popup',
+                    use_fedcm_for_prompt: true
+                });
+
+                const btnLogin = document.getElementById('google-btn-login');
+                if (btnLogin) {
+                    google.accounts.id.renderButton(btnLogin, {
+                        theme: "outline",
+                        size: "large",
+                        text: "signin_with",
+                        shape: "rectangular",
+                        width: 280
+                    });
+                }
+
+                const btnRegister = document.getElementById('google-btn-register');
+                if (btnRegister) {
+                    google.accounts.id.renderButton(btnRegister, {
+                        theme: "outline",
+                        size: "large",
+                        text: "signup_with",
+                        shape: "rectangular",
+                        width: 280
+                    });
+                }
+            } else {
+                setTimeout(renderGoogleBtns, 400);
+            }
+        };
+
+        renderGoogleBtns();
     },
 
     // Command Palette Logic
@@ -433,6 +519,30 @@ const App = {
                     Router.navigate('dashboard');
                 } catch (err) {
                     Toast.error(err.message || 'Error al registrar usuario');
+                }
+            });
+        }
+
+        // Formulario Completar Registro de Google
+        const googleCompleteForm = document.getElementById('form-google-complete');
+        if (googleCompleteForm) {
+            googleCompleteForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('google-complete-email').value;
+                const nombre = document.getElementById('google-complete-nombre').value;
+                const apellido = document.getElementById('google-complete-apellido').value;
+                const rol = document.getElementById('google-complete-rol').value;
+                const pass = document.getElementById('google-complete-password').value;
+
+                try {
+                    await AuthService.register(nombre, apellido, email, pass, rol);
+                    Toast.success('¡Registro completado exitosamente! Iniciando sesión...');
+                    await AuthService.login(email, pass);
+                    this.closeGoogleModal();
+                    this.updateUserInfo();
+                    Router.navigate('dashboard');
+                } catch (err) {
+                    Toast.error(err.message || 'Error al finalizar el registro de Google');
                 }
             });
         }

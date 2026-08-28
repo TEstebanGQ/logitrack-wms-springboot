@@ -18,6 +18,8 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Google Identity Services SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -130,6 +132,12 @@
                     </button>
                 </form>
 
+                <!-- Google Sign-In Login -->
+                <div class="auth-divider">
+                    <span>O INICIA SESIÓN CON</span>
+                </div>
+                <div id="google-btn-login" class="google-btn-wrapper"></div>
+
                 <div class="auth-footer-meta">
                     <span class="sys-status">● SERVIDOR LOGITRACK ONLINE</span>
                 </div>
@@ -187,6 +195,13 @@
                         Completar Registro ✓
                     </button>
                 </form>
+
+                <!-- Google Sign-In Register -->
+                <div class="auth-divider">
+                    <span>O REGÍSTRATE CON</span>
+                </div>
+                <div id="google-btn-register" class="google-btn-wrapper"></div>
+
                 <div class="auth-toggle">
                     ¿Ya posees una cuenta?
                     <a href="#" onclick="App.toggleAuthMode('login'); return false;">Inicia sesión</a>
@@ -404,6 +419,58 @@
             <span><kbd>Ctrl</kbd> <kbd>K</kbd> para abrir</span>
             <span><kbd>ESC</kbd> para salir</span>
         </div>
+    </div>
+</div>
+
+<!-- Modal: Completar Registro de Cuenta Google -->
+<div id="modal-google-complete" class="modal-overlay">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Completar Registro con Google</h3>
+            <button class="modal-close" onclick="App.closeGoogleModal()">&times;</button>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+            ¡Bienvenido! Es tu primera vez ingresando con esta cuenta de Google. Asigna tu rol y define una contraseña para finalizar tu registro.
+        </p>
+        <form id="form-google-complete">
+            <div class="form-group">
+                <label class="form-label" for="google-complete-email">Correo electrónico de Google</label>
+                <input type="email" id="google-complete-email" class="form-input" readonly style="opacity:0.75; cursor:not-allowed;">
+            </div>
+            <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label class="form-label" for="google-complete-nombre">Nombre</label>
+                    <input type="text" id="google-complete-nombre" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label" for="google-complete-apellido">Apellido</label>
+                    <input type="text" id="google-complete-apellido" class="form-input" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="google-complete-rol">Rol a asignar en el sistema</label>
+                <select id="google-complete-rol" class="form-select">
+                    <option value="EMPLEADO">EMPLEADO / OPERADOR</option>
+                    <option value="JEFE_COMPRAS">JEFE DE COMPRAS</option>
+                    <option value="GERENTE_LOGISTICA">GERENTE DE LOGÍSTICA</option>
+                    <option value="SUPERVISOR">SUPERVISOR / AUDITOR</option>
+                    <option value="ADMIN">ADMINISTRADOR</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="google-complete-password">Asignar Contraseña</label>
+                <div class="password-input-wrap">
+                    <input type="password" id="google-complete-password" class="form-input" placeholder="••••••••" required>
+                    <button type="button" class="btn-toggle-password" onclick="App.togglePasswordVisibility('google-complete-password', this)" title="Mostrar / Ocultar contraseña" tabindex="-1">
+                        <span class="eye-icon">👁️</span>
+                    </button>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeGoogleModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Finalizar Registro ✓</button>
+            </div>
+        </form>
     </div>
 </div>
 

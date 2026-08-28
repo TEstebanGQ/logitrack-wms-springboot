@@ -27,6 +27,20 @@ const AuthService = {
         });
     },
 
+    async loginWithGoogle(credential) {
+        const response = await ApiService.post('/auth/google', { credential });
+        if (response && response.registrado && response.token) {
+            ApiService.setToken(response.token);
+            localStorage.setItem(CONFIG.USER_KEY, JSON.stringify({
+                id: response.id,
+                email: response.email,
+                nombre: response.nombre,
+                rol: response.rol
+            }));
+        }
+        return response;
+    },
+
     async logout() {
         const confirmed = typeof ConfirmDialog !== 'undefined' 
             ? await ConfirmDialog.show({

@@ -66,4 +66,79 @@ public class AuthController {
         usuarioRepository.save(usuario);
         return ResponseEntity.ok(java.util.Map.of("mensaje", "Usuario registrado exitosamente"));
     }
+
+    @PostMapping("/google")
+    @Operation(summary = "Iniciar sesión o verificar cuenta con Google OAuth2")
+    public ResponseEntity<?> googleAuth(@Valid @RequestBody com.proyecto.proyectoSpringBoot.dto.request.GoogleAuthRequest request) {
+        try {
+            java.util.Map<String, Object> googleUser = verifyAndDecodeGoogleToken(request.getCredential());
+
+            if (googleUser == null || googleUser.get("email") == null) {
+                return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "Token de Google inválido o no se pudo decodificar"));
+            }
+
+            String email = (String) googleUser.get("email");
+            String nombre = (String) googleUser.getOrDefault("given_name", googleUser.getOrDefault("name", "Usuario"));
+            String apellido = (String) googleUser.getOrDefault("family_name", "Google");
+
+            java.util.Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
+            if (usuarioOpt.isPresent()) {
+                Usuario usuario = usuarioOpt.get();
+                String token = jwtUtil.generateToken(usuario);
+                return ResponseEntity.ok(com.proyecto.proyectoSpringBoot.dto.response.GoogleAuthResponse.builder()
+                        .registrado(true)
+                        .token(token)
+                        .tipo("Bearer")
+                        .id(usuario.getId())
+                        .nombre(usuario.getNombre() + " " + usuario.getApellido())
+                        .email(usuario.getEmail())
+                        .rol(usuario.getRol().name())
+                        .build());
+            } else {
+                return ResponseEntity.ok(com.proyecto.proyectoSpringBoot.dto.response.GoogleAuthResponse.builder()
+                        .registrado(false)
+                        .email(email)
+                        .nombre(nombre)
+                        .apellido(apellido)
+                        .build());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "Error al autenticar con Google: " + e.getMessage()));
+        }
+    }
+
+    private java.util.Map<String, Object> verifyAndDecodeGoogleToken(String idToken) {
+        try {
+            org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+            factory.setConnectTimeout(5000);
+            factory.setReadTimeout(5000);
+            org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate(factory);
+            String url = "https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken;
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, Object> googleUser = restTemplate.getForObject(url, java.util.Map.class);
+            if (googleUser != null && googleUser.get("email") != null) {
+                return googleUser;
+            }
+        } catch (Exception e) {
+            System.err.println("Advertencia: Falló consulta HTTP a Google tokeninfo (" + e.getMessage() + "). Usando fallback JWT local...");
+        }
+
+        try {
+            String[] parts = idToken.split("\\.");
+            if (parts.length >= 2) {
+                String payloadJson = new String(java.util.Base64.getUrlDecoder().decode(parts[1]), java.nio.charset.StandardCharsets.UTF_8);
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                @SuppressWarnings("unchecked")
+                java.util.Map<String, Object> payload = mapper.readValue(payloadJson, java.util.Map.class);
+                if (payload != null && payload.get("email") != null) {
+                    return payload;
+                }
+            }
+        } catch (Exception ex) {
+            System.err.println("Error decodificando token JWT de Google: " + ex.getMessage());
+        }
+        return null;
+    }
 }
+

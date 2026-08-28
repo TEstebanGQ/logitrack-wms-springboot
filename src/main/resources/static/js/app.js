@@ -241,6 +241,17 @@ const App = {
                     </div>
                 </div>
 
+                ${(m.proveedorNombre || m.clienteNombre) ? `
+                    <div class="drawer-card">
+                        <div class="drawer-field">
+                            <div class="drawer-field-label">${m.proveedorNombre ? 'Proveedor de Mercancía' : 'Cliente Receptor / Despacho'}</div>
+                            <div class="drawer-field-value" style="font-weight:600; color:var(--text-bright);">
+                                ${m.proveedorNombre ? `🏢 ${m.proveedorNombre}` : `👤 ${m.clienteNombre}`}
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+
                 <div class="drawer-card">
                     <div class="drawer-field-label" style="margin-bottom:10px;">Items e Inventario Afectado</div>
                     ${detallesHtml}
@@ -486,10 +497,15 @@ const App = {
                 const cantidad = parseInt(document.getElementById('mov-cantidad').value);
                 const observaciones = document.getElementById('mov-obs').value;
 
+                const provIdVal = document.getElementById('mov-proveedor')?.value;
+                const cliIdVal = document.getElementById('mov-cliente')?.value;
+
                 const data = {
                     tipoMovimiento: tipo,
                     bodegaOrigenId: bodegaOrigenId ? parseInt(bodegaOrigenId) : null,
                     bodegaDestinoId: bodegaDestinoId ? parseInt(bodegaDestinoId) : null,
+                    proveedorId: (tipo === 'ENTRADA' && provIdVal) ? parseInt(provIdVal) : null,
+                    clienteId: (tipo === 'SALIDA' && cliIdVal) ? parseInt(cliIdVal) : null,
                     observaciones: observaciones,
                     detalles: [
                         {
@@ -500,6 +516,38 @@ const App = {
                     ]
                 };
                 await MovimientoModuleController.registrar(data);
+            });
+        }
+
+        // Formulario Cliente Modal
+        const clienteForm = document.getElementById('form-cliente');
+        if (clienteForm) {
+            clienteForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = {
+                    nombre: document.getElementById('cliente-nombre').value,
+                    ruc: document.getElementById('cliente-ruc').value,
+                    telefono: document.getElementById('cliente-telefono').value,
+                    email: document.getElementById('cliente-email').value,
+                    direccion: document.getElementById('cliente-direccion').value
+                };
+                await ClienteModuleController.save(data);
+            });
+        }
+
+        // Formulario Proveedor Modal
+        const proveedorForm = document.getElementById('form-proveedor');
+        if (proveedorForm) {
+            proveedorForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = {
+                    nombre: document.getElementById('proveedor-nombre').value,
+                    ruc: document.getElementById('proveedor-ruc').value,
+                    telefono: document.getElementById('proveedor-telefono').value,
+                    email: document.getElementById('proveedor-email').value,
+                    direccion: document.getElementById('proveedor-direccion').value
+                };
+                await ProveedorModuleController.save(data);
             });
         }
 
@@ -614,6 +662,10 @@ const App = {
                 await ProductoModuleController.load();
             } else if (view === 'movimientos') {
                 await MovimientoModuleController.load();
+            } else if (view === 'clientes') {
+                await ClienteModuleController.load();
+            } else if (view === 'proveedores') {
+                await ProveedorModuleController.load();
             } else if (view === 'auditorias') {
                 await AuditoriaModuleController.load();
             } else if (view === 'usuarios') {

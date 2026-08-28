@@ -233,6 +233,16 @@
                     <span class="nav-code">04</span>Movimientos
                 </a>
             </li>
+            <li>
+                <a href="#/clientes" class="nav-link" data-view="clientes">
+                    <span class="nav-code">05</span>Clientes
+                </a>
+            </li>
+            <li>
+                <a href="#/proveedores" class="nav-link" data-view="proveedores">
+                    <span class="nav-code">06</span>Proveedores
+                </a>
+            </li>
         </ul>
 
         <span class="nav-group-label nav-control-only" style="display:none;">Control</span>
@@ -498,13 +508,21 @@
                     <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="mov-origen-group">
                 <label class="form-label" for="mov-origen">Bodega Origen</label>
                 <select id="mov-origen" class="form-select"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="mov-destino-group">
                 <label class="form-label" for="mov-destino">Bodega Destino</label>
                 <select id="mov-destino" class="form-select"></select>
+            </div>
+            <div class="form-group" id="mov-proveedor-group" style="display:none;">
+                <label class="form-label" for="mov-proveedor">Proveedor de Mercancía</label>
+                <select id="mov-proveedor" class="form-select"></select>
+            </div>
+            <div class="form-group" id="mov-cliente-group" style="display:none;">
+                <label class="form-label" for="mov-cliente">Cliente / Receptor</label>
+                <select id="mov-cliente" class="form-select"></select>
             </div>
             <div class="form-group">
                 <label class="form-label" for="mov-producto">Producto</label>
@@ -624,6 +642,76 @@
                 <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-usuario')">Cancelar</button>
                 <button type="submit" class="btn btn-primary">Guardar Usuario</button>
             </div>
+<!-- Modal Cliente -->
+<div id="modal-cliente" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-cliente-title" class="modal-title">Nuevo Cliente</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-cliente')">&times;</button>
+        </div>
+        <form id="form-cliente">
+            <input type="hidden" id="cliente-id">
+            <div class="form-group">
+                <label class="form-label" for="cliente-nombre">Razón Social / Nombre</label>
+                <input type="text" id="cliente-nombre" class="form-input" required placeholder="Empresa ABC S.A.S.">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="cliente-ruc">RUC / NIT / DNI</label>
+                <input type="text" id="cliente-ruc" class="form-input" placeholder="900111222-1">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="cliente-telefono">Teléfono de Contacto</label>
+                <input type="text" id="cliente-telefono" class="form-input" placeholder="+57 601 444 0001">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="cliente-email">Correo Electrónico</label>
+                <input type="email" id="cliente-email" class="form-input" placeholder="contacto@empresaabc.co">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="cliente-direccion">Dirección de Entrega</label>
+                <input type="text" id="cliente-direccion" class="form-input" placeholder="Calle 72 # 10-35, Bogotá">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-cliente')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Proveedor -->
+<div id="modal-proveedor" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-proveedor-title" class="modal-title">Nuevo Proveedor</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-proveedor')">&times;</button>
+        </div>
+        <form id="form-proveedor">
+            <input type="hidden" id="proveedor-id">
+            <div class="form-group">
+                <label class="form-label" for="proveedor-nombre">Razón Social / Proveedor</label>
+                <input type="text" id="proveedor-nombre" class="form-input" required placeholder="TechSupplies S.A.">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="proveedor-ruc">RUC / NIT / Identificación</label>
+                <input type="text" id="proveedor-ruc" class="form-input" placeholder="900123456-1">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="proveedor-telefono">Teléfono Comercial</label>
+                <input type="text" id="proveedor-telefono" class="form-input" placeholder="+57 601 555 0001">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="proveedor-email">Correo Electrónico</label>
+                <input type="email" id="proveedor-email" class="form-input" placeholder="ventas@techsupplies.co">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="proveedor-direccion">Dirección Comercial</label>
+                <input type="text" id="proveedor-direccion" class="form-input" placeholder="Cra 15 # 93-47, Bogotá">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-proveedor')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Proveedor</button>
+            </div>
         </form>
     </div>
 </div>
@@ -656,6 +744,8 @@
 <script src="js/services/bodega.service.js"></script>
 <script src="js/services/categoria.service.js"></script>
 <script src="js/services/producto.service.js"></script>
+<script src="js/services/cliente.service.js"></script>
+<script src="js/services/proveedor.service.js"></script>
 <script src="js/services/movimiento.service.js"></script>
 <script src="js/services/auditoria.service.js"></script>
 <script src="js/services/reporte.service.js"></script>
@@ -667,6 +757,8 @@
 <script src="js/ui/confirm.js"></script>
 <script src="js/ui/renderers/bodega.renderer.js"></script>
 <script src="js/ui/renderers/producto.renderer.js"></script>
+<script src="js/ui/renderers/cliente.renderer.js"></script>
+<script src="js/ui/renderers/proveedor.renderer.js"></script>
 <script src="js/ui/renderers/movimiento.renderer.js"></script>
 <script src="js/ui/renderers/auditoria.renderer.js"></script>
 <script src="js/ui/renderers/reporte.renderer.js"></script>
@@ -674,6 +766,8 @@
 <script src="js/ui/renderers/dashboard.renderer.js"></script>
 <script src="js/controllers/bodega.controller.js"></script>
 <script src="js/controllers/producto.controller.js"></script>
+<script src="js/controllers/cliente.controller.js"></script>
+<script src="js/controllers/proveedor.controller.js"></script>
 <script src="js/controllers/movimiento.controller.js"></script>
 <script src="js/controllers/auditoria.controller.js"></script>
 <script src="js/controllers/reporte.controller.js"></script>

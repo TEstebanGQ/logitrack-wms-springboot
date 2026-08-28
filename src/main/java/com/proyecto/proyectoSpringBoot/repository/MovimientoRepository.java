@@ -22,6 +22,9 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long>,
     @Query("SELECT m FROM Movimiento m WHERE m.bodegaOrigen.id = :bodegaId OR m.bodegaDestino.id = :bodegaId")
     List<Movimiento> findByBodegaId(@Param("bodegaId") Long bodegaId);
 
+    List<Movimiento> findByProveedorId(Long proveedorId);
+    List<Movimiento> findByClienteId(Long clienteId);
+
     @Query("SELECT md.producto.id, SUM(md.cantidad) as totalMovido " +
            "FROM MovimientoDetalle md GROUP BY md.producto.id ORDER BY totalMovido DESC")
     List<Object[]> findProductosMasMovidos();

@@ -7,4 +7,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContadorNotificacionesResponse {
     private Long count;
+
+    public Long getNoLeidas() {
+        return count;
+    }
 }

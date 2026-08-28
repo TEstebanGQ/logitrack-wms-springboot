@@ -37,19 +37,31 @@ public class ClienteServiceImpl implements IClienteService {
     @Override
     @Transactional(readOnly = true)
     public List<ClienteResponse> listar() {
-        return repository.findByActivoTrue().stream().map(mapper::toResponse).collect(Collectors.toList());
+        return listar(true);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClienteResponse> listar(boolean soloActivos) {
+        if (soloActivos) {
+            return repository.findByActivoTrue().stream().map(mapper::toResponse).collect(Collectors.toList());
+        }
+        return repository.findAll().stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public ClienteResponse obtenerPorId(Long id) {
-        return mapper.toResponse(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado")));
+        return mapper.toResponse(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado: " + id)));
     }
 
     @Override
     @Transactional
     public ClienteResponse actualizar(Long id, CrearClienteRequest request) {
-        Cliente c = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+        Cliente c = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado: " + id));
+        if (request.getRuc() != null && !request.getRuc().equals(c.getRuc()) && repository.existsByRuc(request.getRuc())) {
+            throw new RuntimeException("Ya existe otro cliente con este RUC");
+        }
         c.setNombre(request.getNombre());
         c.setRuc(request.getRuc());
         c.setTelefono(request.getTelefono());
@@ -61,7 +73,7 @@ public class ClienteServiceImpl implements IClienteService {
     @Override
     @Transactional
     public void eliminar(Long id) {
-        Cliente c = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+        Cliente c = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado: " + id));
         c.setActivo(false);
         repository.save(c);
     }
@@ -69,6 +81,9 @@ public class ClienteServiceImpl implements IClienteService {
     @Override
     @Transactional(readOnly = true)
     public List<MovimientoResponse> listarMovimientosCliente(Long id) {
-        return java.util.Collections.emptyList(); // placeholder
+        repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado: " + id));
+        return movimientoRepository.findByClienteId(id).stream()
+                .map(movimientoMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

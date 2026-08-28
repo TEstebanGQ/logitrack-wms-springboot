@@ -173,4 +173,46 @@ class MovimientoServiceTest {
         List<MovimientoResponse> porBodega = movimientoService.listarPorBodega(1L);
         assertNotNull(porBodega);
     }
+
+    @Test
+    @DisplayName("27. Debe registrar ENTRADA asociada a un Proveedor y asociar su nombre")
+    void testRegistrarEntradaConProveedor() {
+        MovimientoRequest req = MovimientoRequest.builder()
+                .tipoMovimiento(TipoMovimiento.ENTRADA)
+                .bodegaDestinoId(1L)
+                .proveedorId(1L)
+                .observaciones("Recepción proveedor")
+                .detalles(List.of(
+                        MovimientoRequest.DetalleRequest.builder()
+                                .productoId(1L)
+                                .cantidad(8)
+                                .build()
+                ))
+                .build();
+
+        MovimientoResponse res = movimientoService.registrar(req, "admin@logitrack.com");
+        assertNotNull(res.getId());
+        assertNotNull(res.getProveedorNombre());
+    }
+
+    @Test
+    @DisplayName("28. Debe registrar SALIDA asociada a un Cliente y asociar su nombre")
+    void testRegistrarSalidaConCliente() {
+        MovimientoRequest req = MovimientoRequest.builder()
+                .tipoMovimiento(TipoMovimiento.SALIDA)
+                .bodegaOrigenId(1L)
+                .clienteId(1L)
+                .observaciones("Despacho a cliente corporativo")
+                .detalles(List.of(
+                        MovimientoRequest.DetalleRequest.builder()
+                                .productoId(1L)
+                                .cantidad(2)
+                                .build()
+                ))
+                .build();
+
+        MovimientoResponse res = movimientoService.registrar(req, "admin@logitrack.com");
+        assertNotNull(res.getId());
+        assertNotNull(res.getClienteNombre());
+    }
 }

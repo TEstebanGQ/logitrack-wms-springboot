@@ -42,6 +42,24 @@ public class MovimientoServiceImpl implements IMovimientoService {
 
     @Override
     public MovimientoResponse registrar(MovimientoRequest request, String emailUsuario) {
+        if (request.getTipoMovimiento() == null) {
+            throw new IllegalArgumentException("El tipo de movimiento es obligatorio");
+        }
+        if (request.getTipoMovimiento() == TipoMovimiento.ENTRADA && request.getBodegaDestinoId() == null) {
+            throw new IllegalArgumentException("ENTRADA requiere especificar una bodega destino");
+        }
+        if (request.getTipoMovimiento() == TipoMovimiento.SALIDA && request.getBodegaOrigenId() == null) {
+            throw new IllegalArgumentException("SALIDA requiere especificar una bodega origen");
+        }
+        if (request.getTipoMovimiento() == TipoMovimiento.TRANSFERENCIA) {
+            if (request.getBodegaOrigenId() == null || request.getBodegaDestinoId() == null) {
+                throw new IllegalArgumentException("TRANSFERENCIA requiere especificar bodega origen y bodega destino");
+            }
+            if (request.getBodegaOrigenId().equals(request.getBodegaDestinoId())) {
+                throw new IllegalArgumentException("La bodega origen y la bodega destino no pueden ser la misma");
+            }
+        }
+
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 

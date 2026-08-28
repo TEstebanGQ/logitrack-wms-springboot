@@ -75,9 +75,11 @@ const MovimientoModuleController = {
 
     async populateSelects() {
         try {
-            const [bodegas, productos] = await Promise.all([
-                BodegaService.getAll(true),
-                ProductoService.getAll()
+            const [bodegas, productos, proveedores, clientes] = await Promise.all([
+                BodegaService.getAll(true).catch(() => []),
+                ProductoService.getAll().catch(() => []),
+                ProveedorService.getAll(true).catch(() => []),
+                ClienteService.getAll(true).catch(() => [])
             ]);
 
             this.allProductosCache = productos || [];
@@ -85,6 +87,8 @@ const MovimientoModuleController = {
             const tipoSelect = document.getElementById('mov-tipo');
             const origenSelect = document.getElementById('mov-origen');
             const destinoSelect = document.getElementById('mov-destino');
+            const proveedorSelect = document.getElementById('mov-proveedor');
+            const clienteSelect = document.getElementById('mov-cliente');
 
             const bodegaOpts = bodegas.map(b => `<option value="${b.id}">${b.nombre} (${b.ubicacion})</option>`).join('');
 
@@ -95,15 +99,23 @@ const MovimientoModuleController = {
             if (destinoSelect) {
                 destinoSelect.innerHTML = `<option value="">-- Seleccionar Bodega Destino --</option>` + bodegaOpts;
             }
+
+            if (proveedorSelect) {
+                const provOpts = proveedores.map(p => `<option value="${p.id}">${p.nombre} ${p.ruc ? `(${p.ruc})` : ''}</option>`).join('');
+                proveedorSelect.innerHTML = `<option value="">-- Seleccionar Proveedor (Opcional) --</option>` + provOpts;
+            }
+
+            if (clienteSelect) {
+                const cliOpts = clientes.map(c => `<option value="${c.id}">${c.nombre} ${c.ruc ? `(${c.ruc})` : ''}</option>`).join('');
+                clienteSelect.innerHTML = `<option value="">-- Seleccionar Cliente Receptor (Opcional) --</option>` + cliOpts;
+            }
+
             if (tipoSelect) {
                 tipoSelect.innerHTML = `
                     <option value="ENTRADA">ENTRADA</option>
                     <option value="SALIDA">SALIDA</option>
                     <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                 `;
-            }
-
-            if (tipoSelect) {
                 tipoSelect.onchange = () => this.onTipoChange();
             }
 
@@ -116,20 +128,28 @@ const MovimientoModuleController = {
 
     onTipoChange() {
         const tipo = document.getElementById('mov-tipo')?.value;
-        const origenGroup = document.getElementById('mov-origen')?.closest('.form-group');
-        const destinoGroup = document.getElementById('mov-destino')?.closest('.form-group');
+        const origenGroup = document.getElementById('mov-origen-group') || document.getElementById('mov-origen')?.closest('.form-group');
+        const destinoGroup = document.getElementById('mov-destino-group') || document.getElementById('mov-destino')?.closest('.form-group');
+        const provGroup = document.getElementById('mov-proveedor-group');
+        const cliGroup = document.getElementById('mov-cliente-group');
 
         if (tipo === 'ENTRADA') {
             if (origenGroup) origenGroup.style.display = 'none';
             if (destinoGroup) destinoGroup.style.display = 'block';
+            if (provGroup) provGroup.style.display = 'block';
+            if (cliGroup) cliGroup.style.display = 'none';
             this.updateProductosSelect(this.allProductosCache);
         } else if (tipo === 'SALIDA') {
             if (origenGroup) origenGroup.style.display = 'block';
             if (destinoGroup) destinoGroup.style.display = 'none';
+            if (provGroup) provGroup.style.display = 'none';
+            if (cliGroup) cliGroup.style.display = 'block';
             this.onBodegaOrigenChange();
         } else if (tipo === 'TRANSFERENCIA') {
             if (origenGroup) origenGroup.style.display = 'block';
             if (destinoGroup) destinoGroup.style.display = 'block';
+            if (provGroup) provGroup.style.display = 'none';
+            if (cliGroup) cliGroup.style.display = 'none';
             this.onBodegaOrigenChange();
         }
     },

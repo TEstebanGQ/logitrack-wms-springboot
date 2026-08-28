@@ -8,6 +8,7 @@ import java.util.List;
 public interface IProveedorService {
     ProveedorResponse crear(CrearProveedorRequest request);
     List<ProveedorResponse> listar();
+    List<ProveedorResponse> listar(boolean soloActivos);
     ProveedorResponse obtenerPorId(Long id);
     ProveedorResponse actualizar(Long id, CrearProveedorRequest request);
     void eliminar(Long id);

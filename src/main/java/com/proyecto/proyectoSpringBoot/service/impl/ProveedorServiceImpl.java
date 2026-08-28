@@ -37,19 +37,31 @@ public class ProveedorServiceImpl implements IProveedorService {
     @Override
     @Transactional(readOnly = true)
     public List<ProveedorResponse> listar() {
-        return repository.findByActivoTrue().stream().map(mapper::toResponse).collect(Collectors.toList());
+        return listar(true);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProveedorResponse> listar(boolean soloActivos) {
+        if (soloActivos) {
+            return repository.findByActivoTrue().stream().map(mapper::toResponse).collect(Collectors.toList());
+        }
+        return repository.findAll().stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public ProveedorResponse obtenerPorId(Long id) {
-        return mapper.toResponse(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado")));
+        return mapper.toResponse(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado: " + id)));
     }
 
     @Override
     @Transactional
     public ProveedorResponse actualizar(Long id, CrearProveedorRequest request) {
-        Proveedor p = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado"));
+        Proveedor p = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado: " + id));
+        if (request.getRuc() != null && !request.getRuc().equals(p.getRuc()) && repository.existsByRuc(request.getRuc())) {
+            throw new RuntimeException("Ya existe otro proveedor con este RUC");
+        }
         p.setNombre(request.getNombre());
         p.setRuc(request.getRuc());
         p.setTelefono(request.getTelefono());
@@ -61,7 +73,7 @@ public class ProveedorServiceImpl implements IProveedorService {
     @Override
     @Transactional
     public void eliminar(Long id) {
-        Proveedor p = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado"));
+        Proveedor p = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado: " + id));
         p.setActivo(false);
         repository.save(p);
     }
@@ -69,6 +81,9 @@ public class ProveedorServiceImpl implements IProveedorService {
     @Override
     @Transactional(readOnly = true)
     public List<MovimientoResponse> listarMovimientosProveedor(Long id) {
-        return java.util.Collections.emptyList(); // placeholder, needs implementation in repository if required
+        repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado: " + id));
+        return movimientoRepository.findByProveedorId(id).stream()
+                .map(movimientoMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -111,6 +111,8 @@ const Router = {
                 bodegas:    'Gestión de Bodegas',
                 productos:  'Gestión de Productos',
                 movimientos:'Movimientos de Inventario',
+                clientes:   'Directorio de Clientes',
+                proveedores:'Directorio de Proveedores',
                 auditorias: 'Registros de Auditoría',
                 reportes:   'Reportes y Métricas',
                 usuarios:   'Gestión de Usuarios (Solo Admin)'

@@ -52,4 +52,62 @@ public class ReporteServiceImpl implements IReporteService {
                 .productosMasMovidos(masMovidos)
                 .build();
     }
+
+    @Override
+    public ClasificacionAbcResponse calcularClasificacionABC() {
+        List<com.proyecto.proyectoSpringBoot.model.entity.Producto> productos = productoRepository.findByActivoTrue();
+
+        java.math.BigDecimal totalValor = java.math.BigDecimal.ZERO;
+        List<ClasificacionAbcResponse.ProductoAbcItem> items = new java.util.ArrayList<>();
+
+        for (com.proyecto.proyectoSpringBoot.model.entity.Producto p : productos) {
+            java.math.BigDecimal precio = p.getPrecio() != null ? p.getPrecio() : java.math.BigDecimal.ZERO;
+            int stock = p.getStock() != null ? p.getStock() : 0;
+            java.math.BigDecimal valor = precio.multiply(java.math.BigDecimal.valueOf(stock));
+            totalValor = totalValor.add(valor);
+
+            items.add(ClasificacionAbcResponse.ProductoAbcItem.builder()
+                    .productoId(p.getId())
+                    .productoNombre(p.getNombre())
+                    .categoriaNombre(p.getCategoria() != null ? p.getCategoria().getNombre() : "General")
+                    .stock(stock)
+                    .precio(precio)
+                    .valorValorizado(valor)
+                    .build());
+        }
+
+        items.sort((a, b) -> b.getValorValorizado().compareTo(a.getValorValorizado()));
+
+        List<ClasificacionAbcResponse.ProductoAbcItem> itemsA = new java.util.ArrayList<>();
+        List<ClasificacionAbcResponse.ProductoAbcItem> itemsB = new java.util.ArrayList<>();
+        List<ClasificacionAbcResponse.ProductoAbcItem> itemsC = new java.util.ArrayList<>();
+
+        double acumulado = 0.0;
+        double granTotal = totalValor.doubleValue() > 0 ? totalValor.doubleValue() : 1.0;
+
+        for (ClasificacionAbcResponse.ProductoAbcItem item : items) {
+            double pct = (item.getValorValorizado().doubleValue() / granTotal) * 100.0;
+            item.setPorcentajeValor(Math.round(pct * 100.0) / 100.0);
+            acumulado += pct;
+
+            if (acumulado <= 80.0 || itemsA.isEmpty()) {
+                item.setClasificacion("A");
+                itemsA.add(item);
+            } else if (acumulado <= 95.0) {
+                item.setClasificacion("B");
+                itemsB.add(item);
+            } else {
+                item.setClasificacion("C");
+                itemsC.add(item);
+            }
+        }
+
+        return ClasificacionAbcResponse.builder()
+                .valorTotalInventario(totalValor)
+                .totalProductos(productos.size())
+                .itemsA(itemsA)
+                .itemsB(itemsB)
+                .itemsC(itemsC)
+                .build();
+    }
 }

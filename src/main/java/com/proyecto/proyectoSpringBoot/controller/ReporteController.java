@@ -31,6 +31,12 @@ public class ReporteController {
         return ResponseEntity.ok(reporteService.generarReporteGeneral());
     }
 
+    @GetMapping("/clasificacion-abc")
+    @Operation(summary = "Clasificación ABC de inventario según valorización (80-15-5)")
+    public ResponseEntity<com.proyecto.proyectoSpringBoot.dto.response.ClasificacionAbcResponse> clasificacionAbc() {
+        return ResponseEntity.ok(reporteService.calcularClasificacionABC());
+    }
+
     @GetMapping("/exportar/excel")
     @Operation(summary = "Exportar resumen general a Excel")
     public ResponseEntity<byte[]> exportarExcel() {

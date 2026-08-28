@@ -12,11 +12,13 @@ const DashboardRenderer = {
             return;
         }
 
+        const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+
         const html = bodegas.slice(0, 3).map((b, idx) => {
             const capTotal = b.capacidad || 2000;
             const pcts = [82, 91, 54, 76, 60];
             const capUsadaPct = pcts[idx % pcts.length];
-            const unidadesUsadas = Math.round((capTotal * capUsadaPct) / 100);
 
             return `
                 <div class="bodega-card">
@@ -37,8 +39,11 @@ const DashboardRenderer = {
                     <div class="bodega-foot" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>ENC: ${b.encargado || 'Operador'}</span>
                         <div style="display: flex; gap: 6px;">
-                            <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.edit(${b.id})">Editar</button>
-                            <button class="btn btn-danger btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.delete(${b.id})">Eliminar</button>
+                            <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.verInventario(${b.id})">📦 Inventario</button>
+                            ${canManage ? `
+                                <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.edit(${b.id})">Editar</button>
+                                <button class="btn btn-danger btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.delete(${b.id})">Eliminar</button>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -65,9 +70,13 @@ const DashboardRenderer = {
             if (m.tipoMovimiento === 'TRANSFERENCIA')  { badgeClass = 'badge-warning'; tipoText = '■ TRANSF.'; }
 
             const horaStr = m.fecha ? new Date(m.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '08:47';
-            const productoNombre = (m.detalles && m.detalles.length > 0) ? m.detalles[0].productoNombre : 'Producto';
-            const cantidad = (m.detalles && m.detalles.length > 0) ? m.detalles[0].cantidad : 10;
-            const bodegaStr = m.bodegaOrigenNombre ? `B-0${m.bodegaOrigenId}` : (m.bodegaDestinoNombre ? `B-0${m.bodegaDestinoId}` : 'B-01');
+            const productoNombre = (m.detalles && m.detalles.length > 0)
+                ? m.detalles.map(d => d.productoNombre).join(', ')
+                : (m.productoNombre || 'Producto');
+            const cantidad = (m.detalles && m.detalles.length > 0)
+                ? m.detalles.map(d => d.cantidad).join(', ')
+                : (m.cantidad || 1);
+            const bodegaStr = m.bodegaOrigen ? m.bodegaOrigen : (m.bodegaDestino ? m.bodegaDestino : 'B-01');
             const usuarioStr = m.usuarioNombre ? m.usuarioNombre.toLowerCase().split(' ')[0] : 'operador';
 
             return `
@@ -108,6 +117,9 @@ const DashboardRenderer = {
             return;
         }
 
+        const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+
         const rows = productos.slice(0, 5).map(p => `
             <div class="alert-row" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
@@ -116,8 +128,10 @@ const DashboardRenderer = {
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="alert-stock" style="margin-right: 4px;">${p.stock} u.</div>
-                    <button class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 11px;" onclick="ProductoModuleController.edit(${p.id})">Editar</button>
-                    <button class="btn btn-danger btn-sm" style="padding: 3px 8px; font-size: 11px;" onclick="ProductoModuleController.delete(${p.id})">Eliminar</button>
+                    ${canManage ? `
+                        <button class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 11px;" onclick="ProductoModuleController.edit(${p.id})">Editar</button>
+                        <button class="btn btn-danger btn-sm" style="padding: 3px 8px; font-size: 11px;" onclick="ProductoModuleController.delete(${p.id})">Eliminar</button>
+                    ` : ''}
                 </div>
             </div>
         `).join('');

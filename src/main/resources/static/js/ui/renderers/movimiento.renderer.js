@@ -20,14 +20,24 @@ const MovimientoRenderer = {
 
             const fecha = m.fecha ? new Date(m.fecha).toLocaleString() : '-';
 
+            const productosStr = (m.detalles && m.detalles.length > 0)
+                ? m.detalles.map(d => `<strong>${d.productoNombre}</strong>`).join('<br>')
+                : (m.productoNombre ? `<strong>${m.productoNombre}</strong>` : '-');
+
+            const cantidadesStr = (m.detalles && m.detalles.length > 0)
+                ? m.detalles.map(d => `<span class="badge badge-secondary" style="font-weight:600;">${d.cantidad} un.</span>`).join('<br>')
+                : (m.cantidad ? `<span class="badge badge-secondary" style="font-weight:600;">${m.cantidad} un.</span>` : '-');
+
             return `
-                <tr>
+                <tr style="cursor:pointer;" onclick="App.openMovimientoDrawer(${m.id})" title="Haga clic para abrir ficha completa en el panel lateral">
                     <td>#${m.id}</td>
                     <td><span class="badge ${badgeClass}">${m.tipoMovimiento}</span></td>
+                    <td>${productosStr}</td>
+                    <td>${cantidadesStr}</td>
                     <td>${fecha}</td>
-                    <td>${m.usuarioNombre || 'Usuario #' + (m.usuarioId || '-')}</td>
-                    <td>${m.bodegaOrigenNombre || '-'}</td>
-                    <td>${m.bodegaDestinoNombre || '-'}</td>
+                    <td>${m.usuarioNombre || '-'}</td>
+                    <td>${m.bodegaOrigen || '-'}</td>
+                    <td>${m.bodegaDestino || '-'}</td>
                     <td>${m.observaciones || '-'}</td>
                 </tr>
             `;
@@ -40,6 +50,8 @@ const MovimientoRenderer = {
                         <tr>
                             <th>ID</th>
                             <th>Tipo</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
                             <th>Fecha</th>
                             <th>Usuario</th>
                             <th>Origen</th>

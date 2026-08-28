@@ -23,14 +23,20 @@ const ProductoModuleController = {
         if (form) form.reset();
         document.getElementById('producto-id').value = '';
         document.getElementById('modal-producto-title').innerText = 'Nuevo Producto';
-        await this.populateCategoriaSelect();
+        await Promise.all([
+            this.populateCategoriaSelect(),
+            this.populateBodegaSelect()
+        ]);
         App.openModal('modal-producto');
     },
 
     async edit(id) {
         try {
             const producto = await ProductoService.getById(id);
-            await this.populateCategoriaSelect(producto.categoriaId);
+            await Promise.all([
+                this.populateCategoriaSelect(producto.categoriaId),
+                this.populateBodegaSelect()
+            ]);
             document.getElementById('producto-id').value = producto.id;
             document.getElementById('producto-nombre').value = producto.nombre;
             if (document.getElementById('producto-categoria-id')) {
@@ -58,6 +64,9 @@ const ProductoModuleController = {
             }
             App.closeModal('modal-producto');
             this.load();
+            if (window.App && typeof window.App.loadDashboardData === 'function') {
+                window.App.loadDashboardData();
+            }
         } catch (err) {
             Toast.error(err.message || 'Error al guardar el producto');
         }
@@ -77,6 +86,9 @@ const ProductoModuleController = {
             await ProductoService.delete(id);
             Toast.success('Producto eliminado correctamente');
             this.load();
+            if (window.App && typeof window.App.loadDashboardData === 'function') {
+                window.App.loadDashboardData();
+            }
         } catch (err) {
             Toast.error(err.message || 'Error al eliminar el producto');
         }
@@ -113,13 +125,35 @@ const ProductoModuleController = {
                 ).join('');
                 catSelect.innerHTML = opts;
 
-                // Si hay un id seleccionado explícito, forzar el valor en el elemento select
                 if (selectedId) {
                     catSelect.value = selectedId;
                 }
             }
         } catch (err) {
             console.error('Error cargando categorías:', err);
+        }
+    },
+
+    async populateBodegaSelect(selectedId = null) {
+        try {
+            const bodegas = await BodegaService.getAll(true).catch(() => []);
+            const bodegaSelect = document.getElementById('producto-bodega-id');
+            if (bodegaSelect) {
+                if (!bodegas || bodegas.length === 0) {
+                    bodegaSelect.innerHTML = '<option value="">-- No hay bodegas activas --</option>';
+                    return;
+                }
+                const opts = bodegas.map(b =>
+                    `<option value="${b.id}" ${b.id === selectedId ? 'selected' : ''}>${b.nombre} (${b.ubicacion})</option>`
+                ).join('');
+                bodegaSelect.innerHTML = opts;
+
+                if (selectedId) {
+                    bodegaSelect.value = selectedId;
+                }
+            }
+        } catch (err) {
+            console.error('Error cargando bodegas para el producto:', err);
         }
     }
 };

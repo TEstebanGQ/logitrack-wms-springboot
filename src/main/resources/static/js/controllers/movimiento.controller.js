@@ -96,6 +96,14 @@ const MovimientoModuleController = {
                 destinoSelect.innerHTML = `<option value="">-- Seleccionar Bodega Destino --</option>` + bodegaOpts;
             }
             if (tipoSelect) {
+                tipoSelect.innerHTML = `
+                    <option value="ENTRADA">ENTRADA</option>
+                    <option value="SALIDA">SALIDA</option>
+                    <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                `;
+            }
+
+            if (tipoSelect) {
                 tipoSelect.onchange = () => this.onTipoChange();
             }
 

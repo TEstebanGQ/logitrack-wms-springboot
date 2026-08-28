@@ -14,6 +14,7 @@ const ExportService = {
       link.download = filename;
       link.click();
       URL.revokeObjectURL(link.href);
+      Toast.success(`Archivo '${filename}' generado con éxito`);
     } catch (e) {
       Toast.error('Error al exportar: ' + e.message);
     }
@@ -32,5 +33,9 @@ const ExportService = {
     const desde = hace30.toISOString().split('T')[0];
     const hasta = new Date().toISOString().split('T')[0];
     return this.descargar(`/api/reportes/movimientos/exportar/pdf?desde=${desde}&hasta=${hasta}`, 'logitrack-movimientos.pdf');
-  }
+  },
+  exportarAuditoriasExcel() { return this.descargar('/api/reportes/auditorias/exportar/excel', 'logitrack-auditoria.xlsx'); },
+  exportarAuditoriasPdf()   { return this.descargar('/api/reportes/auditorias/exportar/pdf', 'logitrack-auditoria.pdf'); }
 };
+
+window.ExportService = ExportService;

@@ -12,6 +12,9 @@ const BodegaRenderer = {
             return;
         }
 
+        const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+
         const rows = bodegas.map(b => `
             <tr>
                 <td>#${b.id}</td>
@@ -21,8 +24,11 @@ const BodegaRenderer = {
                 <td>${b.encargado || '-'}</td>
                 <td><span class="badge ${b.activo !== false ? 'badge-success' : 'badge-danger'}">${b.activo !== false ? 'Activo' : 'Inactivo'}</span></td>
                 <td>
-                    <button class="btn btn-secondary btn-sm" onclick="BodegaModuleController.edit(${b.id})">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="BodegaModuleController.delete(${b.id})">Eliminar</button>
+                    <button class="btn btn-secondary btn-sm" onclick="BodegaModuleController.verInventario(${b.id})">📦 Inventario</button>
+                    ${canManage ? `
+                        <button class="btn btn-secondary btn-sm" onclick="BodegaModuleController.edit(${b.id})">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="BodegaModuleController.delete(${b.id})">Eliminar</button>
+                    ` : ''}
                 </td>
             </tr>
         `).join('');

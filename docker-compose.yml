@@ -39,6 +39,7 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/logitrack_db
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com}
       PORT: 8081
     ports:
       - "8081:8081"

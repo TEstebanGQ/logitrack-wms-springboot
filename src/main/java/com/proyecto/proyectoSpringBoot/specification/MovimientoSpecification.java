@@ -22,6 +22,25 @@ public class MovimientoSpecification {
         };
     }
 
+    public static Specification<Movimiento> porBodega(Long bodegaId) {
+        return (root, query, cb) -> {
+            if (bodegaId == null) return null;
+            return cb.or(
+                    cb.equal(root.get("bodegaOrigen").get("id"), bodegaId),
+                    cb.equal(root.get("bodegaDestino").get("id"), bodegaId)
+            );
+        };
+    }
+
+    public static Specification<Movimiento> porProducto(Long productoId) {
+        return (root, query, cb) -> {
+            if (productoId == null) return null;
+            query.distinct(true);
+            jakarta.persistence.criteria.Join<Object, Object> detalles = root.join("detalles");
+            return cb.equal(detalles.get("producto").get("id"), productoId);
+        };
+    }
+
     public static Specification<Movimiento> porUsuario(Long usuarioId) {
         return (root, query, cb) ->
                 usuarioId == null ? null : cb.equal(root.get("usuario").get("id"), usuarioId);

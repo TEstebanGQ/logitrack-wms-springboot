@@ -1,15 +1,27 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
+import com.proyecto.proyectoSpringBoot.dto.response.AuditoriaResponse;
 import com.proyecto.proyectoSpringBoot.dto.response.ClasificacionAbcResponse;
+import com.proyecto.proyectoSpringBoot.dto.response.MovimientoResponse;
 import com.proyecto.proyectoSpringBoot.dto.response.ReporteStockResponse;
+import com.proyecto.proyectoSpringBoot.mapper.AuditoriaMapper;
+import com.proyecto.proyectoSpringBoot.mapper.MovimientoMapper;
+import com.proyecto.proyectoSpringBoot.model.entity.Auditoria;
+import com.proyecto.proyectoSpringBoot.model.entity.Movimiento;
+import com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento;
+import com.proyecto.proyectoSpringBoot.repository.AuditoriaRepository;
 import com.proyecto.proyectoSpringBoot.repository.InventarioBodegaRepository;
 import com.proyecto.proyectoSpringBoot.repository.MovimientoRepository;
 import com.proyecto.proyectoSpringBoot.repository.ProductoRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IReporteService;
+import com.proyecto.proyectoSpringBoot.specification.AuditoriaSpecification;
+import com.proyecto.proyectoSpringBoot.specification.MovimientoSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +32,10 @@ public class ReporteServiceImpl implements IReporteService {
 
     private final InventarioBodegaRepository inventarioRepository;
     private final MovimientoRepository movimientoRepository;
+    private final AuditoriaRepository auditoriaRepository;
     private final ProductoRepository productoRepository;
+    private final MovimientoMapper movimientoMapper;
+    private final AuditoriaMapper auditoriaMapper;
 
     @Override
     public ReporteStockResponse generarReporteGeneral() {
@@ -110,5 +125,32 @@ public class ReporteServiceImpl implements IReporteService {
                 .itemsB(itemsB)
                 .itemsC(itemsC)
                 .build();
+    }
+
+    @Override
+    public List<MovimientoResponse> consultarMovimientosFiltrados(
+            Long bodegaId, Long productoId, TipoMovimiento tipoMovimiento, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+
+        Specification<Movimiento> spec = Specification.where(MovimientoSpecification.porTipo(tipoMovimiento))
+                .and(MovimientoSpecification.entFechas(fechaInicio, fechaFin))
+                .and(MovimientoSpecification.porBodega(bodegaId))
+                .and(MovimientoSpecification.porProducto(productoId));
+
+        return movimientoRepository.findAll(spec).stream()
+                .map(movimientoMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AuditoriaResponse> consultarAuditoriaFiltrada(
+            Long productoId, LocalDateTime fechaInicio, LocalDateTime fechaFin, String campoModificado) {
+
+        Specification<Auditoria> spec = Specification.where(AuditoriaSpecification.porProducto(productoId))
+                .and(AuditoriaSpecification.entFechas(fechaInicio, fechaFin))
+                .and(AuditoriaSpecification.porCampoModificado(campoModificado));
+
+        return auditoriaRepository.findAll(spec).stream()
+                .map(auditoriaMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

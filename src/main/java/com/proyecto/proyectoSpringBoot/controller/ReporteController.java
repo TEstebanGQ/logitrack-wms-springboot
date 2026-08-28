@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reportes")
@@ -29,6 +30,37 @@ public class ReporteController {
     @Operation(summary = "Reporte general: stock por bodega y productos más movidos")
     public ResponseEntity<ReporteStockResponse> reporteGeneral() {
         return ResponseEntity.ok(reporteService.generarReporteGeneral());
+    }
+
+    @GetMapping("/movimientos")
+    @Operation(summary = "Reporte de movimientos de inventario con filtros avanzados",
+               description = "Devuelve movimientos filtrados por bodega, producto, tipo y rango de fechas")
+    public ResponseEntity<List<com.proyecto.proyectoSpringBoot.dto.response.MovimientoResponse>> reporteMovimientos(
+            @RequestParam(required = false) Long bodega,
+            @RequestParam(required = false) Long producto,
+            @RequestParam(required = false) com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento tipoMovimiento,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+
+        java.time.LocalDateTime inicio = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
+        java.time.LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+
+        return ResponseEntity.ok(reporteService.consultarMovimientosFiltrados(bodega, producto, tipoMovimiento, inicio, fin));
+    }
+
+    @GetMapping("/auditoria")
+    @Operation(summary = "Reporte de auditoría con filtros avanzados",
+               description = "Devuelve registros de auditoría filtrados por producto, rango de fechas y campo modificado")
+    public ResponseEntity<List<com.proyecto.proyectoSpringBoot.dto.response.AuditoriaResponse>> reporteAuditoria(
+            @RequestParam(required = false) Long producto,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+            @RequestParam(required = false) String campoModificado) {
+
+        java.time.LocalDateTime inicio = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
+        java.time.LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+
+        return ResponseEntity.ok(reporteService.consultarAuditoriaFiltrada(producto, inicio, fin, campoModificado));
     }
 
     @GetMapping("/clasificacion-abc")

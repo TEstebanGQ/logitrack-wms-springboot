@@ -5,16 +5,11 @@ FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /app
 
-# Copiar configuración de dependencias primero para aprovechar la caché de Docker
+# Copiar el descriptor del proyecto y el código fuente
 COPY pom.xml .
-
-# Descargar dependencias en caché
-RUN mvn dependency:go-offline -B
-
-# Copiar el código fuente
 COPY src ./src
 
-# Compilar y empaquetar el JAR omitiendo tests para agilizar el build
+# Compilar y empaquetar el JAR omitiendo tests
 RUN mvn clean package -DskipTests
 
 # ==========================================

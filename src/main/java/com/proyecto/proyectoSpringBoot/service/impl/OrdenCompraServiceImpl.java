@@ -46,9 +46,15 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
     public OrdenCompraResponse crearOrden(CrearOrdenCompraRequest request, String emailUsuario) {
         Proveedor proveedor = proveedorRepository.findById(request.getProveedorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado: " + request.getProveedorId()));
+        if (!proveedor.isActivo()) {
+            throw new IllegalStateException("No se pueden emitir órdenes a un proveedor inactivo: " + proveedor.getNombre());
+        }
 
         Bodega bodegaDestino = bodegaRepository.findById(request.getBodegaDestinoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bodega no encontrada: " + request.getBodegaDestinoId()));
+        if (!bodegaDestino.isActivo()) {
+            throw new IllegalStateException("No se pueden recibir órdenes en una bodega inactiva: " + bodegaDestino.getNombre());
+        }
 
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + emailUsuario));

@@ -40,9 +40,19 @@ public class AjusteInventarioServiceImpl implements IAjusteInventarioService {
     public AjusteResponse registrarAjuste(CrearAjusteRequest request, String emailUsuario) {
         Bodega bodega = bodegaRepository.findById(request.getBodegaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bodega no encontrada: " + request.getBodegaId()));
+        if (!bodega.isActivo()) {
+            throw new IllegalStateException("No se pueden registrar ajustes en una bodega inactiva: " + bodega.getNombre());
+        }
 
         Producto producto = productoRepository.findById(request.getProductoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado: " + request.getProductoId()));
+        if (!producto.isActivo()) {
+            throw new IllegalStateException("No se pueden registrar ajustes en un producto inactivo: " + producto.getNombre());
+        }
+
+        if (request.getCantidadNueva() < 0) {
+            throw new IllegalArgumentException("La cantidad nueva no puede ser negativa");
+        }
 
         Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + emailUsuario));

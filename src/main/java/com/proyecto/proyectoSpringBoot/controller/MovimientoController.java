@@ -29,6 +29,7 @@ public class MovimientoController {
     private final IMovimientoService movimientoService;
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'JEFE_COMPRAS', 'EMPLEADO')")
     @Operation(summary = "Registrar un movimiento de inventario")
     public ResponseEntity<MovimientoResponse> registrar(
             @Valid @RequestBody MovimientoRequest request,

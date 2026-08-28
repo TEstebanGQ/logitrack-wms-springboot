@@ -1,5 +1,5 @@
 /* ==========================================
-   LogiTrack S.A. - UI Router SPA
+   LogiTrack S.A. - UI Router SPA (Modular Template Loader)
    ========================================== */
 
 const Router = {
@@ -30,7 +30,7 @@ const Router = {
         window.location.hash = `#/${view}`;
     },
 
-    showView(viewId) {
+    async showView(viewId) {
         this.currentView = viewId;
         const appLayout  = document.getElementById('app-layout');
         const authLayout = document.getElementById('auth-layout');
@@ -41,13 +41,56 @@ const Router = {
             return;
         }
 
+        const user = AuthService.getCurrentUser();
+        const role = user ? user.rol : 'EMPLEADO';
+
+        if (viewId === 'usuarios') {
+            if (role !== 'ADMIN') {
+                Toast.error('Acceso denegado: Se requiere rol de Administrador');
+                this.navigate('dashboard');
+                return;
+            }
+        }
+
+        if (viewId === 'auditorias' || viewId === 'reportes') {
+            if (role !== 'ADMIN' && role !== 'SUPERVISOR' && role !== 'GERENTE_LOGISTICA') {
+                Toast.error('Acceso denegado: Se requiere rol de Administrador, Supervisor o Gerente');
+                this.navigate('dashboard');
+                return;
+            }
+        }
+
         // Mostrar dashboard layout
         if (appLayout)  appLayout.style.display  = 'flex';
         if (authLayout) authLayout.style.display = 'none';
 
+        // Cargar vista modular desde /views/${viewId}.html si no está en el DOM
+        const contentArea = document.querySelector('.content-area');
+        let targetView = document.getElementById(`view-${viewId}`);
+        if (!targetView && contentArea) {
+            try {
+                const res = await fetch(`views/${viewId}.html`);
+                if (res.ok) {
+                    const htmlText = await res.text();
+                    const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+                    const extractedSection = doc.querySelector('.view-section');
+                    if (extractedSection) {
+                        targetView = extractedSection;
+                        contentArea.appendChild(targetView);
+                    }
+                }
+            } catch (e) {
+                console.error(`Error al cargar la plantilla views/${viewId}.html:`, e);
+            }
+        }
+
+        // Sincronizar visibilidad de menú del sidebar y botones según rol
+        if (window.App && typeof window.App.updateUserInfo === 'function') {
+            window.App.updateUserInfo();
+        }
+
         // Ocultar todas las vistas y mostrar la activa
         document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
-        const targetView = document.getElementById(`view-${viewId}`);
         if (targetView) targetView.style.display = 'block';
 
         // Actualizar estado activo en navegación
@@ -64,7 +107,8 @@ const Router = {
                 productos:  'Gestión de Productos',
                 movimientos:'Movimientos de Inventario',
                 auditorias: 'Registros de Auditoría',
-                reportes:   'Reportes y Métricas'
+                reportes:   'Reportes y Métricas',
+                usuarios:   'Gestión de Usuarios (Solo Admin)'
             };
             pageTitle.innerText = titles[viewId] || 'LogiTrack S.A.';
         }

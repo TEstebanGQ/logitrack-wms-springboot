@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     created_at TIMESTAMP                       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP                       NULL
 );
+ALTER TABLE usuarios DROP CONSTRAINT IF EXISTS usuarios_rol_check;
+
 
 -- ---- 2. BODEGAS ----
 CREATE TABLE IF NOT EXISTS bodegas (

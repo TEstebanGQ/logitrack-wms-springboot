@@ -1,7 +1,9 @@
 package com.proyecto.proyectoSpringBoot.controller;
 
 import com.proyecto.proyectoSpringBoot.dto.request.CrearProductoRequest;
+import com.proyecto.proyectoSpringBoot.dto.response.InventarioBodegaResponse;
 import com.proyecto.proyectoSpringBoot.dto.response.ProductoResponse;
+import com.proyecto.proyectoSpringBoot.service.interfaces.IBodegaService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,6 +25,7 @@ import java.util.List;
 public class ProductoController {
 
     private final IProductoService productoService;
+    private final IBodegaService bodegaService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -41,6 +44,12 @@ public class ProductoController {
     @Operation(summary = "Obtener producto por ID")
     public ResponseEntity<ProductoResponse> obtener(@PathVariable Long id) {
         return ResponseEntity.ok(productoService.obtenerPorId(id));
+    }
+
+    @GetMapping("/{id}/inventario")
+    @Operation(summary = "Obtener desglose de inventario por bodega de un producto")
+    public ResponseEntity<List<InventarioBodegaResponse>> inventarioPorProducto(@PathVariable Long id) {
+        return ResponseEntity.ok(bodegaService.obtenerInventarioPorProducto(id));
     }
 
     @GetMapping("/stock-bajo")

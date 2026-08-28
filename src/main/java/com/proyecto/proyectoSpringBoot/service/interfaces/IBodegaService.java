@@ -12,6 +12,7 @@ public interface IBodegaService {
     List<BodegaResponse> listarTodas();
     List<BodegaResponse> listarActivas();
     List<InventarioBodegaResponse> obtenerInventarioPorBodega(Long bodegaId);
+    List<InventarioBodegaResponse> obtenerInventarioPorProducto(Long productoId);
     BodegaResponse actualizar(Long id, CrearBodegaRequest request);
     void eliminar(Long id);
 }

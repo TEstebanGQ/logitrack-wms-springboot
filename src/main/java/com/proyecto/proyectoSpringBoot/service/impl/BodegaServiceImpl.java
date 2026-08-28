@@ -81,6 +81,20 @@ public class BodegaServiceImpl implements IBodegaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<InventarioBodegaResponse> obtenerInventarioPorProducto(Long productoId) {
+        return inventarioRepository.findByProductoId(productoId).stream()
+                .map(inv -> InventarioBodegaResponse.builder()
+                        .bodegaId(inv.getBodega().getId())
+                        .bodegaNombre(inv.getBodega().getNombre())
+                        .productoId(inv.getProducto().getId())
+                        .productoNombre(inv.getProducto().getNombre())
+                        .stockActual(inv.getStockActual())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public BodegaResponse actualizar(Long id, CrearBodegaRequest request) {
         Bodega bodega = findById(id);
         String valoresAnt = toJson(bodegaMapper.toResponse(bodega));

@@ -69,41 +69,41 @@ public class ProductoServiceImpl implements IProductoService {
         publishAudit("Producto", guardado.getId(), TipoOperacion.INSERT, null, toJson(resp),
                 "Creó producto '" + guardado.getNombre() + "' ($" + guardado.getPrecio() + ", Stock Inicial: " + guardado.getStock() + " u.)");
 
-        return resp;
+        return mapToResponseWithBodega(guardado);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ProductoResponse obtenerPorId(Long id) {
-        return productoMapper.toResponse(findById(id));
+        return mapToResponseWithBodega(findById(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarTodos() {
         return productoRepository.findAll().stream()
-                .map(productoMapper::toResponse).collect(Collectors.toList());
+                .map(this::mapToResponseWithBodega).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarActivos() {
         return productoRepository.findByActivoTrue().stream()
-                .map(productoMapper::toResponse).collect(Collectors.toList());
+                .map(this::mapToResponseWithBodega).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarConStockBajo(int umbral) {
         return productoRepository.findByStockLessThan(umbral).stream()
-                .map(productoMapper::toResponse).collect(Collectors.toList());
+                .map(this::mapToResponseWithBodega).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorCategoria(String categoria) {
         return productoRepository.findByCategoriaNombreIgnoreCase(categoria).stream()
-                .map(productoMapper::toResponse).collect(Collectors.toList());
+                .map(this::mapToResponseWithBodega).collect(Collectors.toList());
     }
 
     @Override
@@ -156,7 +156,7 @@ public class ProductoServiceImpl implements IProductoService {
         publishAudit("Producto", actualizado.getId(), TipoOperacion.UPDATE, valoresAnt, toJson(resp),
                 "Actualizó producto '" + actualizado.getNombre() + "' ($" + actualizado.getPrecio() + ", Stock: " + actualizado.getStock() + " u., Ajuste: " + (delta >= 0 ? "+" : "") + delta + " u.)");
 
-        return resp;
+        return mapToResponseWithBodega(actualizado);
     }
 
     @Override
@@ -173,6 +173,20 @@ public class ProductoServiceImpl implements IProductoService {
     private Producto findById(Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
+    }
+
+    private ProductoResponse mapToResponseWithBodega(Producto p) {
+        ProductoResponse resp = productoMapper.toResponse(p);
+        List<InventarioBodega> invs = inventarioRepository.findByProductoId(p.getId());
+        if (invs != null && !invs.isEmpty()) {
+            String bodegaStr = invs.stream()
+                    .map(inv -> inv.getBodega().getNombre() + " (" + inv.getStockActual() + " u.)")
+                    .collect(Collectors.joining(", "));
+            resp.setBodegaNombre(bodegaStr);
+        } else {
+            resp.setBodegaNombre("Sin asignar");
+        }
+        return resp;
     }
 
     private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc) {

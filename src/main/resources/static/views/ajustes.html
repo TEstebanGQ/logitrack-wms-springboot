@@ -1,0 +1,56 @@
+<div class="view-header">
+  <div class="view-title">
+    <h2>Ajustes de Inventario y Mermas</h2>
+    <p>Registro y control de bajas por merma, averías, mermas por vencimiento y regularización de conteos físicos.</p>
+  </div>
+  <div class="view-actions">
+    <button class="btn btn-primary" id="btn-nuevo-ajuste">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Registrar Ajuste / Merma
+    </button>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>Filtrar por Bodega:</label>
+    <select id="filtro-ajuste-bodega" class="form-control">
+      <option value="">Todas las bodegas</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Tipo de Ajuste:</label>
+    <select id="filtro-ajuste-tipo" class="form-control">
+      <option value="">Todos los tipos</option>
+      <option value="MERMA">Merma</option>
+      <option value="DANO">Daño / Avería</option>
+      <option value="VENCIMIENTO">Vencimiento</option>
+      <option value="CONTEO_FISICO">Conteo Físico / Descuadre</option>
+      <option value="OTRO">Otro</option>
+    </select>
+  </div>
+</div>
+
+<div class="table-container card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Bodega</th>
+        <th>Producto</th>
+        <th>Tipo</th>
+        <th>Stock Ant.</th>
+        <th>Stock Nuevo</th>
+        <th>Diferencia</th>
+        <th>Justificación</th>
+        <th>Usuario</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-ajustes-body">
+      <tr>
+        <td colspan="10" class="text-center py-4">Cargando registros de ajustes...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

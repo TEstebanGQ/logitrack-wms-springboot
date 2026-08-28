@@ -567,6 +567,157 @@ const App = {
                 await UsuarioModuleController.save(data);
             });
         }
+
+        // Formulario Ajuste Inventario Modal
+        const ajusteForm = document.getElementById('form-ajuste');
+        if (ajusteForm) {
+            ajusteForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const data = {
+                        bodegaId: parseInt(document.getElementById('ajuste-bodega').value),
+                        productoId: parseInt(document.getElementById('ajuste-producto').value),
+                        tipoAjuste: document.getElementById('ajuste-tipo').value,
+                        cantidadNueva: parseInt(document.getElementById('ajuste-cantidad-nueva').value),
+                        justificacion: document.getElementById('ajuste-justificacion').value
+                    };
+                    const res = await fetch('/api/ajustes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AuthService.getToken()}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.mensaje || 'Error al registrar ajuste');
+                    }
+                    Toast.success('Ajuste de inventario registrado exitosamente');
+                    App.closeModal('modal-ajuste');
+                    if (typeof ajusteController !== 'undefined') ajusteController.init();
+                } catch (err) {
+                    Toast.error(err.message || 'Error al registrar ajuste');
+                }
+            });
+        }
+
+        // Formulario Orden de Compra Modal
+        const ocForm = document.getElementById('form-orden-compra');
+        if (ocForm) {
+            ocForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const data = {
+                        proveedorId: parseInt(document.getElementById('oc-proveedor').value),
+                        bodegaDestinoId: parseInt(document.getElementById('oc-bodega').value),
+                        fechaEntregaEsperada: document.getElementById('oc-fecha-entrega').value || null,
+                        observaciones: document.getElementById('oc-observaciones').value,
+                        detalles: [
+                            {
+                                productoId: parseInt(document.getElementById('oc-producto').value),
+                                cantidad: parseInt(document.getElementById('oc-cantidad').value),
+                                precioUnitario: parseFloat(document.getElementById('oc-precio').value)
+                            }
+                        ]
+                    };
+                    const res = await fetch('/api/ordenes-compra', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AuthService.getToken()}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.mensaje || 'Error al generar orden de compra');
+                    }
+                    Toast.success('Orden de compra generada exitosamente');
+                    App.closeModal('modal-orden-compra');
+                    if (typeof ordenCompraController !== 'undefined') ordenCompraController.init();
+                } catch (err) {
+                    Toast.error(err.message || 'Error al generar orden de compra');
+                }
+            });
+        }
+
+        // Formulario Lote Modal
+        const loteForm = document.getElementById('form-lote');
+        if (loteForm) {
+            loteForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const data = {
+                        codigoLote: document.getElementById('lote-codigo').value,
+                        productoId: parseInt(document.getElementById('lote-producto').value),
+                        bodegaId: parseInt(document.getElementById('lote-bodega').value),
+                        stockInicial: parseInt(document.getElementById('lote-stock').value),
+                        fechaFabricacion: document.getElementById('lote-fecha-fab').value || null,
+                        fechaVencimiento: document.getElementById('lote-fecha-venc').value || null
+                    };
+                    const res = await fetch('/api/lotes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AuthService.getToken()}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        throw new Error(err.mensaje || 'Error al registrar lote');
+                    }
+                    Toast.success('Lote registrado exitosamente');
+                    App.closeModal('modal-lote');
+                    if (typeof loteController !== 'undefined') loteController.init();
+                } catch (err) {
+                    Toast.error(err.message || 'Error al registrar lote');
+                }
+            });
+        }
+
+        // Click listeners para abrir modales dinámicos
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('#btn-nuevo-ajuste')) {
+                const [bodegas, productos] = await Promise.all([
+                    BodegaService.getAll().catch(() => []),
+                    ProductoService.getAll().catch(() => [])
+                ]);
+                const selB = document.getElementById('ajuste-bodega');
+                const selP = document.getElementById('ajuste-producto');
+                if (selB) selB.innerHTML = bodegas.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
+                if (selP) selP.innerHTML = productos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+                App.openModal('modal-ajuste');
+            }
+
+            if (e.target.closest('#btn-nueva-orden-compra')) {
+                const [proveedores, bodegas, productos] = await Promise.all([
+                    ProveedorService.getAll().catch(() => []),
+                    BodegaService.getAll().catch(() => []),
+                    ProductoService.getAll().catch(() => [])
+                ]);
+                const selPr = document.getElementById('oc-proveedor');
+                const selB = document.getElementById('oc-bodega');
+                const selP = document.getElementById('oc-producto');
+                if (selPr) selPr.innerHTML = proveedores.map(pr => `<option value="${pr.id}">${pr.nombre}</option>`).join('');
+                if (selB) selB.innerHTML = bodegas.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
+                if (selP) selP.innerHTML = productos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+                App.openModal('modal-orden-compra');
+            }
+
+            if (e.target.closest('#btn-nuevo-lote')) {
+                const [bodegas, productos] = await Promise.all([
+                    BodegaService.getAll().catch(() => []),
+                    ProductoService.getAll().catch(() => [])
+                ]);
+                const selB = document.getElementById('lote-bodega');
+                const selP = document.getElementById('lote-producto');
+                if (selB) selB.innerHTML = bodegas.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
+                if (selP) selP.innerHTML = productos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+                App.openModal('modal-lote');
+            }
+        });
     },
 
     toggleAuthMode(mode) {
@@ -666,6 +817,12 @@ const App = {
                 await ClienteModuleController.load();
             } else if (view === 'proveedores') {
                 await ProveedorModuleController.load();
+            } else if (view === 'ajustes') {
+                if (typeof ajusteController !== 'undefined') await ajusteController.init();
+            } else if (view === 'ordenes-compra') {
+                if (typeof ordenCompraController !== 'undefined') await ordenCompraController.init();
+            } else if (view === 'lotes') {
+                if (typeof loteController !== 'undefined') await loteController.init();
             } else if (view === 'auditorias') {
                 await AuditoriaModuleController.load();
             } else if (view === 'usuarios') {

@@ -243,6 +243,21 @@
                     <span class="nav-code">06</span>Proveedores
                 </a>
             </li>
+            <li>
+                <a href="#/ordenes-compra" class="nav-link" data-view="ordenes-compra">
+                    <span class="nav-code">07</span>Órdenes Compra
+                </a>
+            </li>
+            <li>
+                <a href="#/ajustes" class="nav-link" data-view="ajustes">
+                    <span class="nav-code">08</span>Ajustes / Mermas
+                </a>
+            </li>
+            <li>
+                <a href="#/lotes" class="nav-link" data-view="lotes">
+                    <span class="nav-code">09</span>Lotes &amp; FEFO
+                </a>
+            </li>
         </ul>
 
         <span class="nav-group-label nav-control-only" style="display:none;">Control</span>
@@ -716,6 +731,142 @@
     </div>
 </div>
 
+<!-- Modal Ajuste de Inventario / Merma -->
+<div id="modal-ajuste" class="modal-overlay">
+    <div class="modal-content" style="max-width: 540px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Registrar Ajuste / Merma de Inventario</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-ajuste')">&times;</button>
+        </div>
+        <form id="form-ajuste">
+            <div class="form-group">
+                <label class="form-label" for="ajuste-bodega">Bodega *</label>
+                <select id="ajuste-bodega" class="form-input" required></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="ajuste-producto">Producto *</label>
+                <select id="ajuste-producto" class="form-input" required></select>
+            </div>
+            <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" for="ajuste-tipo">Tipo de Ajuste *</label>
+                    <select id="ajuste-tipo" class="form-input" required>
+                        <option value="MERMA">Merma</option>
+                        <option value="DANO">Daño / Avería</option>
+                        <option value="VENCIMIENTO">Vencimiento</option>
+                        <option value="CONTEO_FISICO">Conteo Físico</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="ajuste-cantidad-nueva">Nuevo Stock Real *</label>
+                    <input type="number" id="ajuste-cantidad-nueva" class="form-input" min="0" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="ajuste-justificacion">Motivo / Justificación *</label>
+                <textarea id="ajuste-justificacion" class="form-input" rows="2" maxlength="300" placeholder="Describe la causa del ajuste o descuadre..." required></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-ajuste')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Registrar Ajuste</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Orden de Compra -->
+<div id="modal-orden-compra" class="modal-overlay">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Nueva Orden de Compra a Proveedor</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-orden-compra')">&times;</button>
+        </div>
+        <form id="form-orden-compra">
+            <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" for="oc-proveedor">Proveedor *</label>
+                    <select id="oc-proveedor" class="form-input" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="oc-bodega">Bodega de Destino *</label>
+                    <select id="oc-bodega" class="form-input" required></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="oc-fecha-entrega">Fecha de Entrega Esperada</label>
+                <input type="date" id="oc-fecha-entrega" class="form-input">
+            </div>
+            <div class="form-row" style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" for="oc-producto">Producto Solicitado *</label>
+                    <select id="oc-producto" class="form-input" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="oc-cantidad">Cantidad *</label>
+                    <input type="number" id="oc-cantidad" class="form-input" min="1" value="10" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="oc-precio">Precio Unit. *</label>
+                    <input type="number" id="oc-precio" class="form-input" step="0.01" min="0.01" value="50000" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="oc-observaciones">Observaciones / Términos</label>
+                <textarea id="oc-observaciones" class="form-input" rows="2" placeholder="Instrucciones de entrega, factura, etc."></textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-orden-compra')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Generar Orden</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Lote -->
+<div id="modal-lote" class="modal-overlay">
+    <div class="modal-content" style="max-width: 540px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Registrar Lote de Producción</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-lote')">&times;</button>
+        </div>
+        <form id="form-lote">
+            <div class="form-group">
+                <label class="form-label" for="lote-codigo">Código de Lote *</label>
+                <input type="text" id="lote-codigo" class="form-input" placeholder="LOTE-2026-001" required>
+            </div>
+            <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" for="lote-producto">Producto *</label>
+                    <select id="lote-producto" class="form-input" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="lote-bodega">Bodega *</label>
+                    <select id="lote-bodega" class="form-input" required></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="lote-stock">Cantidad Inicial (Unidades) *</label>
+                <input type="number" id="lote-stock" class="form-input" min="1" value="50" required>
+            </div>
+            <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" for="lote-fecha-fab">Fecha Fabricación</label>
+                    <input type="date" id="lote-fecha-fab" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="lote-fecha-venc">Fecha Vencimiento</label>
+                    <input type="date" id="lote-fecha-venc" class="form-input">
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-lote')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Lote</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Modal Confirmación Personalizado (Dark Glassmorphism) -->
 <div id="modal-confirm" class="modal-overlay">
     <div class="modal-content" style="max-width: 420px; text-align: center; border: 1px solid rgba(239, 68, 68, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
@@ -746,6 +897,9 @@
 <script src="js/services/producto.service.js"></script>
 <script src="js/services/cliente.service.js"></script>
 <script src="js/services/proveedor.service.js"></script>
+<script src="js/services/ajuste.service.js"></script>
+<script src="js/services/orden-compra.service.js"></script>
+<script src="js/services/lote.service.js"></script>
 <script src="js/services/movimiento.service.js"></script>
 <script src="js/services/auditoria.service.js"></script>
 <script src="js/services/reporte.service.js"></script>
@@ -759,6 +913,9 @@
 <script src="js/ui/renderers/producto.renderer.js"></script>
 <script src="js/ui/renderers/cliente.renderer.js"></script>
 <script src="js/ui/renderers/proveedor.renderer.js"></script>
+<script src="js/ui/renderers/ajuste.renderer.js"></script>
+<script src="js/ui/renderers/orden-compra.renderer.js"></script>
+<script src="js/ui/renderers/lote.renderer.js"></script>
 <script src="js/ui/renderers/movimiento.renderer.js"></script>
 <script src="js/ui/renderers/auditoria.renderer.js"></script>
 <script src="js/ui/renderers/reporte.renderer.js"></script>
@@ -768,6 +925,9 @@
 <script src="js/controllers/producto.controller.js"></script>
 <script src="js/controllers/cliente.controller.js"></script>
 <script src="js/controllers/proveedor.controller.js"></script>
+<script src="js/controllers/ajuste.controller.js"></script>
+<script src="js/controllers/orden-compra.controller.js"></script>
+<script src="js/controllers/lote.controller.js"></script>
 <script src="js/controllers/movimiento.controller.js"></script>
 <script src="js/controllers/auditoria.controller.js"></script>
 <script src="js/controllers/reporte.controller.js"></script>

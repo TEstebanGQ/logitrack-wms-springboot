@@ -113,6 +113,9 @@ const Router = {
                 movimientos:'Movimientos de Inventario',
                 clientes:   'Directorio de Clientes',
                 proveedores:'Directorio de Proveedores',
+                'ordenes-compra': 'Órdenes de Compra a Proveedores',
+                ajustes:    'Ajustes y Control de Mermas',
+                lotes:      'Lotes y Vencimientos (FIFO/FEFO)',
                 auditorias: 'Registros de Auditoría',
                 reportes:   'Reportes y Métricas',
                 usuarios:   'Gestión de Usuarios (Solo Admin)'

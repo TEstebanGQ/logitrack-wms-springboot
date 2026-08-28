@@ -1,0 +1,48 @@
+<div class="view-header">
+  <div class="view-title">
+    <h2>Lotes y Vencimientos (FIFO / FEFO)</h2>
+    <p>Trazabilidad por número de lote, fechas de fabricación, expiración y alertas de rotación de inventario.</p>
+  </div>
+  <div class="view-actions">
+    <button class="btn btn-primary" id="btn-nuevo-lote">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Registrar Lote
+    </button>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>Filtrar por Bodega:</label>
+    <select id="filtro-lote-bodega" class="form-control">
+      <option value="">Todas las bodegas</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <button class="btn btn-outline" id="btn-ver-proximos-vencer">
+      ⚠️ Ver Próximos a Vencer (30 días)
+    </button>
+  </div>
+</div>
+
+<div class="table-container card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Código Lote</th>
+        <th>Producto</th>
+        <th>Bodega</th>
+        <th>Stock Actual</th>
+        <th>Fecha Fab.</th>
+        <th>Fecha Venc.</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-lotes-body">
+      <tr>
+        <td colspan="8" class="text-center py-4">Cargando lotes...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

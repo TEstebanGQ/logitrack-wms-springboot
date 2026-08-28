@@ -1,0 +1,47 @@
+<div class="view-header">
+  <div class="view-title">
+    <h2>Órdenes de Compra a Proveedores</h2>
+    <p>Gestión de pedidos de reabastecimiento, aprobación formal y recepción directa en almacenes.</p>
+  </div>
+  <div class="view-actions">
+    <button class="btn btn-primary" id="btn-nueva-orden-compra">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Nueva Orden de Compra
+    </button>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>Filtrar por Estado:</label>
+    <select id="filtro-orden-estado" class="form-control">
+      <option value="">Todos los estados</option>
+      <option value="PENDIENTE">Pendientes</option>
+      <option value="APROBADA">Aprobadas</option>
+      <option value="RECIBIDA">Recibidas en Bodega</option>
+      <option value="CANCELADA">Canceladas</option>
+    </select>
+  </div>
+</div>
+
+<div class="table-container card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Fecha Solicitud</th>
+        <th>Proveedor</th>
+        <th>Bodega Destino</th>
+        <th>Total Estimado</th>
+        <th>Estado</th>
+        <th>Entrega Esperada</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-ordenes-body">
+      <tr>
+        <td colspan="8" class="text-center py-4">Cargando órdenes de compra...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

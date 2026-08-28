@@ -98,6 +98,11 @@ const Router = {
             link.classList.toggle('active', link.getAttribute('data-view') === viewId);
         });
 
+        // Cerrar menú hamburguesa móvil si está abierto
+        if (window.App && typeof window.App.closeSidebar === 'function') {
+            window.App.closeSidebar();
+        }
+
         // Actualizar título topbar
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) {

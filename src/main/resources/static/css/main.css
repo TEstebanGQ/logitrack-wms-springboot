@@ -74,7 +74,7 @@
     --transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ===== Reset ===== */
+/* ===== Reset & Fluid Protection ===== */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -83,6 +83,9 @@
 
 html {
     scroll-behavior: smooth;
+    font-size: 100%;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -91,6 +94,8 @@ body {
     color: var(--text);
     line-height: 1.5;
     min-height: 100vh;
+    width: 100%;
+    max-width: 100vw;
     overflow-x: hidden;
     /* Grid background */
     background-image:
@@ -99,16 +104,14 @@ body {
     background-size: 42px 42px;
     background-attachment: fixed;
     position: relative;
+    -webkit-text-size-adjust: 100%;
 }
 
-/* Radial glow overlay */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,106,43,0.07), transparent 60%);
-    pointer-events: none;
-    z-index: 0;
+/* Responsive Media Protection */
+img, svg, video, canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 a {
@@ -126,10 +129,12 @@ button {
     cursor: pointer;
     border: none;
     outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 input, select, textarea {
     font-family: inherit;
+    font-size: 16px; /* Prevents auto-zoom on iOS devices */
 }
 
 :focus-visible {

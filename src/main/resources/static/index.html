@@ -12,9 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Hojas de estilo modulares -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/main.css?v=2.0">
+    <link rel="stylesheet" href="css/components.css?v=2.0">
+    <link rel="stylesheet" href="css/dashboard.css?v=2.0">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -282,21 +282,31 @@
         </div>
     </aside>
 
+    <!-- Sidebar Backdrop Mobile Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="App.closeSidebar()"></div>
+
     <!-- === MAIN WRAPPER === -->
     <div class="main-wrapper">
 
         <!-- Topbar -->
         <header class="topbar">
-            <h1 id="page-title" class="page-title">Panel de Bodegas</h1>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button id="btn-hamburger" class="btn-hamburger" onclick="App.toggleSidebar()" aria-label="Abrir menú de navegación">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                <h1 id="page-title" class="page-title">Panel de Bodegas</h1>
+            </div>
             <div class="topbar-meta">
                 <button class="btn-cmd-palette" onclick="App.openCommandPalette()" title="Buscar en todo el sistema (Ctrl + K)">
                     <span class="cmd-icon">🔍</span>
                     <span class="cmd-text">Buscar...</span>
-                    <kbd>Ctrl K</kbd>
+                    <kbd class="cmd-kbd">Ctrl K</kbd>
                 </button>
                 <span id="clock">--:--:--</span>
-                <span>·</span>
-                <span id="topbar-date">--</span>
+                <span class="topbar-date-sep">·</span>
+                <span id="topbar-date" class="topbar-date">--</span>
             </div>
         </header>
 

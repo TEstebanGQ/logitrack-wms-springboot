@@ -12,6 +12,26 @@ const App = {
         this.updateUserInfo();
     },
 
+    // Mobile Hamburger Sidebar Toggle
+    toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const btn = document.getElementById('btn-hamburger');
+        if (!sidebar) return;
+        const isActive = sidebar.classList.toggle('active');
+        if (overlay) overlay.classList.toggle('active', isActive);
+        if (btn) btn.classList.toggle('active', isActive);
+    },
+
+    closeSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const btn = document.getElementById('btn-hamburger');
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        if (btn) btn.classList.remove('active');
+    },
+
     // Command Palette Logic
     initCommandPalette() {
         document.addEventListener('keydown', (e) => {
@@ -241,32 +261,56 @@ const App = {
 
     async openProductoDrawer(productoId) {
         try {
-            const p = await ProductoService.getById(productoId);
+            const [p, inventario] = await Promise.all([
+                ProductoService.getById(productoId),
+                ProductoService.getInventario(productoId).catch(() => [])
+            ]);
             if (!p) return;
 
             const lowStock = p.stock < (p.stockMinimo || 10);
             const stockBadge = lowStock ? 'badge-danger' : 'badge-success';
 
+            const catName = p.categoriaNombre || p.categoria || 'General';
+            let catBadgeClass = 'badge-info';
+            const normCat = catName.toLowerCase();
+            if (normCat.includes('mobil') || normCat.includes('muebl')) catBadgeClass = 'badge-cat-mobiliario';
+            else if (normCat.includes('electr') || normCat.includes('tech')) catBadgeClass = 'badge-cat-electronica';
+            else if (normCat.includes('perifer') || normCat.includes('accesor')) catBadgeClass = 'badge-cat-perifericos';
+            else if (normCat.includes('papel')) catBadgeClass = 'badge-cat-papeleria';
+
+            let bodegasHtml = '';
+            if (inventario && inventario.length > 0) {
+                bodegasHtml = inventario.map(inv => `
+                    <span class="badge badge-bodega">
+                        🏢 ${inv.bodegaNombre}: <strong>${inv.stockActual} u.</strong>
+                    </span>
+                `).join('');
+            } else if (p.bodegaNombre && p.bodegaNombre !== 'Sin asignar') {
+                bodegasHtml = `<span class="badge badge-bodega">🏢 ${p.bodegaNombre}</span>`;
+            } else {
+                bodegasHtml = `<span class="badge badge-warning">⚠️ Sin asignación de bodega</span>`;
+            }
+
             const htmlContent = `
-                <div class="drawer-card" style="text-align:center; padding: 20px 16px;">
-                    <div style="font-size:2.5rem; margin-bottom:8px;">📦</div>
-                    <h4 style="font-family:var(--font-display); font-size:1.4rem; color:var(--text); margin:0 0 6px;">${p.nombre}</h4>
-                    <span class="badge badge-info">${p.categoriaNombre || p.categoria || 'General'}</span>
+                <div class="drawer-card" style="text-align:center; padding: 22px 16px; background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);">
+                    <div style="font-size:2.8rem; margin-bottom:10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));">📦</div>
+                    <h4 style="font-family:var(--font-display); font-size:1.5rem; color:var(--text); margin:0 0 8px; letter-spacing:0.02em;">${p.nombre}</h4>
+                    <span class="badge ${catBadgeClass}">${catName}</span>
                 </div>
 
                 <div class="drawer-card">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                         <div class="drawer-field">
-                            <div class="drawer-field-label">Stock Disponible</div>
+                            <div class="drawer-field-label">Stock Total</div>
                             <div class="drawer-field-value">
-                                <span class="badge ${stockBadge}" style="font-size:13px; font-weight:600;">
-                                    ${p.stock} unidades ${lowStock ? '⚠️ Alerta' : ''}
+                                <span class="badge ${stockBadge}" style="font-size:12.5px; font-weight:700;">
+                                    ${p.stock} UNIDADES ${lowStock ? '⚠️ BAJO' : ''}
                                 </span>
                             </div>
                         </div>
                         <div class="drawer-field">
                             <div class="drawer-field-label">Precio Unitario</div>
-                            <div class="drawer-field-value" style="color:var(--accent); font-family:var(--font-mono); font-size:15px; font-weight:700;">
+                            <div class="drawer-field-value" style="color:var(--accent); font-family:var(--font-mono); font-size:16px; font-weight:700;">
                                 $${Number(p.precio).toLocaleString('es-CO')}
                             </div>
                         </div>
@@ -275,21 +319,24 @@ const App = {
 
                 <div class="drawer-card">
                     <div class="drawer-field">
-                        <div class="drawer-field-label">Bodega Asignada</div>
-                        <div class="drawer-field-value">${p.bodegaNombre || 'Sin asignar'}</div>
+                        <div class="drawer-field-label" style="margin-bottom:8px;">Bodegas Asignadas</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            ${bodegasHtml}
+                        </div>
                     </div>
                 </div>
 
                 <div class="drawer-card">
                     <div class="drawer-field-label">Descripción del Producto</div>
-                    <div class="drawer-field-value" style="font-size:13px; color:var(--text-muted); line-height:1.5;">
+                    <div class="drawer-field-value" style="font-size:13px; color:var(--text-muted); line-height:1.6;">
                         ${p.descripcion || 'Sin descripción detallada disponible.'}
                     </div>
                 </div>
             `;
 
-            this.openDrawer(p.nombre, 'PRODUCTO', 'badge-info', htmlContent);
+            this.openDrawer(p.nombre, 'PRODUCTO', catBadgeClass, htmlContent);
         } catch (err) {
+            console.error('Error cargando producto:', err);
             Toast.error('No se pudo cargar la ficha del producto');
         }
     },

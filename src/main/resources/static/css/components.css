@@ -9,7 +9,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 11px 20px;
+    padding: 10px 18px;
+    min-height: 42px;
     font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 600;
@@ -19,6 +20,8 @@
     border: none;
     cursor: pointer;
     transition: var(--transition);
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .btn:active {
@@ -59,7 +62,8 @@
 
 .btn-sm {
     padding: 6px 12px;
-    font-size: 10px;
+    min-height: 34px;
+    font-size: 11px;
 }
 
 /* ===== FORMS ===== */
@@ -247,53 +251,135 @@
     background: rgba(255,255,255,0.02);
 }
 
-/* ===== BADGES ===== */
+/* ===== BADGES / STICKERS ===== */
 .badge {
     font-family: var(--font-mono);
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 3px 8px;
-    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 50px;
     text-transform: uppercase;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    line-height: 1.2;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+.badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .badge::before {
     content: "";
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
     background: currentColor;
     display: inline-block;
     flex-shrink: 0;
+    box-shadow: 0 0 6px currentColor;
+    animation: badgePulse 2s infinite ease-in-out;
 }
 
-/* Tipo movimiento */
-.badge-entrada,
-.badge.entrada {
-    background: var(--success-dim);
-    color: var(--success);
+@keyframes badgePulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 10px currentColor; }
 }
 
-.badge-salida,
-.badge.salida {
-    background: var(--danger-dim);
-    color: var(--danger);
+/* Status Badges */
+.badge-success {
+    background: linear-gradient(135deg, rgba(51, 214, 166, 0.18), rgba(16, 185, 129, 0.08));
+    color: #33d6a6;
+    border-color: rgba(51, 214, 166, 0.35);
 }
 
-.badge-transferencia,
-.badge.transferencia {
-    background: var(--info-dim);
-    color: var(--info);
+.badge-warning {
+    background: linear-gradient(135deg, rgba(255, 176, 32, 0.2), rgba(245, 158, 11, 0.08));
+    color: #ffb020;
+    border-color: rgba(255, 176, 32, 0.4);
 }
 
-/* Estado / genérico */
-.badge-success { background: var(--success-dim); color: var(--success); }
-.badge-warning { background: var(--warning-dim); color: var(--warning); }
-.badge-danger  { background: var(--danger-dim);  color: var(--danger);  }
-.badge-info    { background: var(--info-dim);    color: var(--info);    }
+.badge-danger {
+    background: linear-gradient(135deg, rgba(255, 77, 94, 0.2), rgba(225, 29, 72, 0.08));
+    color: #ff4d5e;
+    border-color: rgba(255, 77, 94, 0.4);
+}
+
+.badge-info {
+    background: linear-gradient(135deg, rgba(78, 161, 255, 0.2), rgba(14, 165, 233, 0.08));
+    color: #4ea1ff;
+    border-color: rgba(78, 161, 255, 0.35);
+}
+
+.badge-purple {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(147, 51, 234, 0.08));
+    color: #c084fc;
+    border-color: rgba(168, 85, 247, 0.35);
+}
+
+/* Tipo Movimiento Stickers */
+.badge-entrada, .badge.entrada {
+    background: linear-gradient(135deg, rgba(51, 214, 166, 0.22), rgba(16, 185, 129, 0.1));
+    color: #33d6a6;
+    border-color: rgba(51, 214, 166, 0.4);
+}
+
+.badge-salida, .badge.salida {
+    background: linear-gradient(135deg, rgba(255, 77, 94, 0.22), rgba(225, 29, 72, 0.1));
+    color: #ff4d5e;
+    border-color: rgba(255, 77, 94, 0.4);
+}
+
+.badge-transferencia, .badge.transferencia {
+    background: linear-gradient(135deg, rgba(78, 161, 255, 0.22), rgba(14, 165, 233, 0.1));
+    color: #4ea1ff;
+    border-color: rgba(78, 161, 255, 0.4);
+}
+
+/* Category Stickers */
+.badge-cat-mobiliario {
+    background: linear-gradient(135deg, rgba(255, 176, 32, 0.22), rgba(217, 119, 6, 0.1));
+    color: #ffc043;
+    border-color: rgba(255, 176, 32, 0.45);
+}
+
+.badge-cat-electronica {
+    background: linear-gradient(135deg, rgba(78, 161, 255, 0.22), rgba(37, 99, 235, 0.1));
+    color: #60a5fa;
+    border-color: rgba(78, 161, 255, 0.45);
+}
+
+.badge-cat-perifericos {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.22), rgba(147, 51, 234, 0.1));
+    color: #c084fc;
+    border-color: rgba(168, 85, 247, 0.45);
+}
+
+.badge-cat-papeleria {
+    background: linear-gradient(135deg, rgba(51, 214, 166, 0.22), rgba(16, 185, 129, 0.1));
+    color: #34d399;
+    border-color: rgba(51, 214, 166, 0.45);
+}
+
+/* Bodega Sticker Chip */
+.badge-bodega {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+    color: #e2e8f0;
+    border-color: rgba(255, 255, 255, 0.12);
+    font-size: 11px;
+    padding: 6px 12px;
+}
+
+.badge-bodega strong {
+    color: var(--accent);
+    margin-left: 4px;
+}
 
 /* ===== MODALS ===== */
 .modal-overlay {
@@ -417,6 +503,7 @@
     flex-direction: column;
     gap: 10px;
     z-index: 2000;
+    max-width: calc(100vw - 32px);
 }
 
 .toast {
@@ -432,6 +519,20 @@
     gap: 10px;
     box-shadow: var(--shadow-lg);
     animation: slideIn 0.28s ease forwards;
+    border-radius: 6px;
+}
+
+@media (max-width: 600px) {
+    #toast-container {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .toast {
+        min-width: 0;
+        width: 100%;
+    }
 }
 
 .toast-success { border-left: 3px solid var(--success); }
@@ -460,6 +561,15 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+@media (max-width: 480px) {
+    .export-buttons {
+        flex-direction: column;
+    }
+    .btn-export {
+        width: 100%;
+    }
 }
 
 .btn-export {

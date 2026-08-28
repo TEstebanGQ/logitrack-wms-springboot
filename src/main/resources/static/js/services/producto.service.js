@@ -11,6 +11,10 @@ const ProductoService = {
         return ApiService.get(`/productos/${id}`);
     },
 
+    getInventario(id) {
+        return ApiService.get(`/productos/${id}/inventario`);
+    },
+
     getBajoStock() {
         return ApiService.get('/productos/stock-bajo');
     },

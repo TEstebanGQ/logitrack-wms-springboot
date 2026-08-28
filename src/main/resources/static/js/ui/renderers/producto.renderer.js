@@ -15,19 +15,32 @@ const ProductoRenderer = {
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
         const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS');
 
+        const getCatClass = (cat) => {
+            if (!cat) return 'badge-info';
+            const norm = cat.toLowerCase();
+            if (norm.includes('mobil') || norm.includes('muebl')) return 'badge-cat-mobiliario';
+            if (norm.includes('electr') || norm.includes('tech')) return 'badge-cat-electronica';
+            if (norm.includes('perifer') || norm.includes('accesor')) return 'badge-cat-perifericos';
+            if (norm.includes('papel')) return 'badge-cat-papeleria';
+            return 'badge-info';
+        };
+
         const rows = productos.map(p => {
             const lowStock = p.stock < (p.stockMinimo || 10);
+            const catName = p.categoriaNombre || p.categoria || 'General';
+            const catBadgeClass = getCatClass(catName);
+
             return `
                 <tr style="cursor:pointer;" onclick="App.openProductoDrawer(${p.id})" title="Haga clic para abrir ficha completa del producto en el panel lateral">
-                    <td>#${p.id}</td>
+                    <td><span class="mono" style="font-weight:700;">#${p.id}</span></td>
                     <td><strong>${p.nombre}</strong></td>
-                    <td><span class="badge badge-info">${p.categoriaNombre || p.categoria || 'General'}</span></td>
+                    <td><span class="badge ${catBadgeClass}">${catName}</span></td>
                     <td>
                         <span class="badge ${lowStock ? 'badge-danger' : 'badge-success'}">
                             ${p.stock} unidades ${lowStock ? '⚠️ Bajo Stock' : ''}
                         </span>
                     </td>
-                    <td>$${Number(p.precio).toLocaleString('es-CO')}</td>
+                    <td><strong style="color:var(--accent); font-family:var(--font-mono);">$${Number(p.precio).toLocaleString('es-CO')}</strong></td>
                     <td>${p.descripcion || '-'}</td>
                     <td onclick="event.stopPropagation();">
                         ${canManage ? `

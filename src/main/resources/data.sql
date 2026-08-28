@@ -13,13 +13,16 @@ ON CONFLICT (id) DO NOTHING;
 
 SELECT setval(pg_get_serial_sequence('categorias', 'id'), COALESCE((SELECT MAX(id) FROM categorias), 1));
 
--- ---- USUARIOS (contraseña: 'admin123' y 'empleado123' - BCrypt) ----
-INSERT INTO usuarios (id, nombre, apellido, email, password, rol, activo, created_at) VALUES
-(1, 'Admin',    'Sistema',    'admin@logitrack.com',    '$2a$10$r//FnmN.GUtMhQtM23FUhOUBQOwQZjElEu/.LXN701rSgFGKQUHpm', 'ADMIN',    true, CURRENT_TIMESTAMP),
-(2, 'Carlos',   'González',   'carlos@logitrack.com',   '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'EMPLEADO', true, CURRENT_TIMESTAMP),
-(3, 'María',    'López',      'maria@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'EMPLEADO', true, CURRENT_TIMESTAMP),
-(4, 'Andrés',   'Martínez',   'andres@logitrack.com',   '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'EMPLEADO', true, CURRENT_TIMESTAMP)
-ON CONFLICT (id) DO NOTHING;
+-- ---- USUARIOS (contraseña: 'admin123', 'empleado123' - BCrypt) ----
+INSERT INTO usuarios (nombre, apellido, email, password, rol, activo, created_at) VALUES
+('Admin',    'Sistema',    'admin@logitrack.com',    '$2a$10$r//FnmN.GUtMhQtM23FUhOUBQOwQZjElEu/.LXN701rSgFGKQUHpm', 'ADMIN',             true, CURRENT_TIMESTAMP),
+('Carlos',   'González',   'carlos@logitrack.com',   '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'EMPLEADO',          true, CURRENT_TIMESTAMP),
+('María',    'López',      'maria@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'EMPLEADO',          true, CURRENT_TIMESTAMP),
+('Andrés',   'Martínez',   'andres@logitrack.com',   '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'EMPLEADO',          true, CURRENT_TIMESTAMP),
+('Laura',    'Pérez',      'laura@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'SUPERVISOR',        true, CURRENT_TIMESTAMP),
+('Sofía',    'Ramírez',    'sofia@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'GERENTE_LOGISTICA', true, CURRENT_TIMESTAMP),
+('Pedro',    'Sánchez',    'pedro@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'JEFE_COMPRAS',      true, CURRENT_TIMESTAMP)
+ON CONFLICT (email) DO NOTHING;
 
 SELECT setval(pg_get_serial_sequence('usuarios', 'id'), COALESCE((SELECT MAX(id) FROM usuarios), 1));
 
@@ -39,12 +42,12 @@ INSERT INTO productos (id, nombre, categoria_id, stock, stock_minimo, precio, de
 (1,  'Laptop Dell XPS 15',     1, 50,  10, 4500000.00, 'Laptop empresarial 15 pulgadas',    true, CURRENT_TIMESTAMP),
 (2,  'Monitor LG 27"',         1, 30,  10, 900000.00,  'Monitor Full HD 27 pulgadas',       true, CURRENT_TIMESTAMP),
 (3,  'Teclado Mecánico',       2, 80,  10, 250000.00,  'Teclado mecánico retroiluminado',   true, CURRENT_TIMESTAMP),
-(4,  'Mouse Inalámbrico',      2, 120, 10, 85000.00,   'Mouse ergonómico inalámbrico',      true, CURRENT_TIMESTAMP),
-(5,  'Silla Ergonómica',       3, 25,  10, 1200000.00, 'Silla de oficina con soporte lumbar',true, CURRENT_TIMESTAMP),
-(6,  'Escritorio Ejecutivo',   3, 15,  10, 850000.00,  'Escritorio en L 180cm',             true, CURRENT_TIMESTAMP),
-(7,  'Papel A4 500 hojas',     4, 200, 10, 18000.00,   'Resma de papel bond',               true, CURRENT_TIMESTAMP),
-(8,  'Bolígrafos x12',         4, 300, 10, 12000.00,   'Caja de bolígrafos azules',         true, CURRENT_TIMESTAMP),
-(9,  'Impresora HP LaserJet',  1, 8,   10, 1800000.00, 'Impresora láser monocromática',     true, CURRENT_TIMESTAMP),
+(4,  'Mouse Inalámbrico',      2, 125, 10, 85000.00,   'Mouse ergonómico inalámbrico',      true, CURRENT_TIMESTAMP),
+(5,  'Silla Ergonómica',       3, 18,  10, 1200000.00, 'Silla de oficina con soporte lumbar',true, CURRENT_TIMESTAMP),
+(6,  'Escritorio Ejecutivo',   3, 10,  10, 850000.00,  'Escritorio en L 180cm',             true, CURRENT_TIMESTAMP),
+(7,  'Papel A4 500 hojas',     4, 240, 10, 18000.00,   'Resma de papel bond',               true, CURRENT_TIMESTAMP),
+(8,  'Bolígrafos x12',         4, 320, 10, 12000.00,   'Caja de bolígrafos azules',         true, CURRENT_TIMESTAMP),
+(9,  'Impresora HP LaserJet',  1, 6,   10, 1800000.00, 'Impresora láser monocromática',     true, CURRENT_TIMESTAMP),
 (10, 'Auriculares Bluetooth',  2, 45,  10, 320000.00,  'Auriculares cancelación de ruido',  true, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
@@ -87,6 +90,3 @@ INSERT INTO clientes (id, nombre, ruc, telefono, email, direccion, activo, creat
 ON CONFLICT (id) DO NOTHING;
 
 SELECT setval(pg_get_serial_sequence('clientes', 'id'), COALESCE((SELECT MAX(id) FROM clientes), 1));
-
-
-

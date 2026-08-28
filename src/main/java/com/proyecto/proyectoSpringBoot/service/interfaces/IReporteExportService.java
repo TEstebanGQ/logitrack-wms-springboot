@@ -7,4 +7,6 @@ public interface IReporteExportService {
     byte[] exportarResumenPdf();
     byte[] exportarMovimientosExcel(LocalDate desde, LocalDate hasta);
     byte[] exportarMovimientosPdf(LocalDate desde, LocalDate hasta);
+    byte[] exportarAuditoriasExcel();
+    byte[] exportarAuditoriasPdf();
 }

@@ -1,16 +1,20 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.proyectoSpringBoot.dto.request.MovimientoRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.MovimientoResponse;
+import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
 import com.proyecto.proyectoSpringBoot.exception.StockInsuficienteException;
 import com.proyecto.proyectoSpringBoot.mapper.MovimientoMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.*;
 import com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento;
+import com.proyecto.proyectoSpringBoot.model.enums.TipoOperacion;
 import com.proyecto.proyectoSpringBoot.repository.*;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IAlertaStockService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IMovimientoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,8 @@ public class MovimientoServiceImpl implements IMovimientoService {
     private final ProveedorRepository proveedorRepository;
     private final ClienteRepository clienteRepository;
     private final IAlertaStockService alertaStockService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public MovimientoResponse registrar(MovimientoRequest request, String emailUsuario) {
@@ -57,6 +63,8 @@ public class MovimientoServiceImpl implements IMovimientoService {
                 .detalles(new ArrayList<>())
                 .build();
 
+        StringBuilder productosDesc = new StringBuilder();
+
         for (MovimientoRequest.DetalleRequest d : request.getDetalles()) {
             Producto producto = productoRepository.findById(d.getProductoId())
                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado: " + d.getProductoId()));
@@ -71,9 +79,26 @@ public class MovimientoServiceImpl implements IMovimientoService {
                     .build();
             movimiento.getDetalles().add(detalle);
             productoRepository.save(producto);
+
+            productosDesc.append(producto.getNombre()).append(" (x").append(d.getCantidad()).append(" u.) ");
         }
 
-        return movimientoMapper.toResponse(movimientoRepository.save(movimiento));
+        Movimiento guardado = movimientoRepository.save(movimiento);
+        MovimientoResponse resp = movimientoMapper.toResponse(guardado);
+
+        String ubicacionStr = "";
+        if (request.getTipoMovimiento() == TipoMovimiento.ENTRADA) {
+            ubicacionStr = "en bodega '" + (destino != null ? destino.getNombre() : "N/A") + "'";
+        } else if (request.getTipoMovimiento() == TipoMovimiento.SALIDA) {
+            ubicacionStr = "desde bodega '" + (origen != null ? origen.getNombre() : "N/A") + "'";
+        } else {
+            ubicacionStr = "de '" + (origen != null ? origen.getNombre() : "N/A") + "' a '" + (destino != null ? destino.getNombre() : "N/A") + "'";
+        }
+
+        publishAudit("Movimiento", guardado.getId(), TipoOperacion.INSERT, null, toJson(resp),
+                "Registró movimiento " + request.getTipoMovimiento() + " " + ubicacionStr + " - Productos: " + productosDesc.toString().trim(), emailUsuario);
+
+        return resp;
     }
 
     private void procesarStock(TipoMovimiento tipo, Producto producto,
@@ -173,5 +198,23 @@ public class MovimientoServiceImpl implements IMovimientoService {
     private Bodega findBodega(Long id) {
         return bodegaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bodega no encontrada: " + id));
+    }
+
+    private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc, String email) {
+        try {
+            eventPublisher.publishEvent(AuditoriaEvent.builder()
+                    .entidad(entidad)
+                    .entidadId(entidadId)
+                    .tipoOperacion(tipo)
+                    .emailUsuario(email)
+                    .valoresAnteriores(ant)
+                    .valoresNuevos(nuevos)
+                    .descripcion(desc)
+                    .build());
+        } catch (Exception ignored) {}
+    }
+
+    private String toJson(Object obj) {
+        try { return objectMapper.writeValueAsString(obj); } catch (Exception e) { return null; }
     }
 }

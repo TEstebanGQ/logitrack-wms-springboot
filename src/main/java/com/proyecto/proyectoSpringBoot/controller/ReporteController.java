@@ -3,18 +3,21 @@ package com.proyecto.proyectoSpringBoot.controller;
 import com.proyecto.proyectoSpringBoot.dto.response.ReporteStockResponse;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IReporteExportService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IReporteService;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.time.LocalDate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/reportes")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'GERENTE_LOGISTICA')")
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Reportes", description = "Reportes y estadísticas del sistema")
 public class ReporteController {
@@ -68,6 +71,26 @@ public class ReporteController {
         byte[] data = reporteExportService.exportarMovimientosPdf(desde, hasta);
         return ResponseEntity.ok()
             .header("Content-Disposition", "attachment; filename=logitrack-movimientos.pdf")
+            .header("Content-Type", "application/pdf")
+            .body(data);
+    }
+
+    @GetMapping("/auditorias/exportar/excel")
+    @Operation(summary = "Exportar bitácora de auditoría a Excel")
+    public ResponseEntity<byte[]> exportarAuditoriasExcel() {
+        byte[] data = reporteExportService.exportarAuditoriasExcel();
+        return ResponseEntity.ok()
+            .header("Content-Disposition", "attachment; filename=logitrack-auditoria.xlsx")
+            .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            .body(data);
+    }
+
+    @GetMapping("/auditorias/exportar/pdf")
+    @Operation(summary = "Exportar bitácora de auditoría a PDF")
+    public ResponseEntity<byte[]> exportarAuditoriasPdf() {
+        byte[] data = reporteExportService.exportarAuditoriasPdf();
+        return ResponseEntity.ok()
+            .header("Content-Disposition", "attachment; filename=logitrack-auditoria.pdf")
             .header("Content-Type", "application/pdf")
             .body(data);
     }

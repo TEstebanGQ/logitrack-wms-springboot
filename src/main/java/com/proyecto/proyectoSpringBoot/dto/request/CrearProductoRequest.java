@@ -14,6 +14,7 @@ public class CrearProductoRequest {
     private String nombre;
     @NotNull
     private Long categoriaId;
+    private Long bodegaId;
     @Builder.Default
     @Min(0)
     private Integer stock = 0;

@@ -18,9 +18,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/auditorias")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'GERENTE_LOGISTICA')")
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Auditorías", description = "Consulta de registros de auditoría (solo ADMIN)")
+@Tag(name = "Auditorías", description = "Consulta de registros de auditoría")
 public class AuditoriaController {
 
     private final IAuditoriaService auditoriaService;

@@ -134,8 +134,41 @@ Para utilizarlo:
 - `GET /movimientos`: Consultar historial de movimientos (con filtros de fecha y tipo).
 - `POST /movimientos`: Registrar movimiento (ENTRADA, SALIDA, TRANSFERENCIA).
 
-### 5. Auditorías (`/auditorias`)
-- `GET /auditorias`: Consultar registros automáticos de auditoría (filtrar por usuario u operación).
+### 5. Clientes y Proveedores (`/api/clientes`, `/api/proveedores`)
+- `GET /api/clientes`, `POST /api/clientes`, `PUT /api/clientes/{id}`, `DELETE /api/clientes/{id}`
+- `GET /api/proveedores`, `POST /api/proveedores`, `PUT /api/proveedores/{id}`, `DELETE /api/proveedores/{id}`
 
-### 6. Reportes (`/reportes`)
-- `GET /reportes/resumen`: Obtener reporte general en JSON de stock total por bodega.
+### 6. Órdenes de Compra (`/api/ordenes-compra`)
+- `POST /api/ordenes-compra`: Emitir orden de compra a un proveedor en estado PENDIENTE.
+- `PUT /api/ordenes-compra/{id}/aprobar`: Aprobar formalmente una orden de compra.
+- `PUT /api/ordenes-compra/{id}/recibir`: Recepción física en almacén que incrementa automáticamente el inventario.
+- `PUT /api/ordenes-compra/{id}/cancelar`: Anulación justificada de pedido.
+
+### 7. Ajustes de Inventario y Control de Mermas (`/api/ajustes`)
+- `POST /api/ajustes`: Registrar ajuste por Merma, Avería, Vencimiento o Conteo Físico.
+- `GET /api/ajustes`: Listar histórico de ajustes y descuadres con justificación.
+
+### 8. Lotes y Trazabilidad FEFO (`/api/lotes`)
+- `POST /api/lotes`: Registrar lote de producto con fechas de fabricación y caducidad.
+- `GET /api/lotes/fefo`: Listar lotes ordenados por vencimiento para rotación First Expired, First Out.
+- `GET /api/lotes/proximos-vencer`: Alerta de lotes con caducidad cercana.
+
+### 9. Ubicaciones Físicas en Bodegas (`/api/ubicaciones`)
+- `POST /api/ubicaciones`: Registrar pasillos, racks y niveles en almacenes.
+- `GET /api/ubicaciones/bodega/{bodegaId}`: Consultar mapa físico de bodega.
+
+### 10. Auditorías (`/api/auditorias`)
+- `GET /api/auditorias`: Consultar registros automáticos de auditoría (filtrar por usuario u operación).
+
+### 11. Reportes y Clasificación ABC (`/api/reportes`)
+- `GET /api/reportes/resumen`: Obtener reporte general de existencias y productos más movidos.
+- `GET /api/reportes/clasificacion-abc`: Matriz de clasificación ABC según valorización del inventario.
+- `GET /api/reportes/exportar/excel`, `GET /api/reportes/exportar/pdf`: Descarga de reportes ejecutivos.
+
+---
+
+## 🧪 Pruebas Automatizadas
+El sistema incluye una suite de **140 pruebas unitarias y de integración** con **100% de éxito**:
+```bash
+mvn test
+```

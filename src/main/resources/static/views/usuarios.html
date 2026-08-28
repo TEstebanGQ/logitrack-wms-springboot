@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiTrack S.A. - Gestión de Usuarios</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/components/tables.css">
+</head>
+<body>
+
+    <!-- ===== VISTA: USUARIOS (SOLO ADMIN) ===== -->
+    <section id="view-usuarios" class="view-section">
+        <div class="section-title" style="margin-bottom:18px;">
+            <h2>Gestión de Usuarios</h2>
+            <button class="btn btn-primary btn-sm" onclick="UsuarioModuleController.openCreateModal()">+ Nuevo Usuario</button>
+        </div>
+        <div id="usuarios-list-container"></div>
+    </section>
+
+</body>
+</html>

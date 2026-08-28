@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiTrack S.A. - Dashboard</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/components/tables.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+</head>
+<body>
+
+    <!-- ===== VISTA: DASHBOARD ===== -->
+    <section id="view-dashboard" class="view-section">
+
+        <!-- KPI Stats (4 tarjetas) -->
+        <div class="stat-row metrics-grid">
+            <div class="stat-card metric-card">
+                <div class="eyebrow">Bodegas activas</div>
+                <div id="metric-total-bodegas" class="stat-value metric-value">—</div>
+            </div>
+            <div class="stat-card metric-card">
+                <div class="eyebrow">Stock total</div>
+                <div id="metric-stock-total" class="stat-value metric-value">—</div>
+            </div>
+            <div class="stat-card metric-card">
+                <div class="eyebrow">Movimientos hoy</div>
+                <div id="metric-total-movimientos" class="stat-value metric-value">—</div>
+            </div>
+            <div class="stat-card metric-card">
+                <div class="eyebrow">Alertas de stock bajo</div>
+                <div id="metric-bajo-stock" class="stat-value metric-value" style="color:var(--danger)">—</div>
+            </div>
+        </div>
+
+        <!-- Sección: Bodegas (Grid de tarjetas) -->
+        <div class="section-title" style="margin-top:16px; margin-bottom:12px;">
+            <h2>Bodegas</h2>
+            <a href="#/bodegas">Ver todas →</a>
+        </div>
+        <div id="dashboard-bodegas-container" class="bodegas-grid" style="margin-bottom:28px;"></div>
+
+        <!-- Sección Dividida: Movimientos Recientes (izq) y Stock Bajo (der) -->
+        <div class="split-row">
+            <!-- Movimientos Recientes (Columna izquierda 65%) -->
+            <div>
+                <div class="section-title" style="margin-bottom:12px;">
+                    <h2>Movimientos recientes</h2>
+                    <a href="#/movimientos">Ver bitácora →</a>
+                </div>
+                <div id="dashboard-movimientos-container" class="table-wrap"></div>
+            </div>
+
+            <!-- Stock Bajo (Columna derecha 35%) -->
+            <div>
+                <div class="section-title" style="margin-bottom:12px;">
+                    <h2>Stock bajo</h2>
+                    <a href="#/productos">Reponer →</a>
+                </div>
+                <div id="dashboard-bajo-stock-container" class="alerts-panel"></div>
+            </div>
+        </div>
+
+    </section>
+
+</body>
+</html>

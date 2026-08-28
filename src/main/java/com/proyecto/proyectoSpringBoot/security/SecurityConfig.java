@@ -62,6 +62,7 @@ public class SecurityConfig {
                     "/index.html",
                     "/css/**",
                     "/js/**",
+                    "/views/**",
                     "/favicon.ico"
                 ).permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

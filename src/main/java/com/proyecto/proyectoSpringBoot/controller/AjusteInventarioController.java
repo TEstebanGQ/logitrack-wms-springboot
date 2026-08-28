@@ -29,7 +29,12 @@ public class AjusteInventarioController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','GERENTE_LOGISTICA')")
-    @Operation(summary = "Registrar un ajuste o merma de inventario")
+    @Operation(summary = "Registrar un ajuste o merma de inventario", description = "Ajusta existencias por merma, daño o conteo y actualiza inventario")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Ajuste registrado exitosamente"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o bodega inactiva"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Bodega o producto no encontrado")
+    })
     public ResponseEntity<AjusteResponse> registrar(
             @Valid @RequestBody CrearAjusteRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -40,6 +45,7 @@ public class AjusteInventarioController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Listar todos los ajustes de inventario ordenados por fecha descendente")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     public ResponseEntity<List<AjusteResponse>> listar() {
         return ResponseEntity.ok(ajusteService.listarTodos());
     }

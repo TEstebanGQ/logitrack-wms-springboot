@@ -30,7 +30,12 @@ public class OrdenCompraController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','JEFE_COMPRAS')")
-    @Operation(summary = "Crear una nueva orden de compra a un proveedor")
+    @Operation(summary = "Crear una nueva orden de compra a un proveedor", description = "Registra solicitud de reabastecimiento en estado PENDIENTE")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Orden de compra generada exitosamente"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Parámetros inválidos o proveedor inactivo"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Proveedor o bodega no encontrada")
+    })
     public ResponseEntity<OrdenCompraResponse> crear(
             @Valid @RequestBody CrearOrdenCompraRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -41,6 +46,7 @@ public class OrdenCompraController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Listar todas las órdenes de compra")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
     public ResponseEntity<List<OrdenCompraResponse>> listar() {
         return ResponseEntity.ok(ordenCompraService.listarTodas());
     }

@@ -75,30 +75,22 @@
                     <span class="tele-dot"></span>
                     <span class="tele-label">AUDITORÍA JPA ACTIVA</span>
                 </div>
-                <div class="tele-item">
-                    <span class="tele-dot warning"></span>
-                    <span class="tele-label">TRANSFERENCIAS DÍARIAS (150 MAX)</span>
-                </div>
-                <div class="tele-item">
-                    <span class="tele-dot info"></span>
-                    <span class="tele-label">SEGURIDAD JWT BEARER</span>
-                </div>
             </div>
         </div>
 
         <!-- Estadísticas footer -->
         <div class="hero-footer">
             <div class="hero-stat">
-                <div class="num">08 <span>bodegas</span></div>
+                <div class="num">128 <span>bod</span></div>
                 <div class="label">Activas a nivel nacional</div>
             </div>
             <div class="hero-stat">
-                <div class="num">100<span>%</span></div>
-                <div class="label">Movimientos auditados</div>
+                <div class="num">1,4 <span>K</span></div>
+                <div class="label">Movimientos hoy</div>
             </div>
             <div class="hero-stat">
-                <div class="num">JWT</div>
-                <div class="label">Autenticación segura</div>
+                <div class="num">100 <span>%</span></div>
+                <div class="label">Auditorías firmadas</div>
             </div>
         </div>
     </div>
@@ -118,18 +110,26 @@
                     <div class="form-group">
                         <label class="form-label" for="login-email">Correo electrónico</label>
                         <input type="email" id="login-email" class="form-input"
-                               placeholder="empleado@logitrack.com" required
-                               value="admin@logitrack.com">
+                               placeholder="empleado@logitrack.com" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="login-password">Contraseña</label>
-                        <input type="password" id="login-password" class="form-input"
-                               placeholder="••••••••••" required value="admin123">
+                        <div class="password-input-wrap">
+                            <input type="password" id="login-password" class="form-input"
+                                   placeholder="••••••••••" required>
+                            <button type="button" class="btn-toggle-password" onclick="App.togglePasswordVisibility('login-password', this)" title="Mostrar / Ocultar contraseña" tabindex="-1">
+                                <span class="eye-icon">👁️</span>
+                            </button>
+                        </div>
+                        <div id="caps-alert-login" class="caps-lock-alert" style="display:none;">
+                            ⚠️ Mayúsculas activadas
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">
                         Autenticar &amp; Ingresar →
                     </button>
                 </form>
+
                 <div class="auth-footer-meta">
                     <span class="sys-status">● SERVIDOR LOGITRACK ONLINE</span>
                 </div>
@@ -163,12 +163,23 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="reg-password">Contraseña</label>
-                        <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required>
+                        <div class="password-input-wrap">
+                            <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required>
+                            <button type="button" class="btn-toggle-password" onclick="App.togglePasswordVisibility('reg-password', this)" title="Mostrar / Ocultar contraseña" tabindex="-1">
+                                <span class="eye-icon">👁️</span>
+                            </button>
+                        </div>
+                        <div id="caps-alert-reg" class="caps-lock-alert" style="display:none;">
+                            ⚠️ Mayúsculas activadas
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="reg-rol">Rol asignado</label>
                         <select id="reg-rol" class="form-select">
-                            <option value="EMPLEADO">EMPLEADO</option>
+                            <option value="EMPLEADO">EMPLEADO / OPERADOR</option>
+                            <option value="JEFE_COMPRAS">JEFE DE COMPRAS</option>
+                            <option value="GERENTE_LOGISTICA">GERENTE DE LOGÍSTICA</option>
+                            <option value="SUPERVISOR">SUPERVISOR / AUDITOR</option>
                             <option value="ADMIN">ADMINISTRADOR</option>
                         </select>
                     </div>
@@ -224,8 +235,8 @@
             </li>
         </ul>
 
-        <span class="nav-group-label">Control</span>
-        <ul class="nav-list">
+        <span class="nav-group-label nav-control-only" style="display:none;">Control</span>
+        <ul class="nav-list nav-control-only" style="display:none;">
             <li>
                 <a href="#/auditorias" class="nav-link" data-view="auditorias">
                     <span class="nav-code">05</span>Auditoría
@@ -238,8 +249,17 @@
             </li>
         </ul>
 
-        <span class="nav-group-label">Sistema</span>
-        <ul class="nav-list">
+        <span class="nav-group-label nav-admin-only" style="display:none;">Administración</span>
+        <ul class="nav-list nav-admin-only" style="display:none;">
+            <li>
+                <a href="#/usuarios" class="nav-link" data-view="usuarios">
+                    <span class="nav-code">07</span>Usuarios
+                </a>
+            </li>
+        </ul>
+
+        <span class="nav-group-label nav-admin-only" style="display:none;">Sistema</span>
+        <ul class="nav-list nav-admin-only" style="display:none;">
             <li>
                 <a href="http://localhost:8081/swagger-ui.html" target="_blank" class="nav-link">
                     <span class="nav-code">·</span>API Docs
@@ -269,154 +289,58 @@
         <header class="topbar">
             <h1 id="page-title" class="page-title">Panel de Bodegas</h1>
             <div class="topbar-meta">
+                <button class="btn-cmd-palette" onclick="App.openCommandPalette()" title="Buscar en todo el sistema (Ctrl + K)">
+                    <span class="cmd-icon">🔍</span>
+                    <span class="cmd-text">Buscar...</span>
+                    <kbd>Ctrl K</kbd>
+                </button>
                 <span id="clock">--:--:--</span>
                 <span>·</span>
                 <span id="topbar-date">--</span>
             </div>
         </header>
 
-        <!-- Content area -->
-        <div class="content-area">
-
-            <!-- ===== VISTA: DASHBOARD ===== -->
-            <section id="view-dashboard" class="view-section">
-
-                <!-- KPI Stats (4 tarjetas) -->
-                <div class="stat-row metrics-grid">
-                    <div class="stat-card metric-card">
-                        <div class="eyebrow">Bodegas activas</div>
-                        <div id="metric-total-bodegas" class="stat-value metric-value">—</div>
-                    </div>
-                    <div class="stat-card metric-card">
-                        <div class="eyebrow">Stock total</div>
-                        <div id="metric-stock-total" class="stat-value metric-value">—</div>
-                    </div>
-                    <div class="stat-card metric-card">
-                        <div class="eyebrow">Movimientos hoy</div>
-                        <div id="metric-total-movimientos" class="stat-value metric-value">—</div>
-                    </div>
-                    <div class="stat-card metric-card">
-                        <div class="eyebrow">Alertas de stock bajo</div>
-                        <div id="metric-bajo-stock" class="stat-value metric-value" style="color:var(--danger)">—</div>
-                    </div>
-                </div>
-
-                <!-- Sección: Bodegas (Grid de tarjetas) -->
-                <div class="section-title" style="margin-top:16px; margin-bottom:12px;">
-                    <h2>Bodegas</h2>
-                    <a href="#/bodegas">Ver todas →</a>
-                </div>
-                <div id="dashboard-bodegas-container" class="bodegas-grid" style="margin-bottom:28px;"></div>
-
-                <!-- Sección Dividida: Movimientos Recientes (izq) y Stock Bajo (der) -->
-                <div class="split-row">
-                    <!-- Movimientos Recientes (Columna izquierda 65%) -->
-                    <div>
-                        <div class="section-title" style="margin-bottom:12px;">
-                            <h2>Movimientos recientes</h2>
-                            <a href="#/movimientos">Ver bitácora →</a>
-                        </div>
-                        <div id="dashboard-movimientos-container" class="table-wrap"></div>
-                    </div>
-
-                    <!-- Stock Bajo (Columna derecha 35%) -->
-                    <div>
-                        <div class="section-title" style="margin-bottom:12px;">
-                            <h2>Stock bajo</h2>
-                            <a href="#/productos">Reponer →</a>
-                        </div>
-                        <div id="dashboard-bajo-stock-container" class="alerts-panel"></div>
-                    </div>
-                </div>
-
-            </section>
-
-            <!-- ===== VISTA: BODEGAS ===== -->
-            <section id="view-bodegas" class="view-section" style="display:none;">
-                <div class="section-title" style="margin-bottom:18px;">
-                    <h2>Bodegas registradas</h2>
-                    <button class="btn btn-primary btn-sm" onclick="App.openBodegaModal()">+ Nueva Bodega</button>
-                </div>
-                <div id="bodegas-list-container"></div>
-            </section>
-
-            <!-- ===== VISTA: PRODUCTOS ===== -->
-            <section id="view-productos" class="view-section" style="display:none;">
-                <div class="section-title" style="margin-bottom:18px;">
-                    <h2>Catálogo de productos</h2>
-                    <button class="btn btn-primary btn-sm" onclick="App.openProductoModal()">+ Nuevo Producto</button>
-                </div>
-                <div id="productos-list-container"></div>
-            </section>
-
-            <!-- ===== VISTA: MOVIMIENTOS ===== -->
-            <section id="view-movimientos" class="view-section" style="display:none;">
-                <div class="section-title" style="margin-bottom:18px;">
-                    <h2>Historial de movimientos</h2>
-                    <button class="btn btn-primary btn-sm" onclick="App.openModal('modal-movimiento')">+ Registrar Movimiento</button>
-                </div>
-                <div id="movimientos-list-container"></div>
-            </section>
-
-            <!-- ===== VISTA: AUDITORÍAS ===== -->
-            <section id="view-auditorias" class="view-section" style="display:none;">
-                <div class="section-title" style="margin-bottom:18px;">
-                    <h2>Logs de auditoría</h2>
-                </div>
-                <div id="auditorias-list-container"></div>
-            </section>
-
-            <!-- ===== VISTA: REPORTES ===== -->
-            <section id="view-reportes" class="view-section" style="display:none;">
-                <div class="section-title" style="margin-bottom:18px;">
-                    <h2>Reportes y estadísticas</h2>
-                </div>
-                <div id="reportes-list-container"></div>
-
-                <!-- Exportación -->
-                <div class="export-section" style="margin-top:28px;">
-                    <h3 class="export-section__title">Exportar Reportes</h3>
-                    <div class="export-buttons">
-                        <button id="btn-export-excel-resumen" class="btn btn-export btn-export--excel">
-                            <span class="btn-export__icon">📊</span>
-                            <div>
-                                <div class="btn-export__label">Resumen General</div>
-                                <div class="btn-export__format">Excel .xlsx</div>
-                            </div>
-                        </button>
-                        <button id="btn-export-pdf-resumen" class="btn btn-export btn-export--pdf">
-                            <span class="btn-export__icon">📄</span>
-                            <div>
-                                <div class="btn-export__label">Resumen General</div>
-                                <div class="btn-export__format">PDF</div>
-                            </div>
-                        </button>
-                        <button id="btn-export-excel-mov" class="btn btn-export btn-export--excel">
-                            <span class="btn-export__icon">📊</span>
-                            <div>
-                                <div class="btn-export__label">Movimientos (30 días)</div>
-                                <div class="btn-export__format">Excel .xlsx</div>
-                            </div>
-                        </button>
-                        <button id="btn-export-pdf-mov" class="btn btn-export btn-export--pdf">
-                            <span class="btn-export__icon">📄</span>
-                            <div>
-                                <div class="btn-export__label">Movimientos (30 días)</div>
-                                <div class="btn-export__format">PDF</div>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-        </div><!-- /content-area -->
+        <!-- Content area (Vistas cargadas dinámicamente desde static/views/*.html) -->
+        <div class="content-area"></div><!-- /content-area -->
     </div><!-- /main-wrapper -->
 </div><!-- /#app-layout -->
 
 
 <!-- ============================================================
-     MODALES
+     MODALES, DRAWER & COMMAND PALETTE
      ============================================================ -->
+
+<!-- Command Palette Omnibox (Ctrl + K) -->
+<div id="cmd-overlay" class="cmd-overlay" onclick="App.closeCommandPalette()">
+    <div class="cmd-dialog" onclick="event.stopPropagation()">
+        <div class="cmd-header">
+            <span class="cmd-search-icon">🔍</span>
+            <input type="text" id="cmd-input" class="cmd-input" placeholder="Buscar bodegas, productos o movimientos (ej. Laptop, Norte, #3)..." autocomplete="off" oninput="App.handleCommandSearch(this.value)">
+            <kbd class="cmd-esc-tag" onclick="App.closeCommandPalette()">ESC</kbd>
+        </div>
+        <div id="cmd-results" class="cmd-results">
+            <div class="cmd-empty-hint">Escribe para buscar en tiempo real en todo el sistema...</div>
+        </div>
+        <div class="cmd-footer">
+            <span><kbd>Ctrl</kbd> <kbd>K</kbd> para abrir</span>
+            <span><kbd>ESC</kbd> para salir</span>
+        </div>
+    </div>
+</div>
+
+<!-- Drawer Panel Lateral Deslizante -->
+<div id="drawer-overlay" class="drawer-overlay" onclick="App.closeDrawer()">
+    <div class="drawer-content" onclick="event.stopPropagation()">
+        <div class="drawer-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span id="drawer-badge" class="badge badge-info">DETALLE</span>
+                <h3 id="drawer-title" class="drawer-title">Ficha Informativa</h3>
+            </div>
+            <button class="drawer-close" onclick="App.closeDrawer()">&times;</button>
+        </div>
+        <div id="drawer-body" class="drawer-body"></div>
+    </div>
+</div>
 
 <!-- Modal Bodega -->
 <div id="modal-bodega" class="modal-overlay">
@@ -482,8 +406,12 @@
                 <select id="producto-categoria-id" class="form-select" required></select>
             </div>
             <div class="form-group">
-                <label class="form-label" for="producto-stock">Stock Inicial</label>
+                <label class="form-label" for="producto-stock">Stock Inicial / Ajuste de Stock</label>
                 <input type="number" id="producto-stock" class="form-input" required min="0" placeholder="50">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="producto-bodega-id">Bodega Asignada para el Stock</label>
+                <select id="producto-bodega-id" class="form-select"></select>
             </div>
             <div class="form-group">
                 <label class="form-label" for="producto-precio">Precio Unitario ($)</label>
@@ -571,24 +499,103 @@
 
 <!-- Modal Auditoría -->
 <div id="modal-auditoria" class="modal-overlay">
-    <div class="modal-content" style="max-width:640px;">
+    <div class="modal-content" style="max-width:720px; max-height: 90vh; overflow-y: auto;">
         <div class="modal-header">
-            <h3 id="aud-modal-title" class="modal-title">Inspección de Auditoría</h3>
+            <h3 id="aud-modal-title" class="modal-title">Ficha Completa de Auditoría</h3>
             <button class="modal-close" onclick="App.closeModal('modal-auditoria')">&times;</button>
         </div>
-        <div style="display:flex; flex-direction:column; gap:14px; margin-top:6px;">
-            <div>
-                <p class="form-label" style="margin-bottom:6px;">Valores Anteriores (JSON)</p>
-                <pre id="aud-json-anteriores" class="json-viewer"></pre>
+        <div id="aud-metadata-container" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 8px; margin-top: 10px;"></div>
+        
+        <!-- Tabla comparativa campo a campo -->
+        <div id="aud-diff-table-wrap"></div>
+
+        <details style="margin-top:16px; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 12px; background: rgba(0,0,0,0.2);">
+            <summary style="cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted);">🛠️ Ver Objetos JSON Originales (Visión Desarrollador)</summary>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+                <div>
+                    <p class="form-label" style="margin-bottom:4px; color: var(--danger); font-size: 11px;">◄ Estado Previo (valoresAnteriores JSON)</p>
+                    <pre id="aud-json-anteriores" class="json-viewer" style="max-height: 140px; overflow-y: auto; background: #0f131a; padding: 8px; border-radius: 6px; font-size: 11px;"></pre>
+                </div>
+                <div>
+                    <p class="form-label" style="margin-bottom:4px; color: var(--success); font-size: 11px;">► Estado Resultante (valoresNuevos JSON)</p>
+                    <pre id="aud-json-nuevos" class="json-viewer" style="max-height: 140px; overflow-y: auto; background: #0f131a; padding: 8px; border-radius: 6px; font-size: 11px;"></pre>
+                </div>
             </div>
-            <div>
-                <p class="form-label" style="margin-bottom:6px;">Valores Nuevos (JSON)</p>
-                <pre id="aud-json-nuevos" class="json-viewer"></pre>
-            </div>
-        </div>
+        </details>
+
         <div style="display:flex; justify-content:flex-end; margin-top:18px;">
             <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-auditoria')">Cerrar</button>
         </div>
+    </div>
+</div>
+
+<!-- Modal Inventario por Bodega -->
+<div id="modal-inventario-bodega" class="modal-overlay">
+    <div class="modal-content" style="max-width:680px; max-height: 85vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h3 id="inv-bodega-title" class="modal-title">Inventario en Bodega</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-inventario-bodega')">&times;</button>
+        </div>
+        <p id="inv-bodega-subtitle" style="font-size:12px; color:var(--text-muted); margin-bottom:14px;"></p>
+        <div id="inv-bodega-body"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:18px;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="App.closeModal('modal-inventario-bodega'); App.openModal('modal-movimiento');">➕ Registrar Movimiento / Transferencia</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="App.closeModal('modal-inventario-bodega')">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Usuario -->
+<div id="modal-usuario" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-usuario-title" class="modal-title">Nuevo Usuario</h3>
+            <button class="modal-close" onclick="App.closeModal('modal-usuario')">&times;</button>
+        </div>
+        <form id="form-usuario">
+            <input type="hidden" id="usuario-id">
+            <div class="form-group">
+                <label class="form-label" for="usuario-nombre">Nombre</label>
+                <input type="text" id="usuario-nombre" class="form-input" required placeholder="Carlos">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="usuario-apellido">Apellido</label>
+                <input type="text" id="usuario-apellido" class="form-input" required placeholder="González">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="usuario-email">Correo Electrónico</label>
+                <input type="email" id="usuario-email" class="form-input" required placeholder="carlos@logitrack.com">
+            </div>
+            <div class="form-group" id="usuario-pass-group">
+                <label class="form-label" for="usuario-password">Contraseña</label>
+                <input type="password" id="usuario-password" class="form-input" placeholder="••••••••">
+                <small style="color: var(--text-muted); font-size: 11px;">(Dejar en blanco para conservar la actual al editar)</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="usuario-rol">Rol</label>
+                <select id="usuario-rol" class="form-select">
+                    <option value="EMPLEADO">EMPLEADO / OPERADOR</option>
+                    <option value="JEFE_COMPRAS">JEFE DE COMPRAS</option>
+                    <option value="GERENTE_LOGISTICA">GERENTE DE LOGÍSTICA</option>
+                    <option value="SUPERVISOR">SUPERVISOR / AUDITOR</option>
+                    <option value="ADMIN">ADMINISTRADOR</option>
+                </select>
+            </div>
+            <div class="toggle-group" onclick="document.getElementById('usuario-activo').click();">
+                <label class="toggle-switch" onclick="event.stopPropagation();">
+                    <input type="checkbox" id="usuario-activo" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <div class="toggle-label-text">
+                    <span class="toggle-title">Usuario Activo</span>
+                    <span class="toggle-sub">Permite el acceso al sistema</span>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-usuario')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -623,6 +630,7 @@
 <script src="js/services/movimiento.service.js"></script>
 <script src="js/services/auditoria.service.js"></script>
 <script src="js/services/reporte.service.js"></script>
+<script src="js/services/usuario.service.js"></script>
 <script src="js/services/export.service.js"></script>
 <script src="js/ui/toast.js"></script>
 <script src="js/ui/confirm.js"></script>
@@ -631,44 +639,18 @@
 <script src="js/ui/renderers/movimiento.renderer.js"></script>
 <script src="js/ui/renderers/auditoria.renderer.js"></script>
 <script src="js/ui/renderers/reporte.renderer.js"></script>
+<script src="js/ui/renderers/usuario.renderer.js"></script>
 <script src="js/ui/renderers/dashboard.renderer.js"></script>
 <script src="js/controllers/bodega.controller.js"></script>
 <script src="js/controllers/producto.controller.js"></script>
 <script src="js/controllers/movimiento.controller.js"></script>
 <script src="js/controllers/auditoria.controller.js"></script>
 <script src="js/controllers/reporte.controller.js"></script>
+<script src="js/controllers/usuario.controller.js"></script>
 <script src="js/ui/router.js"></script>
 <script src="js/ui/charts.js"></script>
+<script src="js/utils/clock.js"></script>
 <script src="js/app.js"></script>
-
-<!-- Clock + gauge animation init -->
-<script>
-(function () {
-    // Reloj
-    function tick() {
-        var now = new Date();
-        var pad = function(n){ return String(n).padStart(2,'0'); };
-        var clockEl = document.getElementById('clock');
-        if (clockEl) clockEl.textContent = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
-        var dateEl = document.getElementById('topbar-date');
-        if (dateEl) {
-            var months = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-            dateEl.textContent = pad(now.getDate())+' '+months[now.getMonth()]+' '+now.getFullYear();
-        }
-    }
-    tick();
-    setInterval(tick, 1000);
-
-    // Gauge fill animación — se llama desde app.js o dashboard loader
-    window.animateGauges = function () {
-        document.querySelectorAll('.gauge-fill[data-fill]').forEach(function(el) {
-            requestAnimationFrame(function() {
-                el.style.width = el.getAttribute('data-fill') + '%';
-            });
-        });
-    };
-})();
-</script>
 
 </body>
 </html>

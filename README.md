@@ -100,11 +100,13 @@ Para utilizarlo:
 
 ## 🔑 Credenciales de Prueba por Defecto (`data.sql`)
 
-| Usuario | Correo Electrónico | Contraseña | Rol |
-| :--- | :--- | :--- | :--- |
-| **Administrador** | `admin@logitrack.com` | `admin123` | `ADMIN` |
-| **Empleado Carlos** | `carlos@logitrack.com` | `empleado123` | `EMPLEADO` |
-| **Empleado María** | `maria@logitrack.com` | `empleado123` | `EMPLEADO` |
+| Rol | Usuario | Correo Electrónico | Contraseña | Permisos y Alcance |
+| :--- | :--- | :--- | :--- | :--- |
+| 🔑 **`ADMIN`** | Admin Sistema | `admin@logitrack.com` | `admin123` | Control Total + Gestión Usuarios + API Docs |
+| 📊 **`GERENTE_LOGISTICA`** | Sofía Ramírez | `sofia@logitrack.com` | `empleado123` | Dashboard + Auditoría + Reportes Excel/PDF (Vista Ejecutiva) |
+| 🕵️ **`SUPERVISOR`** | Laura Pérez | `laura@logitrack.com` | `empleado123` | Dashboard + Auditoría + Reportes + Edición/Eliminación Bodegas/Productos |
+| 🛍️ **`JEFE_COMPRAS`** | Pedro Sánchez | `pedro@logitrack.com` | `empleado123` | Dashboard + Alta/Edición Productos + Movimientos (Entradas, Salidas, Transferencias) |
+| 👤 **`EMPLEADO`** | Carlos González | `carlos@logitrack.com` | `empleado123` | Dashboard + Operación (Entradas/Salidas/Transferencias). Modo Lectura |
 
 ---
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface IAlertaStockService {
     void verificarYGenerarAlerta(Producto producto, Bodega bodega, Integer stockActual);
+    List<AlertaStockResponse> listarTodas();
     List<AlertaStockResponse> listarPendientes();
     List<AlertaStockResponse> listarPorProducto(Long productoId);
     void resolver(Long alertaId, String emailUsuario);

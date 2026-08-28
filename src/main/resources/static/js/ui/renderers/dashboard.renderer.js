@@ -108,9 +108,27 @@ const DashboardRenderer = {
         `;
     },
 
-    renderBajoStockList(productos, containerId = 'dashboard-bajo-stock-container') {
+    renderBajoStockList(productos, alertasPendientes = [], containerId = 'dashboard-bajo-stock-container') {
         const container = document.getElementById(containerId);
         if (!container) return;
+
+        // Si tenemos alertas activas desde la base de datos, mostrarlas prioritariamente
+        if (alertasPendientes && alertasPendientes.length > 0) {
+            const rows = alertasPendientes.slice(0, 5).map(a => `
+                <div class="alert-row" style="display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--danger); padding-left: 10px;">
+                    <div>
+                        <div class="alert-name"><strong>${a.productoNombre || 'Producto'}</strong></div>
+                        <div class="alert-cat" style="color: var(--text-muted); font-size: 11px;">${a.bodegaNombre || 'Bodega'} · Mín: ${a.stockMinimo} u.</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="alert-stock" style="margin-right: 4px; color: var(--danger); font-weight: 700;">${a.stockActual} u.</div>
+                        <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px; border-color: var(--success); color: var(--success);" onclick="App.resolverAlertaStock(${a.id})" title="Marcar como resuelta">✓ Resolver</button>
+                    </div>
+                </div>
+            `).join('');
+            container.innerHTML = rows;
+            return;
+        }
 
         if (!productos || productos.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">Sin alertas de bajo stock.</p>`;
@@ -124,7 +142,7 @@ const DashboardRenderer = {
             <div class="alert-row" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div class="alert-name"><strong>${p.nombre}</strong></div>
-                    <div class="alert-cat">${p.categoriaNombre || 'General'} · B-01</div>
+                    <div class="alert-cat">${p.categoriaNombre || 'General'} · Catálogo</div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="alert-stock" style="margin-right: 4px;">${p.stock} u.</div>

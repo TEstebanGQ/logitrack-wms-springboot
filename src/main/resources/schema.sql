@@ -125,13 +125,7 @@ CREATE TABLE IF NOT EXISTS clientes (
     updated_at  TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS configuracion (
-    id          BIGSERIAL PRIMARY KEY,
-    clave       VARCHAR(100) NOT NULL UNIQUE,
-    valor       VARCHAR(500) NOT NULL,
-    descripcion VARCHAR(500),
-    updated_at  TIMESTAMP
-);
+
 
 CREATE TABLE IF NOT EXISTS alertas_stock (
     id              BIGSERIAL PRIMARY KEY,
@@ -157,27 +151,7 @@ CREATE TABLE IF NOT EXISTS notificaciones (
     url_accion      VARCHAR(500)
 );
 
-CREATE TABLE IF NOT EXISTS solicitudes_transferencia (
-    id                  BIGSERIAL PRIMARY KEY,
-    bodega_origen_id    BIGINT NOT NULL REFERENCES bodegas(id),
-    bodega_destino_id   BIGINT NOT NULL REFERENCES bodegas(id),
-    solicitante_id      BIGINT NOT NULL REFERENCES usuarios(id),
-    aprobador_id        BIGINT REFERENCES usuarios(id),
-    estado              VARCHAR(30) NOT NULL DEFAULT 'PENDIENTE',
-    observaciones       VARCHAR(500),
-    motivo_rechazo      VARCHAR(500),
-    total_unidades      INT NOT NULL DEFAULT 0,
-    fecha_solicitud     TIMESTAMP NOT NULL DEFAULT NOW(),
-    fecha_resolucion    TIMESTAMP,
-    fecha_expiracion    TIMESTAMP
-);
 
-CREATE TABLE IF NOT EXISTS solicitud_detalle_transferencia (
-    id              BIGSERIAL PRIMARY KEY,
-    solicitud_id    BIGINT NOT NULL REFERENCES solicitudes_transferencia(id) ON DELETE CASCADE,
-    producto_id     BIGINT NOT NULL REFERENCES productos(id),
-    cantidad        INT NOT NULL
-);
 
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS categoria_id BIGINT REFERENCES categorias(id);
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS stock_minimo INT NOT NULL DEFAULT 10;

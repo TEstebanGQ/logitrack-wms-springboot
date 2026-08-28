@@ -65,13 +65,7 @@ INSERT INTO inventario_bodega (bodega_id, producto_id, stock_actual, ultima_actu
 (5, 1,  5, CURRENT_TIMESTAMP), (5, 2,  5, CURRENT_TIMESTAMP), (5, 3, 15, CURRENT_TIMESTAMP), (5, 7, 30, CURRENT_TIMESTAMP)
 ON CONFLICT (bodega_id, producto_id) DO NOTHING;
 
--- Configuración del sistema
-INSERT INTO configuracion (clave, valor, descripcion) VALUES
-    ('UMBRAL_APROBACION', '50', 'Número de unidades a partir del cual una solicitud de transferencia requiere aprobación de ADMIN'),
-    ('LIMITE_DIARIO_EMPLEADO', '150', 'Límite máximo de unidades que un empleado puede transferir automáticamente en un día'),
-    ('HORAS_EXPIRACION_SOLICITUD', '48', 'Horas antes de que una solicitud PENDIENTE expire automáticamente'),
-    ('STOCK_MINIMO_DEFAULT', '10', 'Stock mínimo por defecto para alertas de stock bajo')
-ON CONFLICT (clave) DO NOTHING;
+
 
 -- Proveedores
 INSERT INTO proveedores (id, nombre, ruc, telefono, email, direccion, activo, created_at) VALUES

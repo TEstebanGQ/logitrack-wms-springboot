@@ -10,6 +10,7 @@ const App = {
         this.initCommandPalette();
         Router.init();
         this.updateUserInfo();
+        this.initNotifications();
     },
 
     // Mobile Hamburger Sidebar Toggle
@@ -661,15 +662,137 @@ const App = {
 
             const lowStockCount = productos.filter(p => p.stock < 10).length;
             const bajoStockMetricEl = document.getElementById('metric-bajo-stock');
-            if (bajoStockMetricEl) bajoStockMetricEl.innerText = String(lowStockCount).padStart(2, '0');
+            
+            // Cargar alertas reales de stock de la base de datos
+            const alertasPendientes = await AlertaStockService.getPendientes().catch(() => []);
+            const totalAlertas = (alertasPendientes && alertasPendientes.length > 0) ? alertasPendientes.length : lowStockCount;
+            if (bajoStockMetricEl) bajoStockMetricEl.innerText = String(totalAlertas).padStart(2, '0');
 
             DashboardRenderer.renderBodegasCards(bodegasActivas);
             DashboardRenderer.renderMovimientosRecientes(movimientos);
-            DashboardRenderer.renderBajoStockList(productos.filter(p => p.stock < 10));
+            DashboardRenderer.renderBajoStockList(productos.filter(p => p.stock < 10), alertasPendientes);
 
             if (typeof window.animateGauges === 'function') window.animateGauges();
         } catch (err) {
             console.error('Error cargando dashboard:', err);
+        }
+    },
+
+    // ===== Centro de Notificaciones & Alertas =====
+    initNotifications() {
+        this.loadNotificationCount();
+        setInterval(() => {
+            if (typeof AuthService !== 'undefined' && AuthService.isAuthenticated && AuthService.isAuthenticated()) {
+                this.loadNotificationCount();
+            }
+        }, 20000);
+
+        document.addEventListener('click', (e) => {
+            const notifWrapper = document.querySelector('.notification-wrapper');
+            const dropdown = document.getElementById('notification-dropdown');
+            if (notifWrapper && dropdown && !notifWrapper.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    },
+
+    async loadNotificationCount() {
+        if (typeof AuthService === 'undefined' || !AuthService.isAuthenticated || !AuthService.isAuthenticated()) return;
+        try {
+            const data = await NotificacionService.getContadorNoLeidas().catch(() => null);
+            const badge = document.getElementById('notification-badge');
+            if (badge && data) {
+                const count = data.noLeidas || 0;
+                badge.innerText = count > 99 ? '99+' : count;
+                badge.style.display = count > 0 ? 'inline-block' : 'none';
+            }
+        } catch (e) {
+            console.error('Error cargando contador de notificaciones:', e);
+        }
+    },
+
+    async toggleNotificationCenter() {
+        const dropdown = document.getElementById('notification-dropdown');
+        if (!dropdown) return;
+        const isVisible = dropdown.style.display === 'flex';
+        if (isVisible) {
+            dropdown.style.display = 'none';
+        } else {
+            dropdown.style.display = 'flex';
+            await this.loadNotificationsList();
+        }
+    },
+
+    async loadNotificationsList() {
+        const container = document.getElementById('notification-list-container');
+        if (!container) return;
+        try {
+            container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 12px;">Cargando notificaciones...</div>';
+            const notifs = await NotificacionService.getAll().catch(() => []);
+            if (!notifs || notifs.length === 0) {
+                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 12px;">Sin notificaciones recientes</div>';
+                return;
+            }
+            container.innerHTML = notifs.map(n => {
+                let icon = 'ℹ️';
+                if (n.tipo === 'ALERTA') icon = '⚠️';
+                else if (n.tipo === 'EXITO') icon = '✓';
+                else if (n.tipo === 'ERROR') icon = '✕';
+
+                const hora = n.fechaCreacion ? new Date(n.fechaCreacion).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                return `
+                    <div style="padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; align-items: flex-start; ${n.leida ? 'opacity: 0.55;' : 'background: rgba(255,255,255,0.03);'}">
+                        <span style="font-size: 14px; line-height: 1.2;">${icon}</span>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px;">
+                                <strong style="font-size: 12px; color: var(--text-color);">${n.titulo}</strong>
+                                <small style="font-size: 10px; color: var(--text-dim);">${hora}</small>
+                            </div>
+                            <p style="font-size: 11px; color: var(--text-muted); margin: 0; line-height: 1.3;">${n.mensaje}</p>
+                            ${!n.leida ? `
+                                <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+                                    <button class="btn btn-secondary btn-sm" style="padding: 1px 6px; font-size: 9px;" onclick="App.marcarNotificacionLeida(${n.id}, event)">Marcar leída</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (e) {
+            container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--danger); font-size: 12px;">Error al cargar notificaciones</div>';
+        }
+    },
+
+    async marcarNotificacionLeida(id, event) {
+        if (event) event.stopPropagation();
+        try {
+            await NotificacionService.marcarLeida(id);
+            await this.loadNotificationCount();
+            await this.loadNotificationsList();
+        } catch (e) {
+            Toast.error('Error al marcar notificación');
+        }
+    },
+
+    async marcarTodasNotificacionesLeidas() {
+        try {
+            await NotificacionService.marcarTodasLeidas();
+            await this.loadNotificationCount();
+            await this.loadNotificationsList();
+            Toast.success('Todas las notificaciones marcadas como leídas');
+        } catch (e) {
+            Toast.error('Error al actualizar notificaciones');
+        }
+    },
+
+    async resolverAlertaStock(alertaId) {
+        try {
+            await AlertaStockService.resolver(alertaId);
+            Toast.success('Alerta de stock resuelta');
+            this.loadDashboard();
+            this.loadNotificationCount();
+        } catch (e) {
+            Toast.error('Error al resolver alerta');
         }
     },
 

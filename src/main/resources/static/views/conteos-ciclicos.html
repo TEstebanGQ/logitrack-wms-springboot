@@ -1,0 +1,85 @@
+<section id="view-conteos-ciclicos" class="view-section">
+    <div class="view-header">
+        <div class="view-title">
+            <h2>Conteos Cíclicos y Auditoría Física de Inventario</h2>
+            <p>Programación de inventarios rotativos, conteo a ciegas y conciliación automática con ajustes.</p>
+        </div>
+        <div class="view-actions">
+            <button id="btn-nuevo-conteo" class="btn btn-primary" onclick="ConteoController.abrirModalProgramar()">+ Programar Auditoría</button>
+        </div>
+    </div>
+
+    <!-- Lista de Auditorías -->
+    <div class="table-container card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">📑 Historial de Auditorías Físicas</h4>
+            <span id="contador-conteos" class="badge badge-info">0 auditorías</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código Conteo</th>
+                    <th>Bodega / Zona</th>
+                    <th>Fecha Programada</th>
+                    <th>Supervisor</th>
+                    <th>Líneas Auditadas</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-conteos-body">
+                <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">Cargando auditorías...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Programar Auditoría -->
+    <div id="modal-conteo" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:550px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Programar Conteo Cíclico</h3>
+                <button class="btn btn-sm btn-secondary" onclick="ConteoController.cerrarModalProgramar()">✕</button>
+            </div>
+            <form id="form-conteo" onsubmit="ConteoController.guardarProgramacion(event)">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Bodega a Auditar:</label>
+                    <select id="conteo-bodega" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Fecha Programada:</label>
+                    <input type="date" id="conteo-fecha" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Producto a Verificar:</label>
+                    <select id="conteo-producto" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Observaciones / Justificación:</label>
+                    <textarea id="conteo-obs" class="form-control" rows="2" placeholder="Auditoría preventiva..."></textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-secondary" onclick="ConteoController.cerrarModalProgramar()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear Programación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalles y Conteo Físico -->
+    <div id="modal-conteo-detalles" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:750px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 id="modal-conteo-titulo" style="margin:0; font-size:1.2rem; color:var(--text-bright);">Detalles de Auditoría</h3>
+                <button class="btn btn-sm btn-secondary" onclick="ConteoController.cerrarModalDetalles()">✕</button>
+            </div>
+            <div id="modal-conteo-lineas-container"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                <span id="conteo-status-badge"></span>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn btn-secondary" onclick="ConteoController.cerrarModalDetalles()">Cerrar</button>
+                    <button id="btn-conciliar-conteo" type="button" class="btn btn-success" onclick="ConteoController.conciliarConteo()">⚡ Conciliar y Ajustar Inventario</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,85 @@
+<section id="view-picking" class="view-section">
+    <div class="view-header">
+        <div class="view-title">
+            <h2>Monitor de Picking y Recolección WMS</h2>
+            <p>Asignación de tareas operativas, ubicación de origen y avance de recolección en estantería.</p>
+        </div>
+        <div class="view-actions">
+            <button class="btn btn-secondary" onclick="PickingController.load()">🔄 Actualizar Tareas</button>
+        </div>
+    </div>
+
+    <!-- Filtros de Picking -->
+    <div class="filters-bar card" style="margin-bottom:1.5rem; padding:1.25rem;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; align-items:flex-end;">
+            <div class="filter-group">
+                <label>Buscar por Código o Pedido:</label>
+                <input type="text" id="filtro-pck-search" class="form-control" placeholder="PCK-..., PED-...">
+            </div>
+            <div class="filter-group">
+                <label>Estado de Picking:</label>
+                <select id="filtro-pck-estado" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="PENDIENTE">PENDIENTE</option>
+                    <option value="EN_PROCESO">EN PROCESO</option>
+                    <option value="COMPLETADA">COMPLETADA</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Tareas de Picking -->
+    <div class="table-container card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">📋 Órdenes de Extracción Activas</h4>
+            <span id="contador-picking" class="badge badge-info">0 tareas</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código Tarea</th>
+                    <th>Pedido Relacionado</th>
+                    <th>Producto</th>
+                    <th>Ubicación Estante</th>
+                    <th>Requerido</th>
+                    <th>Recolectado</th>
+                    <th>Estado</th>
+                    <th>Acción del Operario</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-picking-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando tareas de picking...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Recolección de Picking -->
+    <div id="modal-picking-accion" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:450px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Avance de Picking</h3>
+                <button class="btn btn-sm btn-secondary" onclick="PickingController.cerrarModal()">✕</button>
+            </div>
+            <form id="form-picking-accion" onsubmit="PickingController.guardarAvance(event)">
+                <input type="hidden" id="pck-tarea-id">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Producto:</label>
+                    <input type="text" id="pck-prod-nombre" class="form-control" readonly>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Cantidad Recolectada:</label>
+                    <input type="number" id="pck-cant-recogida" class="form-control" min="0" required>
+                    <small id="pck-cant-max-info" style="color:var(--text-muted);"></small>
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Observaciones del Operario:</label>
+                    <textarea id="pck-notas" class="form-control" rows="2" placeholder="Notas de recolección..."></textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-secondary" onclick="PickingController.cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Confirmar Recolección</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

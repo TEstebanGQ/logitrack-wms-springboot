@@ -813,6 +813,16 @@ const App = {
                 await ProductoModuleController.load();
             } else if (view === 'movimientos') {
                 await MovimientoModuleController.load();
+            } else if (view === 'pedidos') {
+                if (typeof PedidoController !== 'undefined') await PedidoController.load();
+            } else if (view === 'despachos') {
+                if (typeof DespachoController !== 'undefined') await DespachoController.load();
+            } else if (view === 'picking') {
+                if (typeof PickingController !== 'undefined') await PickingController.load();
+            } else if (view === 'conteos-ciclicos') {
+                if (typeof ConteoController !== 'undefined') await ConteoController.load();
+            } else if (view === 'zonas-series') {
+                if (typeof ZonasSeriesController !== 'undefined') await ZonasSeriesController.load();
             } else if (view === 'clientes') {
                 await ClienteModuleController.load();
             } else if (view === 'proveedores') {

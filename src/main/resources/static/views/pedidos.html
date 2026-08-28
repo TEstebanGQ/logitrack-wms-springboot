@@ -1,0 +1,104 @@
+<section id="view-pedidos" class="view-section">
+    <div class="view-header">
+        <div class="view-title">
+            <h2>Pedidos de Clientes y Ventas</h2>
+            <p>Gestión del ciclo comercial de pedidos, reserva de stock, picking y despacho.</p>
+        </div>
+        <div class="view-actions">
+            <button id="btn-nuevo-pedido" class="btn btn-primary" onclick="PedidoController.abrirModalCrear()">+ Nuevo Pedido</button>
+        </div>
+    </div>
+
+    <!-- Filtros y buscador -->
+    <div class="filters-bar card" style="margin-bottom:1.5rem; padding:1.25rem;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; align-items:flex-end;">
+            <div class="filter-group">
+                <label>Buscar Pedido:</label>
+                <input type="text" id="filtro-ped-search" class="form-control" placeholder="Código, cliente...">
+            </div>
+            <div class="filter-group">
+                <label>Filtrar por Estado:</label>
+                <select id="filtro-ped-estado" class="form-control">
+                    <option value="">Todos los estados</option>
+                    <option value="PENDIENTE">PENDIENTE</option>
+                    <option value="EN_PREPARACION">EN PREPARACIÓN</option>
+                    <option value="EMPACADO">EMPACADO</option>
+                    <option value="DESPACHADO">DESPACHADO</option>
+                    <option value="ENTREGADO">ENTREGADO</option>
+                    <option value="CANCELADO">CANCELADO</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button class="btn btn-secondary" onclick="PedidoController.load()" style="width:100%;">🔄 Actualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Pedidos -->
+    <div class="table-container card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Registro de Pedidos Comerciales</h4>
+            <span id="contador-pedidos" class="badge badge-info">0 pedidos</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Cliente</th>
+                    <th>Bodega Origen</th>
+                    <th>Fecha Pedido</th>
+                    <th>Compromiso</th>
+                    <th>Total ($)</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-pedidos-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando pedidos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Crear Pedido -->
+    <div id="modal-pedido" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:600px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Crear Nuevo Pedido de Cliente</h3>
+                <button class="btn btn-sm btn-secondary" onclick="PedidoController.cerrarModal()">✕</button>
+            </div>
+            <form id="form-pedido" onsubmit="PedidoController.guardar(event)">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Cliente:</label>
+                    <select id="ped-cliente" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Bodega de Origen (Despacho):</label>
+                    <select id="ped-bodega" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Fecha de Compromiso de Entrega:</label>
+                    <input type="date" id="ped-fecha-compromiso" class="form-control">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Dirección de Entrega:</label>
+                    <input type="text" id="ped-direccion" class="form-control" placeholder="Dirección de destino">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Producto a Solicitar:</label>
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+                        <select id="ped-producto" class="form-control" required></select>
+                        <input type="number" id="ped-cantidad" class="form-control" placeholder="Cantidad" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Observaciones:</label>
+                    <textarea id="ped-obs" class="form-control" rows="2" placeholder="Notas de entrega o embalaje..."></textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-secondary" onclick="PedidoController.cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Registrar Pedido</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

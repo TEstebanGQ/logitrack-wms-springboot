@@ -1,0 +1,178 @@
+<section id="view-zonas-series" class="view-section">
+    <div class="view-header">
+        <div class="view-title">
+            <h2>Estructura Física, Series y Unidades de Medida</h2>
+            <p>Configuración de macro-zonas, tipologías de estantes, unidades y trazabilidad de números de serie.</p>
+        </div>
+        <div class="view-actions">
+            <button class="btn btn-primary btn-sm" onclick="ZonasSeriesController.abrirModalSerie()">+ Nueva Serie</button>
+            <button class="btn btn-secondary btn-sm" onclick="ZonasSeriesController.abrirModalZona()">+ Nueva Zona</button>
+            <button class="btn btn-secondary btn-sm" onclick="ZonasSeriesController.abrirModalUnidad()">+ Unidad Medida</button>
+        </div>
+    </div>
+
+    <!-- Trazabilidad de Números de Serie -->
+    <div class="table-container card" style="margin-bottom:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🏷️ Trazabilidad de Números de Serie Unitarios</h4>
+            <span id="contador-series" class="badge badge-info">0 series</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Número de Serie</th>
+                    <th>Producto</th>
+                    <th>Bodega / Ubicación</th>
+                    <th>Fecha Ingreso</th>
+                    <th>Estado Serie</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-series-body">
+                <tr><td colspan="6" class="text-center py-4" style="color:var(--text-muted);">Cargando números de serie...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:20px;">
+        <!-- Zonas de Bodega -->
+        <div class="table-container card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🏬 Zonas Operativas de Bodega</h4>
+                <span id="contador-zonas" class="badge badge-info">0 zonas</span>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Tipo Zona</th>
+                        <th>Bodega</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-zonas-body">
+                    <tr><td colspan="4" class="text-center py-4" style="color:var(--text-muted);">Cargando zonas...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Unidades de Medida -->
+        <div class="table-container card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">⚖️ Unidades de Medida y Empaque</h4>
+                <span id="contador-unidades" class="badge badge-info">0 unidades</span>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Abreviatura</th>
+                        <th>Factor Base</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-unidades-body">
+                    <tr><td colspan="4" class="text-center py-4" style="color:var(--text-muted);">Cargando unidades...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Serie -->
+    <div id="modal-serie" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:500px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Número de Serie</h3>
+                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalSerie()">✕</button>
+            </div>
+            <form id="form-serie" onsubmit="ZonasSeriesController.guardarSerie(event)">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Número de Serie (Único):</label>
+                    <input type="text" id="serie-numero" class="form-control" required placeholder="Ej: SN-DELL-998877">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Producto:</label>
+                    <select id="serie-producto" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Bodega:</label>
+                    <select id="serie-bodega" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Observaciones:</label>
+                    <input type="text" id="serie-obs" class="form-control" placeholder="Notas de garantía o lote...">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-secondary" onclick="ZonasSeriesController.cerrarModalSerie()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Registrar Serie</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Zona -->
+    <div id="modal-zona" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:500px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Zona de Bodega</h3>
+                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalZona()">✕</button>
+            </div>
+            <form id="form-zona" onsubmit="ZonasSeriesController.guardarZona(event)">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Código Zona:</label>
+                    <input type="text" id="zona-codigo" class="form-control" required placeholder="Ej: ZN-B1-ALM2">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Nombre de la Zona:</label>
+                    <input type="text" id="zona-nombre" class="form-control" required placeholder="Ej: Pasillo Picking Sur">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Tipo de Zona:</label>
+                    <select id="zona-tipo" class="form-control">
+                        <option value="ALMACENAMIENTO">ALMACENAMIENTO</option>
+                        <option value="RECEPCION">RECEPCIÓN</option>
+                        <option value="PICKING">PICKING</option>
+                        <option value="CUARENTENA">CUARENTENA</option>
+                        <option value="DESPACHO">DESPACHO</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Bodega Perteneciente:</label>
+                    <select id="zona-bodega" class="form-control" required></select>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-secondary" onclick="ZonasSeriesController.cerrarModalZona()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Zona</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Unidad -->
+    <div id="modal-unidad" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:450px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Unidad de Medida</h3>
+                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalUnidad()">✕</button>
+            </div>
+            <form id="form-unidad" onsubmit="ZonasSeriesController.guardarUnidad(event)">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Código (Abreviado):</label>
+                    <input type="text" id="unidad-codigo" class="form-control" required placeholder="Ej: PAQ">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Nombre:</label>
+                    <input type="text" id="unidad-nombre" class="form-control" required placeholder="Ej: Paquete x50">
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Factor de Conversión Base:</label>
+                    <input type="number" id="unidad-factor" class="form-control" required min="1" value="1">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn btn-secondary" onclick="ZonasSeriesController.cerrarModalUnidad()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Unidad</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

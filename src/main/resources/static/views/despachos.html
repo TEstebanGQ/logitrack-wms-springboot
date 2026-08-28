@@ -1,0 +1,143 @@
+<section id="view-despachos" class="view-section">
+    <div class="view-header">
+        <div class="view-title">
+            <h2>Despachos, Transportadoras y Guías de Envío</h2>
+            <p>Emisión de albaranes, asignación de convenios logísticos y trazabilidad de entregas.</p>
+        </div>
+        <div class="view-actions">
+            <button id="btn-nueva-guia" class="btn btn-primary" onclick="DespachoController.abrirModalGuia()">+ Generar Guía de Envío</button>
+            <button id="btn-nueva-transp" class="btn btn-secondary" onclick="DespachoController.abrirModalTransportadora()">+ Transportadora</button>
+        </div>
+    </div>
+
+    <!-- Guías de Despacho -->
+    <div class="table-container card" style="margin-bottom:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🚚 Guías de Envío Activas</h4>
+            <span id="contador-guias" class="badge badge-info">0 guías</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nº Guía</th>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Transportadora</th>
+                    <th>Vehículo / Conductor</th>
+                    <th>Fecha Despacho</th>
+                    <th>Estado Envío</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-guias-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando guías de despacho...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Transportadoras Registradas -->
+    <div class="table-container card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🏢 Empresas Transportadoras y Flotas</h4>
+            <span id="contador-transportadoras" class="badge badge-info">0 empresas</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Razón Social</th>
+                    <th>NIT / RUC</th>
+                    <th>Tipo Servicio</th>
+                    <th>Contacto / Teléfono</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-transportadoras-body">
+                <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">Cargando transportadoras...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Generar Guía -->
+    <div id="modal-guia" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:550px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Generar Guía de Despacho</h3>
+                <button class="btn btn-sm btn-secondary" onclick="DespachoController.cerrarModalGuia()">✕</button>
+            </div>
+            <form id="form-guia" onsubmit="DespachoController.guardarGuia(event)">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Número de Guía / Tracking:</label>
+                    <input type="text" id="guia-numero" class="form-control" placeholder="Ej: GUIA-COL-2026-001" required>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Pedido a Enviar:</label>
+                    <select id="guia-pedido" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Empresa Transportadora:</label>
+                    <select id="guia-transportadora" class="form-control" required></select>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <div class="form-group">
+                        <label>Nombre del Conductor:</label>
+                        <input type="text" id="guia-conductor" class="form-control" placeholder="Ej: Carlos Silva">
+                    </div>
+                    <div class="form-group">
+                        <label>Placa Vehículo:</label>
+                        <input type="text" id="guia-placa" class="form-control" placeholder="Ej: ABC-123">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Costo de Flete ($):</label>
+                    <input type="number" id="guia-flete" class="form-control" placeholder="0.00" min="0">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                    <button type="button" class="btn btn-secondary" onclick="DespachoController.cerrarModalGuia()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Emitir Guía</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Transportadora -->
+    <div id="modal-transp" class="modal-backdrop" style="display:none;">
+        <div class="modal-dialog card" style="max-width:500px; padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Registrar Transportadora</h3>
+                <button class="btn btn-sm btn-secondary" onclick="DespachoController.cerrarModalTransportadora()">✕</button>
+            </div>
+            <form id="form-transp" onsubmit="DespachoController.guardarTransportadora(event)">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Razón Social:</label>
+                    <input type="text" id="transp-nombre" class="form-control" required placeholder="Nombre de la empresa">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>NIT / RUC:</label>
+                    <input type="text" id="transp-ruc" class="form-control" required placeholder="900123456-1">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Tipo de Servicio:</label>
+                    <select id="transp-tipo" class="form-control">
+                        <option value="TERRESTRE">TERRESTRE</option>
+                        <option value="AEREO">AÉREO</option>
+                        <option value="FLOTA_PROPIA">FLOTA PROPIA</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Teléfono:</label>
+                    <input type="text" id="transp-telefono" class="form-control">
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label>Email de Contacto:</label>
+                    <input type="email" id="transp-email" class="form-control">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                    <button type="button" class="btn btn-secondary" onclick="DespachoController.cerrarModalTransportadora()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

@@ -1,5 +1,6 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
+import com.proyecto.proyectoSpringBoot.dto.response.ClasificacionAbcResponse;
 import com.proyecto.proyectoSpringBoot.dto.response.ReporteStockResponse;
 import com.proyecto.proyectoSpringBoot.repository.InventarioBodegaRepository;
 import com.proyecto.proyectoSpringBoot.repository.MovimientoRepository;

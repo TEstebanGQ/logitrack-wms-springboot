@@ -156,4 +156,18 @@ class AjusteInventarioServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> ajusteService.registrarAjuste(req, "admin@logitrack.com"));
     }
+
+    @Test
+    @DisplayName("09. Debe lanzar IllegalArgumentException si la cantidad nueva es negativa")
+    void testCantidadNegativaFalla() {
+        CrearAjusteRequest req = CrearAjusteRequest.builder()
+                .bodegaId(1L)
+                .productoId(1L)
+                .tipoAjuste(TipoAjuste.MERMA)
+                .cantidadNueva(-10)
+                .justificacion("Negativo")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> ajusteService.registrarAjuste(req, "admin@logitrack.com"));
+    }
 }

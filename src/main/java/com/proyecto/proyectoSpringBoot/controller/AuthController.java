@@ -27,6 +27,7 @@ public class AuthController {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final com.proyecto.proyectoSpringBoot.service.interfaces.IEmailService emailService;
 
     @PostMapping("/login")
     @Operation(summary = "Iniciar sesión y obtener token JWT")
@@ -63,7 +64,11 @@ public class AuthController {
                 .rol(RolUsuario.valueOf(request.getRol().toUpperCase()))
                 .activo(true)
                 .build();
-        usuarioRepository.save(usuario);
+        Usuario guardado = usuarioRepository.save(usuario);
+
+        // Envío asíncrono del correo corporativo de bienvenida según el rol
+        emailService.enviarCorreoBienvenida(guardado);
+
         return ResponseEntity.ok(java.util.Map.of("mensaje", "Usuario registrado exitosamente"));
     }
 

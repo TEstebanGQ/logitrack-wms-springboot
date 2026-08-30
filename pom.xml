@@ -43,6 +43,12 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+		<!-- Spring Mail (JavaMailSender / Gmail SMTP) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- PostgreSQL Driver -->
 		<dependency>
 			<groupId>org.postgresql</groupId>

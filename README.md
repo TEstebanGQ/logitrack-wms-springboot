@@ -167,8 +167,34 @@ Para utilizarlo:
 
 ---
 
-## 🧪 Pruebas Automatizadas
-El sistema incluye una suite de **140 pruebas unitarias y de integración** con **100% de éxito**:
-```bash
-mvn test
+## 📧 Configuración de Correo Electrónico (Gmail SMTP)
+
+LogiTrack envía un correo electrónico de bienvenida profesional en formato HTML adaptado al rol del usuario (`ADMIN`, `SUPERVISOR`, `GERENTE_LOGISTICA`, `JEFE_COMPRAS`, `EMPLEADO`) al completar su registro.
+
+### Pasos para configurar Gmail con Contraseña de Aplicación:
+
+1. Ve a la [Seguridad de tu Cuenta de Google](https://myaccount.google.com/security) y activa la **Verificación en 2 pasos**.
+2. Ingresa a [Contraseñas de Aplicación](https://myaccount.google.com/apppasswords).
+3. En el nombre de la app escribe `LogiTrack` y haz clic en **Crear**.
+4. Copia la contraseña de 16 caracteres generada (ej: `xxxx xxxx xxxx xxxx`).
+5. Configura las variables en tu archivo `.env` o en las variables de entorno:
+
+```env
+SPRING_MAIL_HOST=smtp.gmail.com
+SPRING_MAIL_PORT=587
+SPRING_MAIL_USERNAME=tu_cuenta@gmail.com
+SPRING_MAIL_PASSWORD=tu_contraseña_de_aplicación_16_caracteres
+APP_MAIL_ENABLED=true
+APP_MAIL_FROM=no-reply@logitrack.com
 ```
+
+> **Nota:** Si no se configuran las variables de correo en desarrollo, el sistema funcionará normalmente registrando los usuarios sin interrumpir el flujo.
+
+---
+
+## 🧪 Pruebas Automatizadas
+El sistema incluye una suite de pruebas unitarias y de integración completas:
+```bash
+./mvnw test
+```
+

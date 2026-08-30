@@ -192,3 +192,20 @@ La seguridad del sistema está construida sobre **Spring Security 6** y tokens *
    Host: localhost:8081
    Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBsb2dpdHJhY2suY29tIiwiaWF0IjoxNzA4ODcwMDAwLCJleHAiOjE3MDg5NTY0MDB9.SIGNATURE
    ```
+
+---
+
+## 5. Servicio de Notificaciones y Correos de Bienvenida (Gmail SMTP)
+
+LogiTrack cuenta con un módulo de correos corporativos automáticos impulsado por `spring-boot-starter-mail`, `JavaMailSender` y plantillas HTML dinámicas adaptadas según el `RolUsuario`:
+
+1. **Disparo en Registro**: Al registrarse un usuario (POST `/api/auth/register`), el `AuthController` delega a `IEmailService.enviarCorreoBienvenida(usuario)`.
+2. **Ejecución Asíncrona (`@Async`)**: El envío ocurre en un pool de hilos independiente (`AsyncConfig` / `mailTaskExecutor`), respondiendo de inmediato al cliente HTTP.
+3. **Plantillas HTML Adaptadas por Rol (`EmailTemplateBuilder`)**:
+   - `ADMIN`: Insignia púrpura, credenciales de administración, auditoría global y seguridad.
+   - `SUPERVISOR`: Insignia ámbar, gestión de picking, conteos cíclicos y control de calidad.
+   - `GERENTE_LOGISTICA`: Insignia verde esmeralda, guías de despacho, transportadoras y KPIs ABC.
+   - `JEFE_COMPRAS`: Insignia azul cielo, órdenes de compra y gestión de proveedores.
+   - `EMPLEADO`: Insignia azul real, preparación de picking asistido y serialización.
+4. **Tolerancia a Fallos**: Si las credenciales SMTP no están presentes o hay cortes de red externos, el registro no se bloquea y se registra el error de forma segura en los logs.
+

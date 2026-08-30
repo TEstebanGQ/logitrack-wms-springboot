@@ -41,6 +41,12 @@ services:
       DB_PASSWORD: postgres
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com}
       PORT: 8081
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-smtp.gmail.com}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-}
+      APP_MAIL_ENABLED: ${APP_MAIL_ENABLED:-true}
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-no-reply@logitrack.com}
     ports:
       - "8081:8081"
     networks:

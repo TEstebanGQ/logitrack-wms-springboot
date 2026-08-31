@@ -36,11 +36,14 @@
     </div>
 
 
-    <!-- Tabla de Pedidos -->
-    <div class="table-container card">
+    <!-- 1. Tabla de Pedidos Activos en Proceso -->
+    <div class="table-container card" style="margin-bottom: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Registro de Pedidos Comerciales</h4>
-            <span id="contador-pedidos" class="badge badge-info">0 pedidos</span>
+            <div>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Pedidos Activos en Proceso</h4>
+                <small style="color:var(--text-muted);">Pedidos pendientes de preparación, empaque o despacho.</small>
+            </div>
+            <span id="contador-pedidos-activos" class="badge badge-warning">0 activos</span>
         </div>
         <table class="data-table">
             <thead>
@@ -55,11 +58,40 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="tabla-pedidos-body">
-                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando pedidos...</td></tr>
+            <tbody id="tabla-pedidos-activos-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando pedidos activos...</td></tr>
             </tbody>
         </table>
     </div>
+
+    <!-- 2. Historial de Pedidos Despachados y Finalizados -->
+    <div class="table-container card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Historial de Pedidos Despachados y Finalizados</h4>
+                <small style="color:var(--text-muted);">Pedidos despachados a transportadora, entregados o cancelados.</small>
+            </div>
+            <span id="contador-pedidos-historial" class="badge badge-success">0 despachados</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Cliente</th>
+                    <th>Bodega Origen</th>
+                    <th>Fecha Pedido</th>
+                    <th>Compromiso</th>
+                    <th>Total ($)</th>
+                    <th>Estado</th>
+                    <th>Seguimiento</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-pedidos-historial-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando pedidos despachados...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
 
     <!-- Modal Crear Pedido -->
     <div id="modal-pedido" class="modal-backdrop" style="display:none;">

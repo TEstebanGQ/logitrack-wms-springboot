@@ -944,19 +944,25 @@ const App = {
             el.style.display = (isAdmin || isSupervisor) ? '' : 'none';
         });
 
-        // 9. Despachos y Guías (+ Generar Guía, + Transportadora) -> ADMIN, SUPERVISOR, EMPLEADO
-        document.querySelectorAll('#btn-nueva-guia, #btn-nueva-transp').forEach(el => {
+        // 9. Despachos y Guías (+ Generar Guía) -> ADMIN, SUPERVISOR, EMPLEADO
+        document.querySelectorAll('#btn-nueva-guia').forEach(el => {
             el.style.display = (isAdmin || isSupervisor || isEmpleado) ? '' : 'none';
         });
 
-        // 10. Clientes y Proveedores (+ Nuevo Cliente, + Nuevo Proveedor) -> ADMIN, SUPERVISOR, EMPLEADO, GERENTE_LOGISTICA (Oculto para JEFE_COMPRAS)
+        // 10. Transportadoras (+ Transportadora) -> Solo ADMIN y SUPERVISOR
+        document.querySelectorAll('#btn-nueva-transp').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor) ? '' : 'none';
+        });
+
+        // 11. Clientes y Proveedores (+ Nuevo Cliente, + Nuevo Proveedor) -> ADMIN, SUPERVISOR, EMPLEADO, GERENTE_LOGISTICA (Oculto para JEFE_COMPRAS)
         const canCreateClientOrProvider = isAdmin || isSupervisor || isEmpleado || isGerente;
         document.querySelectorAll('#btn-nuevo-cliente, #btn-nuevo-proveedor').forEach(el => {
             el.style.display = canCreateClientOrProvider ? '' : 'none';
         });
 
-        // 11. Movimientos Manuales (+ Registrar Movimiento) -> Deshabilitado para GERENTE_LOGISTICA
+        // 12. Movimientos Manuales (+ Registrar Movimiento) -> Deshabilitado para GERENTE_LOGISTICA
         const canRegisterMovement = isAdmin || isSupervisor || isCompras || isEmpleado;
+
 
         document.querySelectorAll('.btn-op-only, #btn-nuevo-movimiento').forEach(el => {
             el.style.display = canRegisterMovement ? '' : 'none';

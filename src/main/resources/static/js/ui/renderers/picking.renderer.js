@@ -22,6 +22,9 @@ const PickingRenderer = {
 
             const pct = Math.min(100, Math.round((t.cantidadRecogida / t.cantidadRequerida) * 100));
 
+            const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+            const canPick = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+
             return `
                 <tr>
                     <td style="font-family:var(--font-mono); color:var(--accent); font-weight:600;">${t.codigoTarea}</td>
@@ -37,14 +40,15 @@ const PickingRenderer = {
                     </td>
                     <td><span class="badge ${badgeClass}">${t.estado}</span></td>
                     <td>
-                        ${t.estado !== 'COMPLETADA' && t.estado !== 'CANCELADA' ? `
+                        ${(t.estado !== 'COMPLETADA' && t.estado !== 'CANCELADA' && canPick) ? `
                             <button class="btn btn-sm btn-primary" onclick="PickingController.abrirModalRecoleccion(${t.id}, '${t.productoNombre}', ${t.cantidadRequerida}, ${t.cantidadRecogida})">
                                 Recolectar
                             </button>
-                        ` : '<span style="color:var(--text-muted); font-size:12px;">Finalizada</span>'}
+                        ` : (t.estado === 'COMPLETADA' || t.estado === 'CANCELADA') ? '<span style="color:var(--text-muted); font-size:12px;">Finalizada</span>' : '<span style="color:var(--text-muted); font-size:12px;">Lectura</span>'}
                     </td>
                 </tr>
             `;
+
         }).join('');
     }
 };

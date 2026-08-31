@@ -22,6 +22,9 @@ const DespachoRenderer = {
 
             const fecha = g.fechaDespacho ? new Date(g.fechaDespacho).toLocaleDateString() : '-';
 
+            const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+            const canDeliver = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+
             return `
                 <tr>
                     <td style="font-family:var(--font-mono); font-weight:600; color:var(--accent);">${g.numeroGuia}</td>
@@ -32,11 +35,12 @@ const DespachoRenderer = {
                     <td style="font-size:12px;">${fecha}</td>
                     <td><span class="badge ${badgeClass}">${g.estadoEnvio}</span></td>
                     <td>
-                        ${g.estadoEnvio !== 'ENTREGADO' ? `<button class="btn btn-sm btn-success" onclick="DespachoController.marcarEntregado(${g.id})">Entregado</button>` : '<span style="color:var(--success); font-size:12px;"> Completado</span>'}
+                        ${(g.estadoEnvio !== 'ENTREGADO' && canDeliver) ? `<button class="btn btn-sm btn-success" onclick="DespachoController.marcarEntregado(${g.id})">Entregado</button>` : (g.estadoEnvio === 'ENTREGADO') ? '<span style="color:var(--success); font-size:12px;"> Completado</span>' : '<span style="color:var(--text-muted); font-size:12px;">Lectura</span>'}
                     </td>
                 </tr>
             `;
         }).join('');
+
     },
 
     renderTransportadoras(transportadoras) {

@@ -66,16 +66,19 @@ const ConteoRenderer = {
             const diffClass = d.diferencia === 0 ? 'color:var(--success);' : (d.diferencia < 0 ? 'color:var(--danger); font-weight:700;' : 'color:var(--warning); font-weight:700;');
             const isClosed = conteo.estado === 'CERRADO';
 
+            const canCount = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+
             return `
                 <tr>
                     <td><strong style="color:var(--text-bright); font-size:13.5px;">${d.productoNombre}</strong></td>
                     <td style="text-align:center;"><span class="badge badge-info">${d.codigoUbicacion || 'Almacén General'}</span></td>
                     <td style="text-align:center;"><strong style="font-family:var(--font-mono);">${d.stockSistema}</strong> u.</td>
                     <td style="text-align:center;">
-                        ${!isClosed ? `
+                        ${(!isClosed && canCount) ? `
                             <input type="number" class="form-control" style="width:90px; display:inline-block; text-align:center; padding:4px 8px;" value="${d.stockFisico !== null ? d.stockFisico : d.stockSistema}" min="0" onchange="ConteoController.actualizarConteoFisico(${conteo.id}, ${d.id}, this.value)">
-                        ` : `<strong style="font-family:var(--font-mono);">${d.stockFisico}</strong> u.`}
+                        ` : `<strong style="font-family:var(--font-mono);">${d.stockFisico !== null ? d.stockFisico : '-'}</strong> u.`}
                     </td>
+
                     <td style="text-align:center; ${diffClass}">${d.diferencia > 0 ? '+' : ''}${d.diferencia} u.</td>
                     <td style="text-align:center;"><span class="badge ${d.diferencia === 0 ? 'badge-success' : 'badge-danger'}">${d.estadoLinea}</span></td>
                 </tr>

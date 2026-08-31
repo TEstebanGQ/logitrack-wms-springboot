@@ -15,8 +15,9 @@ const ProveedorRenderer = {
         }
 
         const currentUser = AuthService.getCurrentUser();
-        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS' || currentUser.rol === 'GERENTE_LOGISTICA');
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'GERENTE_LOGISTICA');
         const isAdmin = currentUser && currentUser.rol === 'ADMIN';
+
 
         const rows = list.map(p => `
             <tr>

@@ -981,8 +981,15 @@ const App = {
             el.style.display = (isAdmin || isSupervisor || isEmpleado) ? '' : 'none';
         });
 
-        // 10. Movimientos Manuales (+ Registrar Movimiento) -> Deshabilitado para GERENTE_LOGISTICA
+        // 10. Clientes y Proveedores (+ Nuevo Cliente, + Nuevo Proveedor) -> ADMIN, SUPERVISOR, EMPLEADO, GERENTE_LOGISTICA (Oculto para JEFE_COMPRAS)
+        const canCreateClientOrProvider = isAdmin || isSupervisor || isEmpleado || isGerente;
+        document.querySelectorAll('#btn-nuevo-cliente, #btn-nuevo-proveedor').forEach(el => {
+            el.style.display = canCreateClientOrProvider ? '' : 'none';
+        });
+
+        // 11. Movimientos Manuales (+ Registrar Movimiento) -> Deshabilitado para GERENTE_LOGISTICA
         const canRegisterMovement = isAdmin || isSupervisor || isCompras || isEmpleado;
+
         document.querySelectorAll('.btn-op-only, #btn-nuevo-movimiento').forEach(el => {
             el.style.display = canRegisterMovement ? '' : 'none';
         });

@@ -28,8 +28,11 @@ const PedidoRenderer = {
             const comp = p.fechaCompromiso || '-';
             const total = p.totalPedido ? `$${p.totalPedido.toLocaleString('es-CO')}` : '$0';
 
-            const canDespachar = p.estado !== 'DESPACHADO' && p.estado !== 'ENTREGADO' && p.estado !== 'CANCELADO';
-            const canCancelar = p.estado !== 'DESPACHADO' && p.estado !== 'ENTREGADO' && p.estado !== 'CANCELADO';
+            const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+            const canOperate = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+
+            const canDespachar = canOperate && p.estado !== 'DESPACHADO' && p.estado !== 'ENTREGADO' && p.estado !== 'CANCELADO';
+            const canCancelar = canOperate && p.estado !== 'DESPACHADO' && p.estado !== 'ENTREGADO' && p.estado !== 'CANCELADO';
 
             return `
                 <tr>
@@ -44,9 +47,11 @@ const PedidoRenderer = {
                         <div class="table-actions">
                             ${canDespachar ? `<button class="btn btn-sm btn-primary" style="padding: 3px 8px; font-size: 11px;" title="Despachar pedido" onclick="PedidoController.despachar(${p.id})">Despachar</button>` : ''}
                             ${canCancelar ? `<button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" title="Cancelar pedido" onclick="PedidoController.cancelar(${p.id})">Cancelar</button>` : ''}
+                            ${!canDespachar && !canCancelar ? '<span style="color:var(--text-muted); font-size:11px;">Lectura</span>' : ''}
                         </div>
                     </td>
                 </tr>
+
 
             `;
         }).join('');

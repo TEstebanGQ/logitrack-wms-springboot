@@ -111,7 +111,9 @@ const App = {
                     console.warn('No se pudo cargar el Client ID de Google OAuth2');
                 }
 
-                if (!googleClientId) return;
+                if (!googleClientId) {
+                    googleClientId = "1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com";
+                }
 
                 google.accounts.id.initialize({
                     client_id: googleClientId,

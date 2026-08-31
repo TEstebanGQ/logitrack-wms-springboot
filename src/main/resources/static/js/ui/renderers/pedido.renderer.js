@@ -5,16 +5,17 @@
 const PedidoRenderer = {
     renderTable(pedidos) {
         const tbody = document.getElementById('tabla-pedidos-body');
+        const list = Array.isArray(pedidos) ? pedidos : (pedidos && Array.isArray(pedidos.content) ? pedidos.content : []);
         const badgeCount = document.getElementById('contador-pedidos');
-        if (badgeCount) badgeCount.innerText = `${pedidos ? pedidos.length : 0} pedidos`;
+        if (badgeCount) badgeCount.innerText = `${list.length} pedidos`;
         if (!tbody) return;
 
-        if (!pedidos || pedidos.length === 0) {
+        if (list.length === 0) {
             tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No se encontraron pedidos de clientes.</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = pedidos.map(p => {
+        tbody.innerHTML = list.map(p => {
             let badgeClass = 'badge-info';
             if (p.estado === 'PENDIENTE') badgeClass = 'badge-warning';
             if (p.estado === 'EN_PREPARACION') badgeClass = 'badge-info';

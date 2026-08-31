@@ -4,6 +4,7 @@ import com.proyecto.proyectoSpringBoot.model.enums.EstadoLote;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 public class CrearLoteRequest {
 
     @NotBlank(message = "El código de lote es obligatorio")
+    @Size(min = 2, max = 50, message = "El código de lote debe tener entre 2 y 50 caracteres")
     private String codigoLote;
 
     @NotNull(message = "El producto es obligatorio")

@@ -61,6 +61,17 @@ const ApiService = {
                 throw new Error(message);
             }
 
+            // [Pageable Adapter] Si el backend devuelve un Page<T> de Spring Data (con { content: [...] }),
+            // desenvolvemos el array manteniendo los metadatos de paginación adjuntos.
+            if (data && typeof data === 'object' && Array.isArray(data.content)) {
+                const arrayData = data.content;
+                arrayData.totalElements = data.totalElements;
+                arrayData.totalPages = data.totalPages;
+                arrayData.pageNumber = data.number;
+                arrayData.pageSize = data.size;
+                return arrayData;
+            }
+
             return data;
         } catch (error) {
             console.error(`API Error [${endpoint}]:`, error);

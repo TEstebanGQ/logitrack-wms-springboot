@@ -7,12 +7,14 @@ const MovimientoRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        if (!movimientos || movimientos.length === 0) {
+        const list = Array.isArray(movimientos) ? movimientos : (movimientos && Array.isArray(movimientos.content) ? movimientos.content : []);
+
+        if (list.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">No hay movimientos registrados para el filtro seleccionado.</p>`;
             return;
         }
 
-        const rows = movimientos.map(m => {
+        const rows = list.map(m => {
             let badgeClass = 'badge-info';
             if (m.tipoMovimiento === 'ENTRADA') badgeClass = 'badge-success';
             if (m.tipoMovimiento === 'SALIDA') badgeClass = 'badge-danger';

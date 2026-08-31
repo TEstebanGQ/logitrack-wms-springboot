@@ -1,10 +1,9 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.proyectoSpringBoot.dto.request.CrearUbicacionRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.UbicacionBodegaResponse;
-import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaHelper;
 import com.proyecto.proyectoSpringBoot.mapper.UbicacionBodegaMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.Bodega;
 import com.proyecto.proyectoSpringBoot.model.entity.UbicacionBodega;
@@ -13,7 +12,6 @@ import com.proyecto.proyectoSpringBoot.repository.BodegaRepository;
 import com.proyecto.proyectoSpringBoot.repository.UbicacionBodegaRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IUbicacionBodegaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +27,7 @@ public class UbicacionBodegaServiceImpl implements IUbicacionBodegaService {
     private final UbicacionBodegaRepository ubicacionRepository;
     private final BodegaRepository bodegaRepository;
     private final UbicacionBodegaMapper mapper;
-    private final ApplicationEventPublisher eventPublisher;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuditoriaHelper auditoriaHelper;
 
     @Override
     public UbicacionBodegaResponse crearUbicacion(CrearUbicacionRequest request, String emailUsuario) {
@@ -56,7 +53,7 @@ public class UbicacionBodegaServiceImpl implements IUbicacionBodegaService {
         UbicacionBodega guardada = ubicacionRepository.save(ubicacion);
         UbicacionBodegaResponse resp = mapper.toResponse(guardada);
 
-        publishAudit("UbicacionBodega", guardada.getId(), TipoOperacion.INSERT, null, toJson(resp),
+        auditoriaHelper.publishAudit("UbicacionBodega", guardada.getId(), TipoOperacion.INSERT, null, auditoriaHelper.toJson(resp),
                 "Creó ubicación física '" + guardada.getCodigoUbicacion() + "' en " + bodega.getNombre(), emailUsuario);
 
         return resp;
@@ -90,29 +87,11 @@ public class UbicacionBodegaServiceImpl implements IUbicacionBodegaService {
         UbicacionBodega ubicacion = ubicacionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ubicación no encontrada: " + id));
 
-        String valAnt = toJson(mapper.toResponse(ubicacion));
+        String valAnt = auditoriaHelper.toJson(mapper.toResponse(ubicacion));
         ubicacion.setActivo(false);
         UbicacionBodega guardada = ubicacionRepository.save(ubicacion);
 
-        publishAudit("UbicacionBodega", guardada.getId(), TipoOperacion.DELETE, valAnt, toJson(mapper.toResponse(guardada)),
+        auditoriaHelper.publishAudit("UbicacionBodega", guardada.getId(), TipoOperacion.DELETE, valAnt, auditoriaHelper.toJson(mapper.toResponse(guardada)),
                 "Desactivó ubicación '" + guardada.getCodigoUbicacion() + "'", emailUsuario);
-    }
-
-    private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc, String email) {
-        try {
-            eventPublisher.publishEvent(AuditoriaEvent.builder()
-                    .entidad(entidad)
-                    .entidadId(entidadId)
-                    .tipoOperacion(tipo)
-                    .emailUsuario(email)
-                    .valoresAnteriores(ant)
-                    .valoresNuevos(nuevos)
-                    .descripcion(desc)
-                    .build());
-        } catch (Exception ignored) {}
-    }
-
-    private String toJson(Object obj) {
-        try { return objectMapper.writeValueAsString(obj); } catch (Exception e) { return null; }
     }
 }

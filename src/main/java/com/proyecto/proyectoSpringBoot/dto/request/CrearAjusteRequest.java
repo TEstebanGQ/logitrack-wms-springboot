@@ -30,6 +30,6 @@ public class CrearAjusteRequest {
     private Integer cantidadNueva;
 
     @NotBlank(message = "La justificación es obligatoria")
-    @Size(max = 300, message = "La justificación no puede exceder 300 caracteres")
+    @Size(min = 3, max = 300, message = "La justificación debe tener entre 3 y 300 caracteres")
     private String justificacion;
 }

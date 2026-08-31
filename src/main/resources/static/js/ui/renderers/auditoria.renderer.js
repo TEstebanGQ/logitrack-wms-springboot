@@ -65,11 +65,13 @@ const AuditoriaRenderer = {
     },
 
     buildTableHtml(auditorias) {
-        if (!auditorias || auditorias.length === 0) {
+        const list = Array.isArray(auditorias) ? auditorias : (auditorias && Array.isArray(auditorias.content) ? auditorias.content : []);
+
+        if (list.length === 0) {
             return `<p style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No se encontraron registros de auditoría que coincidan con los filtros.</p>`;
         }
 
-        const rows = auditorias.map(a => {
+        const rows = list.map(a => {
             let badgeClass = 'badge-info';
             if (a.tipoOperacion === 'INSERT') badgeClass = 'badge-success';
             if (a.tipoOperacion === 'DELETE') badgeClass = 'badge-danger';

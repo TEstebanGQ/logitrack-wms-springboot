@@ -7,12 +7,14 @@ const LoteRenderer = {
         const tbody = document.getElementById('tabla-lotes-body');
         if (!tbody) return;
 
-        if (!lotes || lotes.length === 0) {
+        const list = Array.isArray(lotes) ? lotes : (lotes && Array.isArray(lotes.content) ? lotes.content : []);
+
+        if (list.length === 0) {
             tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No hay lotes registrados.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = lotes.map(l => {
+        tbody.innerHTML = list.map(l => {
             const fechaFab = l.fechaFabricacion || 'No registrada';
             const fechaVenc = l.fechaVencimiento || 'No registrada';
 

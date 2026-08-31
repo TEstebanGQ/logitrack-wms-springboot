@@ -57,12 +57,14 @@ const DashboardRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        if (!movimientos || movimientos.length === 0) {
+        const list = Array.isArray(movimientos) ? movimientos : (movimientos && Array.isArray(movimientos.content) ? movimientos.content : []);
+
+        if (list.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">No hay movimientos recientes.</p>`;
             return;
         }
 
-        const rows = movimientos.slice(0, 5).map(m => {
+        const rows = list.slice(0, 5).map(m => {
             let badgeClass = 'badge-info';
             let tipoText = m.tipoMovimiento;
             if (m.tipoMovimiento === 'ENTRADA')        { badgeClass = 'badge-success'; tipoText = '■ ENTRADA'; }

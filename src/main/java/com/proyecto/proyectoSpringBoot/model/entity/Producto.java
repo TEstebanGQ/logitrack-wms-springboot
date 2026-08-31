@@ -25,9 +25,10 @@ public class Producto {
     @Column(nullable = false, length = 150)
     private String nombre;
 
+    @NotNull(message = "La categoría es obligatoria")
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
     @Builder.Default

@@ -1,21 +1,31 @@
 # ==========================================
-# Etapa 1: Compilación con Maven y Java 17
+# Etapa 1: Descarga y caché de dependencias
 # ==========================================
-FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
-
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS deps
 WORKDIR /app
-
-# Copiar el descriptor del proyecto y el código fuente
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# ==========================================
+# Etapa 2: Stage de Tests Unitarios / Integración [H-017]
+# ==========================================
+FROM deps AS tester
+WORKDIR /app
 COPY src ./src
-
-# Compilar y empaquetar el JAR omitiendo tests
-RUN mvn clean package -DskipTests
+RUN mvn test -B
 
 # ==========================================
-# Etapa 2: Imagen final liviana de ejecución (JRE)
+# Etapa 3: Stage de Compilación y Build [H-017]
 # ==========================================
-FROM eclipse-temurin:17-jre-alpine
+FROM deps AS builder
+WORKDIR /app
+COPY src ./src
+RUN mvn package -DskipTests -B
+
+# ==========================================
+# Etapa 4: Imagen final liviana de ejecución (JRE)
+# ==========================================
+FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
@@ -31,3 +41,4 @@ EXPOSE 8081
 
 # Parámetros JVM optimizados para contenedores
 ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
+

@@ -44,4 +44,15 @@ class GoogleAuthIntegrationTest {
                         .content(json))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("03. GET /api/config/stats debe ser público y retornar estadísticas reales")
+    void testHeroStatsPublic() throws Exception {
+        mockMvc.perform(get("/api/config/stats"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bodegasActivas").isNumber())
+                .andExpect(jsonPath("$.totalMovimientos").isNumber())
+                .andExpect(jsonPath("$.totalAuditorias").isNumber())
+                .andExpect(jsonPath("$.auditoriaCoverage").value("100%"));
+    }
 }

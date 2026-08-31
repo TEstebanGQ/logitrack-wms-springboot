@@ -4,6 +4,7 @@ import com.proyecto.proyectoSpringBoot.dto.request.PedidoClienteDetalleRequest;
 import com.proyecto.proyectoSpringBoot.dto.request.PedidoClienteRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.PedidoClienteResponse;
 import com.proyecto.proyectoSpringBoot.dto.response.TareaPickingResponse;
+import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
 import com.proyecto.proyectoSpringBoot.model.enums.EstadoPicking;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IPedidoClienteService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.ITareaPickingService;
@@ -54,5 +55,42 @@ class TareaPickingServiceTest {
         TareaPickingResponse completada = tareaPickingService.actualizarRecoleccion(tarea.getId(), 5, "Picking completo");
         assertEquals(EstadoPicking.COMPLETADA, completada.getEstado());
         assertNotNull(completada.getFechaCompletada());
+    }
+
+    @Test
+    @DisplayName("02. Debe cancelar tarea de picking al eliminar")
+    void testCancelarTareaPicking() {
+        PedidoClienteRequest pReq = PedidoClienteRequest.builder()
+                .clienteId(1L)
+                .bodegaOrigenId(1L)
+                .detalles(List.of(
+                        PedidoClienteDetalleRequest.builder()
+                                .productoId(2L)
+                                .cantidadSolicitada(2)
+                                .build()
+                ))
+                .build();
+        PedidoClienteResponse pedido = pedidoClienteService.crear(pReq, "admin@logitrack.com");
+        List<TareaPickingResponse> tareas = tareaPickingService.listarPorPedido(pedido.getId());
+        assertFalse(tareas.isEmpty());
+
+        Long tareaId = tareas.get(0).getId();
+        tareaPickingService.eliminar(tareaId);
+
+        TareaPickingResponse cancelada = tareaPickingService.obtenerPorId(tareaId);
+        assertEquals(EstadoPicking.CANCELADA, cancelada.getEstado());
+    }
+
+    @Test
+    @DisplayName("03. Debe listar tareas por estado")
+    void testListarPorEstado() {
+        List<TareaPickingResponse> pendientes = tareaPickingService.listarPorEstado(EstadoPicking.PENDIENTE);
+        assertNotNull(pendientes);
+    }
+
+    @Test
+    @DisplayName("04. Debe lanzar ResourceNotFoundException si la tarea no existe")
+    void testTareaNotFound() {
+        assertThrows(ResourceNotFoundException.class, () -> tareaPickingService.obtenerPorId(999999L));
     }
 }

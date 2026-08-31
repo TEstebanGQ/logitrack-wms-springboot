@@ -1,10 +1,9 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.proyectoSpringBoot.dto.request.CrearLoteRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.LoteResponse;
-import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaHelper;
 import com.proyecto.proyectoSpringBoot.mapper.LoteMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.Bodega;
 import com.proyecto.proyectoSpringBoot.model.entity.Lote;
@@ -16,7 +15,6 @@ import com.proyecto.proyectoSpringBoot.repository.LoteRepository;
 import com.proyecto.proyectoSpringBoot.repository.ProductoRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.ILoteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,8 +34,7 @@ public class LoteServiceImpl implements ILoteService {
     private final ProductoRepository productoRepository;
     private final BodegaRepository bodegaRepository;
     private final LoteMapper mapper;
-    private final ApplicationEventPublisher eventPublisher;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuditoriaHelper auditoriaHelper;
 
     @Override
     public LoteResponse crearLote(CrearLoteRequest request, String emailUsuario) {
@@ -67,7 +64,7 @@ public class LoteServiceImpl implements ILoteService {
         Lote guardado = loteRepository.save(lote);
         LoteResponse resp = mapper.toResponse(guardado);
 
-        publishAudit("Lote", guardado.getId(), TipoOperacion.INSERT, null, toJson(resp),
+        auditoriaHelper.publishAudit("Lote", guardado.getId(), TipoOperacion.INSERT, null, auditoriaHelper.toJson(resp),
                 "Creó Lote '" + guardado.getCodigoLote() + "' para " + producto.getNombre() + " en " + bodega.getNombre() + " (Cant: " + guardado.getStockInicial() + ")", emailUsuario);
 
         return resp;
@@ -129,32 +126,14 @@ public class LoteServiceImpl implements ILoteService {
         Lote lote = loteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Lote no encontrado: " + id));
 
-        String valAnt = toJson(mapper.toResponse(lote));
+        String valAnt = auditoriaHelper.toJson(mapper.toResponse(lote));
         lote.setEstado(estado);
         Lote guardado = loteRepository.save(lote);
         LoteResponse resp = mapper.toResponse(guardado);
 
-        publishAudit("Lote", guardado.getId(), TipoOperacion.UPDATE, valAnt, toJson(resp),
+        auditoriaHelper.publishAudit("Lote", guardado.getId(), TipoOperacion.UPDATE, valAnt, auditoriaHelper.toJson(resp),
                 "Cambió estado de Lote " + guardado.getCodigoLote() + " a " + estado, emailUsuario);
 
         return resp;
-    }
-
-    private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc, String email) {
-        try {
-            eventPublisher.publishEvent(AuditoriaEvent.builder()
-                    .entidad(entidad)
-                    .entidadId(entidadId)
-                    .tipoOperacion(tipo)
-                    .emailUsuario(email)
-                    .valoresAnteriores(ant)
-                    .valoresNuevos(nuevos)
-                    .descripcion(desc)
-                    .build());
-        } catch (Exception ignored) {}
-    }
-
-    private String toJson(Object obj) {
-        try { return objectMapper.writeValueAsString(obj); } catch (Exception e) { return null; }
     }
 }

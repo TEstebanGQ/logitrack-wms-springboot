@@ -1,11 +1,10 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.proyectoSpringBoot.dto.request.CrearOrdenCompraRequest;
 import com.proyecto.proyectoSpringBoot.dto.request.MovimientoRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.OrdenCompraResponse;
-import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaHelper;
 import com.proyecto.proyectoSpringBoot.mapper.OrdenCompraMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.*;
 import com.proyecto.proyectoSpringBoot.model.enums.EstadoOrdenCompra;
@@ -15,7 +14,6 @@ import com.proyecto.proyectoSpringBoot.repository.*;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IMovimientoService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IOrdenCompraService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,8 +37,7 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
     private final UsuarioRepository usuarioRepository;
     private final IMovimientoService movimientoService;
     private final OrdenCompraMapper mapper;
-    private final ApplicationEventPublisher eventPublisher;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuditoriaHelper auditoriaHelper;
 
     @Override
     public OrdenCompraResponse crearOrden(CrearOrdenCompraRequest request, String emailUsuario) {
@@ -97,7 +94,7 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
         OrdenCompra guardada = ordenCompraRepository.save(orden);
         OrdenCompraResponse resp = mapper.toResponse(guardada);
 
-        publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.INSERT, null, toJson(resp),
+        auditoriaHelper.publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.INSERT, null, auditoriaHelper.toJson(resp),
                 "Creó Orden de Compra " + guardada.getCodigoOrden() + " para proveedor " + proveedor.getNombre() + " por $" + total, emailUsuario);
 
         return resp;
@@ -147,12 +144,12 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
             throw new IllegalStateException("Solo se pueden aprobar órdenes en estado PENDIENTE");
         }
 
-        String valAnt = toJson(mapper.toResponse(orden));
+        String valAnt = auditoriaHelper.toJson(mapper.toResponse(orden));
         orden.setEstado(EstadoOrdenCompra.APROBADA);
         OrdenCompra guardada = ordenCompraRepository.save(orden);
         OrdenCompraResponse resp = mapper.toResponse(guardada);
 
-        publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.UPDATE, valAnt, toJson(resp),
+        auditoriaHelper.publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.UPDATE, valAnt, auditoriaHelper.toJson(resp),
                 "Aprobó Orden de Compra " + guardada.getCodigoOrden(), emailUsuario);
 
         return resp;
@@ -167,7 +164,7 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
             throw new IllegalStateException("No se puede cancelar una orden que ya ha sido recibida en inventario");
         }
 
-        String valAnt = toJson(mapper.toResponse(orden));
+        String valAnt = auditoriaHelper.toJson(mapper.toResponse(orden));
         orden.setEstado(EstadoOrdenCompra.CANCELADA);
         if (motivo != null && !motivo.isBlank()) {
             orden.setObservaciones((orden.getObservaciones() != null ? orden.getObservaciones() + " | " : "") + "Cancelación: " + motivo);
@@ -175,7 +172,7 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
         OrdenCompra guardada = ordenCompraRepository.save(orden);
         OrdenCompraResponse resp = mapper.toResponse(guardada);
 
-        publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.UPDATE, valAnt, toJson(resp),
+        auditoriaHelper.publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.UPDATE, valAnt, auditoriaHelper.toJson(resp),
                 "Canceló Orden de Compra " + guardada.getCodigoOrden() + ". Motivo: " + (motivo != null ? motivo : "Sin motivo"), emailUsuario);
 
         return resp;
@@ -210,12 +207,12 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
 
         movimientoService.registrar(movReq, emailUsuario);
 
-        String valAnt = toJson(mapper.toResponse(orden));
+        String valAnt = auditoriaHelper.toJson(mapper.toResponse(orden));
         orden.setEstado(EstadoOrdenCompra.RECIBIDA);
         OrdenCompra guardada = ordenCompraRepository.save(orden);
         OrdenCompraResponse resp = mapper.toResponse(guardada);
 
-        publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.UPDATE, valAnt, toJson(resp),
+        auditoriaHelper.publishAudit("OrdenCompra", guardada.getId(), TipoOperacion.UPDATE, valAnt, auditoriaHelper.toJson(resp),
                 "Recibió e ingresó a bodega la Orden de Compra " + guardada.getCodigoOrden(), emailUsuario);
 
         return resp;
@@ -234,23 +231,5 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
         String fechaStr = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
         Long seq = ordenCompraRepository.nextOrdenCompraSeq();
         return String.format("OC-%s-%05d", fechaStr, seq);
-    }
-
-    private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc, String email) {
-        try {
-            eventPublisher.publishEvent(AuditoriaEvent.builder()
-                    .entidad(entidad)
-                    .entidadId(entidadId)
-                    .tipoOperacion(tipo)
-                    .emailUsuario(email)
-                    .valoresAnteriores(ant)
-                    .valoresNuevos(nuevos)
-                    .descripcion(desc)
-                    .build());
-        } catch (Exception ignored) {}
-    }
-
-    private String toJson(Object obj) {
-        try { return objectMapper.writeValueAsString(obj); } catch (Exception e) { return null; }
     }
 }

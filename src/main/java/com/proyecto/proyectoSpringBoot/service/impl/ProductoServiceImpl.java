@@ -1,10 +1,9 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.proyectoSpringBoot.dto.request.CrearProductoRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.ProductoResponse;
-import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaHelper;
 import com.proyecto.proyectoSpringBoot.mapper.ProductoMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.Bodega;
 import com.proyecto.proyectoSpringBoot.model.entity.Categoria;
@@ -17,9 +16,6 @@ import com.proyecto.proyectoSpringBoot.repository.InventarioBodegaRepository;
 import com.proyecto.proyectoSpringBoot.repository.ProductoRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IProductoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +32,7 @@ public class ProductoServiceImpl implements IProductoService {
     private final CategoriaRepository categoriaRepository;
     private final BodegaRepository bodegaRepository;
     private final InventarioBodegaRepository inventarioRepository;
-    private final ApplicationEventPublisher eventPublisher;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuditoriaHelper auditoriaHelper;
 
     @Override
     public ProductoResponse crear(CrearProductoRequest request) {
@@ -66,7 +61,7 @@ public class ProductoServiceImpl implements IProductoService {
             }
         }
 
-        publishAudit("Producto", guardado.getId(), TipoOperacion.INSERT, null, toJson(resp),
+        auditoriaHelper.publishAudit("Producto", guardado.getId(), TipoOperacion.INSERT, null, auditoriaHelper.toJson(resp),
                 "Creó producto '" + guardado.getNombre() + "' ($" + guardado.getPrecio() + ", Stock Inicial: " + guardado.getStock() + " u.)");
 
         return mapToResponseWithBodega(guardado);
@@ -113,7 +108,7 @@ public class ProductoServiceImpl implements IProductoService {
         int newStock = request.getStock() != null ? request.getStock() : 0;
         int delta = newStock - oldStock;
 
-        String valoresAnt = toJson(productoMapper.toResponse(producto));
+        String valoresAnt = auditoriaHelper.toJson(productoMapper.toResponse(producto));
         Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
             .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         productoMapper.updateEntity(producto, request);
@@ -153,7 +148,7 @@ public class ProductoServiceImpl implements IProductoService {
 
         ProductoResponse resp = productoMapper.toResponse(actualizado);
 
-        publishAudit("Producto", actualizado.getId(), TipoOperacion.UPDATE, valoresAnt, toJson(resp),
+        auditoriaHelper.publishAudit("Producto", actualizado.getId(), TipoOperacion.UPDATE, valoresAnt, auditoriaHelper.toJson(resp),
                 "Actualizó producto '" + actualizado.getNombre() + "' ($" + actualizado.getPrecio() + ", Stock: " + actualizado.getStock() + " u., Ajuste: " + (delta >= 0 ? "+" : "") + delta + " u.)");
 
         return mapToResponseWithBodega(actualizado);
@@ -162,11 +157,11 @@ public class ProductoServiceImpl implements IProductoService {
     @Override
     public void eliminar(Long id) {
         Producto producto = findById(id);
-        String valoresAnt = toJson(productoMapper.toResponse(producto));
+        String valoresAnt = auditoriaHelper.toJson(productoMapper.toResponse(producto));
         producto.setActivo(false);
         Producto guardado = productoRepository.save(producto);
 
-        publishAudit("Producto", guardado.getId(), TipoOperacion.DELETE, valoresAnt, toJson(productoMapper.toResponse(guardado)),
+        auditoriaHelper.publishAudit("Producto", guardado.getId(), TipoOperacion.DELETE, valoresAnt, auditoriaHelper.toJson(productoMapper.toResponse(guardado)),
                 "Desactivó / eliminó producto '" + guardado.getNombre() + "'");
     }
 
@@ -187,33 +182,5 @@ public class ProductoServiceImpl implements IProductoService {
             resp.setBodegaNombre("Sin asignar");
         }
         return resp;
-    }
-
-    private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc) {
-        try {
-            eventPublisher.publishEvent(AuditoriaEvent.builder()
-                    .entidad(entidad)
-                    .entidadId(entidadId)
-                    .tipoOperacion(tipo)
-                    .emailUsuario(getCurrentUserEmail())
-                    .valoresAnteriores(ant)
-                    .valoresNuevos(nuevos)
-                    .descripcion(desc)
-                    .build());
-        } catch (Exception ignored) {}
-    }
-
-    private String getCurrentUserEmail() {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
-                return auth.getName();
-            }
-        } catch (Exception ignored) {}
-        return "admin@logitrack.com";
-    }
-
-    private String toJson(Object obj) {
-        try { return objectMapper.writeValueAsString(obj); } catch (Exception e) { return null; }
     }
 }

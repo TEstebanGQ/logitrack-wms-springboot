@@ -1,11 +1,10 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.proyectoSpringBoot.dto.request.MovimientoRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.MovimientoResponse;
-import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
 import com.proyecto.proyectoSpringBoot.exception.StockInsuficienteException;
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaHelper;
 import com.proyecto.proyectoSpringBoot.mapper.MovimientoMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.*;
 import com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento;
@@ -14,7 +13,6 @@ import com.proyecto.proyectoSpringBoot.repository.*;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IAlertaStockService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IMovimientoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,8 +37,7 @@ public class MovimientoServiceImpl implements IMovimientoService {
     private final ProveedorRepository proveedorRepository;
     private final ClienteRepository clienteRepository;
     private final IAlertaStockService alertaStockService;
-    private final ApplicationEventPublisher eventPublisher;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuditoriaHelper auditoriaHelper;
 
     @Override
     public MovimientoResponse registrar(MovimientoRequest request, String emailUsuario) {
@@ -115,7 +112,7 @@ public class MovimientoServiceImpl implements IMovimientoService {
             ubicacionStr = "de '" + (origen != null ? origen.getNombre() : "N/A") + "' a '" + (destino != null ? destino.getNombre() : "N/A") + "'";
         }
 
-        publishAudit("Movimiento", guardado.getId(), TipoOperacion.INSERT, null, toJson(resp),
+        auditoriaHelper.publishAudit("Movimiento", guardado.getId(), TipoOperacion.INSERT, null, auditoriaHelper.toJson(resp),
                 "Registró movimiento " + request.getTipoMovimiento() + " " + ubicacionStr + " - Productos: " + productosDesc.toString().trim(), emailUsuario);
 
         return resp;
@@ -225,23 +222,5 @@ public class MovimientoServiceImpl implements IMovimientoService {
     private Bodega findBodega(Long id) {
         return bodegaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bodega no encontrada: " + id));
-    }
-
-    private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc, String email) {
-        try {
-            eventPublisher.publishEvent(AuditoriaEvent.builder()
-                    .entidad(entidad)
-                    .entidadId(entidadId)
-                    .tipoOperacion(tipo)
-                    .emailUsuario(email)
-                    .valoresAnteriores(ant)
-                    .valoresNuevos(nuevos)
-                    .descripcion(desc)
-                    .build());
-        } catch (Exception ignored) {}
-    }
-
-    private String toJson(Object obj) {
-        try { return objectMapper.writeValueAsString(obj); } catch (Exception e) { return null; }
     }
 }

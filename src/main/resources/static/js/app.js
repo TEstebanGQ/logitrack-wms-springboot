@@ -9,9 +9,37 @@ const App = {
         this.initCapsLockDetectors();
         this.initGoogleSignIn();
         this.initCommandPalette();
+        this.loadHeroStats();
         Router.init();
         this.updateUserInfo();
         this.initNotifications();
+    },
+
+    // Carga de estadísticas en tiempo real para el hero del login [H-014]
+    async loadHeroStats() {
+        try {
+            const stats = await ApiService.get('/config/stats');
+            if (stats) {
+                const bodEl = document.getElementById('hero-stat-bodegas');
+                const movEl = document.getElementById('hero-stat-movimientos');
+                const audEl = document.getElementById('hero-stat-auditorias');
+
+                if (bodEl && stats.bodegasActivas !== undefined) {
+                    bodEl.innerHTML = `${stats.bodegasActivas} <span>bod</span>`;
+                }
+                if (movEl && stats.totalMovimientos !== undefined) {
+                    const movCount = stats.totalMovimientos >= 1000
+                        ? (stats.totalMovimientos / 1000).toFixed(1).replace('.', ',') + ' <span>K</span>'
+                        : `${stats.totalMovimientos} <span>mov</span>`;
+                    movEl.innerHTML = movCount;
+                }
+                if (audEl && stats.auditoriaCoverage) {
+                    audEl.innerHTML = `${stats.auditoriaCoverage}`;
+                }
+            }
+        } catch (e) {
+            // Silencioso si no está disponible
+        }
     },
 
     // Mobile Hamburger Sidebar Toggle
@@ -29,7 +57,8 @@ const App = {
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const btn = document.getElementById('btn-hamburger');
-        if (sidebar) sidebar.classList.remove('active');
+        if (!sidebar) return;
+        sidebar.classList.remove('active');
         if (overlay) overlay.classList.remove('active');
         if (btn) btn.classList.remove('active');
     },
@@ -72,15 +101,17 @@ const App = {
 
         const renderGoogleBtns = async () => {
             if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                let googleClientId = "1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com";
+                let googleClientId = "";
                 try {
                     const pubConfig = await ApiService.get('/config/public');
                     if (pubConfig && pubConfig.googleClientId) {
                         googleClientId = pubConfig.googleClientId;
                     }
                 } catch (e) {
-                    console.warn('Usando Client ID por defecto para Google OAuth2');
+                    console.warn('No se pudo cargar el Client ID de Google OAuth2');
                 }
+
+                if (!googleClientId) return;
 
                 google.accounts.id.initialize({
                     client_id: googleClientId,

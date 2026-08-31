@@ -27,15 +27,15 @@ CREATE TABLE IF NOT EXISTS bodegas (
 
 -- ---- 3. PRODUCTOS ----
 CREATE TABLE IF NOT EXISTS productos (
-    id          BIGSERIAL PRIMARY KEY,
-    nombre      VARCHAR(150)   NOT NULL,
-    categoria   VARCHAR(100)   NOT NULL,
-    stock       INT            NOT NULL DEFAULT 0,
-    precio      DECIMAL(10, 2) NOT NULL,
-    descripcion VARCHAR(500)   NULL,
-    activo      BOOLEAN        NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP       NULL
+    id           BIGSERIAL PRIMARY KEY,
+    nombre       VARCHAR(150)   NOT NULL,
+    categoria_id BIGINT         NULL,
+    stock        INT            NOT NULL DEFAULT 0,
+    precio       DECIMAL(10, 2) NOT NULL,
+    descripcion  VARCHAR(500)   NULL,
+    activo       BOOLEAN        NOT NULL DEFAULT TRUE,
+    created_at   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP       NULL
 );
 
 -- ---- 4. MOVIMIENTOS ----
@@ -153,6 +153,8 @@ CREATE TABLE IF NOT EXISTS notificaciones (
 
 
 
+-- [H-011 FIX] Migración de datos: eliminar columna categoria VARCHAR legada y asegurar categoria_id obligatoria
+ALTER TABLE productos DROP COLUMN IF EXISTS categoria;
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS categoria_id BIGINT REFERENCES categorias(id);
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS stock_minimo INT NOT NULL DEFAULT 10;
 ALTER TABLE movimientos ADD COLUMN IF NOT EXISTS proveedor_id BIGINT REFERENCES proveedores(id);

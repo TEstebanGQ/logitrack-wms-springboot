@@ -80,18 +80,18 @@
             </div>
         </div>
 
-        <!-- Estadísticas footer -->
+        <!-- Estadísticas footer [H-014] -->
         <div class="hero-footer">
             <div class="hero-stat">
-                <div class="num">128 <span>bod</span></div>
+                <div class="num" id="hero-stat-bodegas">128 <span>bod</span></div>
                 <div class="label">Activas a nivel nacional</div>
             </div>
             <div class="hero-stat">
-                <div class="num">1,4 <span>K</span></div>
+                <div class="num" id="hero-stat-movimientos">1,4 <span>K</span></div>
                 <div class="label">Movimientos hoy</div>
             </div>
             <div class="hero-stat">
-                <div class="num">100 <span>%</span></div>
+                <div class="num" id="hero-stat-auditorias">100 <span>%</span></div>
                 <div class="label">Auditorías firmadas</div>
             </div>
         </div>
@@ -111,13 +111,13 @@
                 <form id="login-form">
                     <div class="form-group">
                         <label class="form-label" for="login-email">Correo electrónico</label>
-                        <input type="email" id="login-email" class="form-input"
+                        <input type="email" id="login-email" name="email" autocomplete="username" class="form-input"
                                placeholder="empleado@logitrack.com" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="login-password">Contraseña</label>
                         <div class="password-input-wrap">
-                            <input type="password" id="login-password" class="form-input"
+                            <input type="password" id="login-password" name="password" autocomplete="current-password" class="form-input"
                                    placeholder="••••••••••" required>
                             <button type="button" class="btn-toggle-password" onclick="App.togglePasswordVisibility('login-password', this)" title="Mostrar contraseña" tabindex="-1">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-svg">
@@ -162,20 +162,20 @@
                 <form id="register-form">
                     <div class="form-group">
                         <label class="form-label" for="reg-nombre">Nombre</label>
-                        <input type="text" id="reg-nombre" class="form-input" placeholder="Juan" required>
+                        <input type="text" id="reg-nombre" name="nombre" autocomplete="given-name" class="form-input" placeholder="Juan" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="reg-apellido">Apellido</label>
-                        <input type="text" id="reg-apellido" class="form-input" placeholder="Pérez" required>
+                        <input type="text" id="reg-apellido" name="apellido" autocomplete="family-name" class="form-input" placeholder="Pérez" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="reg-email">Correo electrónico</label>
-                        <input type="email" id="reg-email" class="form-input" placeholder="juan@logitrack.com" required>
+                        <input type="email" id="reg-email" name="email" autocomplete="email" class="form-input" placeholder="juan@logitrack.com" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="reg-password">Contraseña</label>
                         <div class="password-input-wrap">
-                            <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required>
+                            <input type="password" id="reg-password" name="password" autocomplete="new-password" class="form-input" placeholder="••••••••" required>
                             <button type="button" class="btn-toggle-password" onclick="App.togglePasswordVisibility('reg-password', this)" title="Mostrar contraseña" tabindex="-1">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-svg">
                                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -311,12 +311,12 @@
             <ul class="nav-list nav-control-only" style="display:none;">
                 <li>
                     <a href="#/auditorias" class="nav-link" data-view="auditorias">
-                        <span class="nav-code">05</span>Auditoría
+                        <span class="nav-code">15</span>Auditoría
                     </a>
                 </li>
                 <li>
                     <a href="#/reportes" class="nav-link" data-view="reportes">
-                        <span class="nav-code">06</span>Reportes
+                        <span class="nav-code">16</span>Reportes
                     </a>
                 </li>
             </ul>
@@ -325,7 +325,7 @@
             <ul class="nav-list nav-admin-only" style="display:none;">
                 <li>
                     <a href="#/usuarios" class="nav-link" data-view="usuarios">
-                        <span class="nav-code">07</span>Usuarios
+                        <span class="nav-code">17</span>Usuarios
                     </a>
                 </li>
             </ul>
@@ -333,7 +333,7 @@
             <span class="nav-group-label nav-admin-only" style="display:none;">Sistema</span>
             <ul class="nav-list nav-admin-only" style="display:none;">
                 <li>
-                    <a href="http://localhost:8081/swagger-ui.html" target="_blank" class="nav-link">
+                    <a href="/swagger-ui.html" target="_blank" class="nav-link">
                         <span class="nav-code">·</span>API Docs
                     </a>
                 </li>
@@ -459,21 +459,21 @@
         <form id="form-google-complete">
             <div class="form-group">
                 <label class="form-label" for="google-complete-email">Correo electrónico de Google</label>
-                <input type="email" id="google-complete-email" class="form-input" readonly style="opacity:0.75; cursor:not-allowed;">
+                <input type="email" id="google-complete-email" name="email" autocomplete="email" class="form-input" readonly style="opacity:0.75; cursor:not-allowed;">
             </div>
             <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                 <div>
                     <label class="form-label" for="google-complete-nombre">Nombre</label>
-                    <input type="text" id="google-complete-nombre" class="form-input" required>
+                    <input type="text" id="google-complete-nombre" name="nombre" autocomplete="given-name" class="form-input" required>
                 </div>
                 <div>
                     <label class="form-label" for="google-complete-apellido">Apellido</label>
-                    <input type="text" id="google-complete-apellido" class="form-input" required>
+                    <input type="text" id="google-complete-apellido" name="apellido" autocomplete="family-name" class="form-input" required>
                 </div>
             </div>
             <div class="form-group">
                 <label class="form-label" for="google-complete-rol">Rol a asignar en el sistema</label>
-                <select id="google-complete-rol" class="form-select">
+                <select id="google-complete-rol" name="rol" class="form-select">
                     <option value="EMPLEADO">EMPLEADO / OPERADOR</option>
                     <option value="JEFE_COMPRAS">JEFE DE COMPRAS</option>
                     <option value="GERENTE_LOGISTICA">GERENTE DE LOGÍSTICA</option>
@@ -484,7 +484,7 @@
             <div class="form-group">
                 <label class="form-label" for="google-complete-password">Asignar Contraseña</label>
                 <div class="password-input-wrap">
-                    <input type="password" id="google-complete-password" class="form-input" placeholder="••••••••" required>
+                    <input type="password" id="google-complete-password" name="password" autocomplete="new-password" class="form-input" placeholder="••••••••" required>
                     <button type="button" class="btn-toggle-password" onclick="App.togglePasswordVisibility('google-complete-password', this)" title="Mostrar / Ocultar contraseña" tabindex="-1">
                         <span class="eye-icon">👁️</span>
                     </button>

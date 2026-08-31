@@ -5,6 +5,7 @@ import com.proyecto.proyectoSpringBoot.dto.request.PedidoClienteDetalleRequest;
 import com.proyecto.proyectoSpringBoot.dto.request.PedidoClienteRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.GuiaDespachoResponse;
 import com.proyecto.proyectoSpringBoot.dto.response.PedidoClienteResponse;
+import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
 import com.proyecto.proyectoSpringBoot.model.enums.EstadoEnvio;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IGuiaDespachoService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IPedidoClienteService;
@@ -62,5 +63,49 @@ class GuiaDespachoServiceTest {
         GuiaDespachoResponse entregada = guiaDespachoService.actualizarEstado(guia.getId(), EstadoEnvio.ENTREGADO, "Entregado a conformidad");
         assertEquals(EstadoEnvio.ENTREGADO, entregada.getEstadoEnvio());
         assertNotNull(entregada.getFechaEntregaReal());
+    }
+
+    @Test
+    @DisplayName("02. Debe rechazar creación de guía con número duplicado")
+    void testNumeroGuiaDuplicado() {
+        PedidoClienteRequest pReq = PedidoClienteRequest.builder()
+                .clienteId(1L)
+                .bodegaOrigenId(1L)
+                .detalles(List.of(
+                        PedidoClienteDetalleRequest.builder()
+                                .productoId(1L)
+                                .cantidadSolicitada(1)
+                                .build()
+                ))
+                .build();
+        PedidoClienteResponse pedido = pedidoClienteService.crear(pReq, "admin@logitrack.com");
+
+        String numGuia = "GUIA-DUP-001";
+        GuiaDespachoRequest req = GuiaDespachoRequest.builder()
+                .numeroGuia(numGuia)
+                .pedidoId(pedido.getId())
+                .transportadoraId(1L)
+                .fechaEntregaEstimada(LocalDate.now().plusDays(2))
+                .build();
+
+        guiaDespachoService.generarGuia(req);
+
+        assertThrows(IllegalArgumentException.class, () -> guiaDespachoService.generarGuia(req));
+    }
+
+    @Test
+    @DisplayName("03. Debe listar guías por transportadora y estado")
+    void testListarPorTransportadoraYEstado() {
+        List<GuiaDespachoResponse> porTransportadora = guiaDespachoService.listarPorTransportadora(1L);
+        assertNotNull(porTransportadora);
+
+        List<GuiaDespachoResponse> porEstado = guiaDespachoService.listarPorEstado(EstadoEnvio.EN_TRANSITO);
+        assertNotNull(porEstado);
+    }
+
+    @Test
+    @DisplayName("04. Debe lanzar ResourceNotFoundException si la guía no existe")
+    void testGuiaNotFound() {
+        assertThrows(ResourceNotFoundException.class, () -> guiaDespachoService.obtenerPorId(999999L));
     }
 }

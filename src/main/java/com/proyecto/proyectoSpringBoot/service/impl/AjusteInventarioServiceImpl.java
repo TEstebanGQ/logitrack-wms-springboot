@@ -1,10 +1,9 @@
 package com.proyecto.proyectoSpringBoot.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.proyectoSpringBoot.dto.request.CrearAjusteRequest;
 import com.proyecto.proyectoSpringBoot.dto.response.AjusteResponse;
-import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException;
+import com.proyecto.proyectoSpringBoot.listener.AuditoriaHelper;
 import com.proyecto.proyectoSpringBoot.mapper.AjusteMapper;
 import com.proyecto.proyectoSpringBoot.model.entity.*;
 import com.proyecto.proyectoSpringBoot.model.enums.TipoAjuste;
@@ -13,7 +12,6 @@ import com.proyecto.proyectoSpringBoot.repository.*;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IAlertaStockService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IAjusteInventarioService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +31,7 @@ public class AjusteInventarioServiceImpl implements IAjusteInventarioService {
     private final UsuarioRepository usuarioRepository;
     private final AjusteMapper mapper;
     private final IAlertaStockService alertaStockService;
-    private final ApplicationEventPublisher eventPublisher;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuditoriaHelper auditoriaHelper;
 
     @Override
     public AjusteResponse registrarAjuste(CrearAjusteRequest request, String emailUsuario) {
@@ -94,7 +91,7 @@ public class AjusteInventarioServiceImpl implements IAjusteInventarioService {
         AjusteInventario guardado = ajusteRepository.save(ajuste);
         AjusteResponse resp = mapper.toResponse(guardado);
 
-        publishAudit("AjusteInventario", guardado.getId(), TipoOperacion.INSERT, null, toJson(resp),
+        auditoriaHelper.publishAudit("AjusteInventario", guardado.getId(), TipoOperacion.INSERT, null, auditoriaHelper.toJson(resp),
                 "Ajuste por " + request.getTipoAjuste() + " en " + bodega.getNombre() + " para " + producto.getNombre() +
                         " (Antes: " + cantidadAnterior + ", Nuevo: " + cantidadNueva + ", Dif: " + diferencia + ")", emailUsuario);
 
@@ -134,23 +131,5 @@ public class AjusteInventarioServiceImpl implements IAjusteInventarioService {
     public AjusteResponse obtenerPorId(Long id) {
         return mapper.toResponse(ajusteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ajuste no encontrado: " + id)));
-    }
-
-    private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc, String email) {
-        try {
-            eventPublisher.publishEvent(AuditoriaEvent.builder()
-                    .entidad(entidad)
-                    .entidadId(entidadId)
-                    .tipoOperacion(tipo)
-                    .emailUsuario(email)
-                    .valoresAnteriores(ant)
-                    .valoresNuevos(nuevos)
-                    .descripcion(desc)
-                    .build());
-        } catch (Exception ignored) {}
-    }
-
-    private String toJson(Object obj) {
-        try { return objectMapper.writeValueAsString(obj); } catch (Exception e) { return null; }
     }
 }

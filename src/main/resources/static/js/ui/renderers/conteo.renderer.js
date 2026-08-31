@@ -64,31 +64,31 @@ const ConteoRenderer = {
 
             return `
                 <tr>
-                    <td><strong>${d.productoNombre}</strong></td>
-                    <td>${d.codigoUbicacion || 'Almacén General'}</td>
-                    <td><strong>${d.stockSistema}</strong> u.</td>
-                    <td>
+                    <td><strong style="color:var(--text-bright); font-size:13.5px;">${d.productoNombre}</strong></td>
+                    <td style="text-align:center;"><span class="badge badge-info">${d.codigoUbicacion || 'Almacén General'}</span></td>
+                    <td style="text-align:center;"><strong style="font-family:var(--font-mono);">${d.stockSistema}</strong> u.</td>
+                    <td style="text-align:center;">
                         ${!isClosed ? `
-                            <input type="number" class="form-control" style="width:90px; display:inline-block;" value="${d.stockFisico !== null ? d.stockFisico : d.stockSistema}" min="0" onchange="ConteoController.actualizarConteoFisico(${conteo.id}, ${d.id}, this.value)">
-                        ` : `<strong>${d.stockFisico}</strong> u.`}
+                            <input type="number" class="form-control" style="width:90px; display:inline-block; text-align:center; padding:4px 8px;" value="${d.stockFisico !== null ? d.stockFisico : d.stockSistema}" min="0" onchange="ConteoController.actualizarConteoFisico(${conteo.id}, ${d.id}, this.value)">
+                        ` : `<strong style="font-family:var(--font-mono);">${d.stockFisico}</strong> u.`}
                     </td>
-                    <td style="${diffClass}">${d.diferencia > 0 ? '+' : ''}${d.diferencia} u.</td>
-                    <td><span class="badge ${d.diferencia === 0 ? 'badge-success' : 'badge-danger'}">${d.estadoLinea}</span></td>
+                    <td style="text-align:center; ${diffClass}">${d.diferencia > 0 ? '+' : ''}${d.diferencia} u.</td>
+                    <td style="text-align:center;"><span class="badge ${d.diferencia === 0 ? 'badge-success' : 'badge-danger'}">${d.estadoLinea}</span></td>
                 </tr>
             `;
         }).join('');
 
         container.innerHTML = `
-            <div class="table-container" style="margin-top:12px;">
-                <table class="data-table">
+            <div class="table-container" style="margin-top:14px; border-radius:8px; border:1px solid var(--border-color); overflow-x:auto;">
+                <table class="data-table" style="width:100%; border-collapse:collapse;">
                     <thead>
                         <tr>
                             <th>PRODUCTO</th>
-                            <th>UBICACIÓN</th>
-                            <th>STOCK TEÓRICO</th>
-                            <th>CONTEO REAL</th>
-                            <th>DIFERENCIA</th>
-                            <th>ESTADO LÍNEA</th>
+                            <th style="text-align:center;">UBICACIÓN</th>
+                            <th style="text-align:center;">STOCK TEÓRICO</th>
+                            <th style="text-align:center;">CONTEO REAL</th>
+                            <th style="text-align:center;">DIFERENCIA</th>
+                            <th style="text-align:center;">ESTADO LÍNEA</th>
                         </tr>
                     </thead>
                     <tbody>${rows}</tbody>

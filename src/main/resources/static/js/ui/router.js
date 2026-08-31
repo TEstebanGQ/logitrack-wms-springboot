@@ -73,11 +73,15 @@ const Router = {
                 if (res.ok) {
                     const htmlText = await res.text();
                     const doc = new DOMParser().parseFromString(htmlText, 'text/html');
-                    const extractedSection = doc.querySelector('.view-section');
-                    if (extractedSection) {
-                        targetView = extractedSection;
-                        contentArea.appendChild(targetView);
+                    let extractedSection = doc.querySelector('.view-section');
+                    if (!extractedSection) {
+                        extractedSection = document.createElement('section');
+                        extractedSection.id = `view-${viewId}`;
+                        extractedSection.className = 'view-section';
+                        extractedSection.innerHTML = doc.body.innerHTML;
                     }
+                    targetView = extractedSection;
+                    contentArea.appendChild(targetView);
                 }
             } catch (e) {
                 console.error(`Error al cargar la plantilla views/${viewId}.html:`, e);

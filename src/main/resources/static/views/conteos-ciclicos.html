@@ -46,6 +46,12 @@
                     <select id="conteo-bodega" class="form-control" required></select>
                 </div>
                 <div class="form-group" style="margin-bottom:12px;">
+                    <label>Zona Específica de Bodega (Opcional):</label>
+                    <select id="conteo-zona" class="form-control">
+                        <option value="">-- Toda la bodega (General) --</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
                     <label>Fecha Programada:</label>
                     <input type="date" id="conteo-fecha" class="form-control" required>
                 </div>
@@ -53,6 +59,7 @@
                     <label>Producto a Verificar:</label>
                     <select id="conteo-producto" class="form-control" required></select>
                 </div>
+
                 <div class="form-group" style="margin-bottom:16px;">
                     <label>Observaciones / Justificación:</label>
                     <textarea id="conteo-obs" class="form-control" rows="2" placeholder="Auditoría preventiva..."></textarea>

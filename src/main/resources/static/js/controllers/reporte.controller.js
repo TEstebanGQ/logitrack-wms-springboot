@@ -66,9 +66,24 @@ const ReporteModuleController = {
             this.filtrarMovimientos();
         } else if (tabName === 'auditoria') {
             this.filtrarAuditoria();
-        } else if (tabName === 'abc') {
-            this.cargarMatrizAbc();
         }
+    },
+
+    limpiarFiltrosMovimientos() {
+        if (document.getElementById('filtro-rep-mov-bodega')) document.getElementById('filtro-rep-mov-bodega').value = '';
+        if (document.getElementById('filtro-rep-mov-producto')) document.getElementById('filtro-rep-mov-producto').value = '';
+        if (document.getElementById('filtro-rep-mov-tipo')) document.getElementById('filtro-rep-mov-tipo').value = '';
+        if (document.getElementById('filtro-rep-mov-desde')) document.getElementById('filtro-rep-mov-desde').value = '';
+        if (document.getElementById('filtro-rep-mov-hasta')) document.getElementById('filtro-rep-mov-hasta').value = '';
+        this.filtrarMovimientos();
+    },
+
+    limpiarFiltrosAuditoria() {
+        if (document.getElementById('filtro-rep-aud-producto')) document.getElementById('filtro-rep-aud-producto').value = '';
+        if (document.getElementById('filtro-rep-aud-campo')) document.getElementById('filtro-rep-aud-campo').value = '';
+        if (document.getElementById('filtro-rep-aud-desde')) document.getElementById('filtro-rep-aud-desde').value = '';
+        if (document.getElementById('filtro-rep-aud-hasta')) document.getElementById('filtro-rep-aud-hasta').value = '';
+        this.filtrarAuditoria();
     },
 
     async filtrarMovimientos() {
@@ -102,14 +117,6 @@ const ReporteModuleController = {
         }
     },
 
-    async cargarMatrizAbc() {
-        try {
-            const res = await ReporteService.getClasificacionAbc();
-            ReporteRenderer.renderMatrizAbc(res);
-        } catch (err) {
-            Toast.error('Error al cargar matriz ABC');
-        }
-    },
 
     initEventListeners() {
         document.getElementById('btn-ejecutar-filtro-mov')?.addEventListener('click', () => this.filtrarMovimientos());

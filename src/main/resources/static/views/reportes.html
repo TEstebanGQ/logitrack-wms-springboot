@@ -2,13 +2,12 @@
     <div class="view-header">
         <div class="view-title">
             <h2>Módulo de Reportes y Analítica REST</h2>
-            <p>Consultas consolidadas con filtros JPA Specification, auditorías en tiempo real y matriz ABC.</p>
+            <p>Consultas consolidadas con filtros dinámicos, trazabilidad de movimientos y auditoría en tiempo real.</p>
         </div>
         <div class="view-actions">
             <button id="btn-tab-resumen" class="btn btn-primary btn-sm btn-reporte-tab active" onclick="ReporteModuleController.switchTab('resumen')">Resumen General</button>
-            <button id="btn-tab-movimientos" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('movimientos')"> Consulta Movimientos</button>
-            <button id="btn-tab-auditoria" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('auditoria')">️ Consulta Auditoría</button>
-            <button id="btn-tab-abc" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('abc')"> Matriz ABC</button>
+            <button id="btn-tab-movimientos" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('movimientos')">Consulta Movimientos</button>
+            <button id="btn-tab-auditoria" class="btn btn-secondary btn-sm btn-reporte-tab" onclick="ReporteModuleController.switchTab('auditoria')">Consulta Auditoría</button>
         </div>
     </div>
 
@@ -54,53 +53,67 @@
 
     <!-- ===== TAB 2: CONSULTA DE MOVIMIENTOS REST FILTRADOS ===== -->
     <div id="tab-content-movimientos" class="reporte-tab-content" style="display:none;">
-        <div class="filters-bar card" style="margin-bottom:1.5rem; padding:1.25rem;">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; align-items:flex-end;">
+        <div class="card" style="margin-bottom:1.5rem; padding:1.5rem; border:1px solid var(--border-color); background:rgba(255,255,255,0.015);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem;">
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright); display:flex; align-items:center; gap:8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Filtros de Búsqueda de Movimientos
+                </h4>
+                <small style="color:var(--text-muted);">Consulte kardex con filtros combinados</small>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap:14px; margin-bottom:16px;">
                 <div class="filter-group">
-                    <label>Bodega:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Bodega</label>
                     <select id="filtro-rep-mov-bodega" class="form-control">
                         <option value="">Todas las bodegas</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Producto:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Producto</label>
                     <select id="filtro-rep-mov-producto" class="form-control">
                         <option value="">Todos los productos</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Tipo Movimiento:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Tipo de Operación</label>
                     <select id="filtro-rep-mov-tipo" class="form-control">
                         <option value="">Todos los tipos</option>
-                        <option value="ENTRADA">ENTRADA</option>
-                        <option value="SALIDA">SALIDA</option>
-                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                        <option value="ENTRADA">ENTRADA (Recepción)</option>
+                        <option value="SALIDA">SALIDA (Despacho)</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA (Entre Bodegas)</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Fecha Desde:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Fecha Desde</label>
                     <input type="date" id="filtro-rep-mov-desde" class="form-control">
                 </div>
                 <div class="filter-group">
-                    <label>Fecha Hasta:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Fecha Hasta</label>
                     <input type="date" id="filtro-rep-mov-hasta" class="form-control">
                 </div>
-                <div class="filter-group">
-                    <button class="btn btn-primary" id="btn-ejecutar-filtro-mov" style="width:100%;">Filtrar Movimientos</button>
-                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="ReporteModuleController.limpiarFiltrosMovimientos()">Limpiar Filtros</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-ejecutar-filtro-mov" style="min-width:160px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Filtrar Movimientos
+                </button>
             </div>
         </div>
 
         <div class="table-container card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Resultados de Consulta de Movimientos</h4>
+                <div>
+                    <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Resultados de Consulta de Movimientos</h4>
+                    <small style="color:var(--text-muted);">Historial de transacciones de inventario filtradas</small>
+                </div>
                 <span id="contador-rep-mov" class="badge badge-info">0 registros</span>
             </div>
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Fecha</th>
+                        <th>Fecha y Hora</th>
                         <th>Tipo</th>
                         <th>Bodega Origen</th>
                         <th>Bodega Destino</th>
@@ -117,35 +130,49 @@
 
     <!-- ===== TAB 3: CONSULTA DE AUDITORÍA REST FILTRADA ===== -->
     <div id="tab-content-auditoria" class="reporte-tab-content" style="display:none;">
-        <div class="filters-bar card" style="margin-bottom:1.5rem; padding:1.25rem;">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; align-items:flex-end;">
+        <div class="card" style="margin-bottom:1.5rem; padding:1.5rem; border:1px solid var(--border-color); background:rgba(255,255,255,0.015);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem;">
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright); display:flex; align-items:center; gap:8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    Filtros de Búsqueda de Auditoría
+                </h4>
+                <small style="color:var(--text-muted);">Trazabilidad de modificaciones de datos</small>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:16px;">
                 <div class="filter-group">
-                    <label>Producto Asociado:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Producto Asociado</label>
                     <select id="filtro-rep-aud-producto" class="form-control">
-                        <option value="">Cualquier recurso</option>
+                        <option value="">Cualquier recurso / producto</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Campo Modificado / Término:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Campo Modificado / Término</label>
                     <input type="text" id="filtro-rep-aud-campo" class="form-control" placeholder="Ej: stock, precio, nombre...">
                 </div>
                 <div class="filter-group">
-                    <label>Fecha Desde:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Fecha Desde</label>
                     <input type="date" id="filtro-rep-aud-desde" class="form-control">
                 </div>
                 <div class="filter-group">
-                    <label>Fecha Hasta:</label>
+                    <label class="form-label" style="font-size:11px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Fecha Hasta</label>
                     <input type="date" id="filtro-rep-aud-hasta" class="form-control">
                 </div>
-                <div class="filter-group">
-                    <button class="btn btn-primary" id="btn-ejecutar-filtro-aud" style="width:100%;">Filtrar Auditoría</button>
-                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="ReporteModuleController.limpiarFiltrosAuditoria()">Limpiar Filtros</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-ejecutar-filtro-aud" style="min-width:160px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Filtrar Auditoría
+                </button>
             </div>
         </div>
 
         <div class="table-container card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Bitácora de Auditoría Filtrada</h4>
+                <div>
+                    <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Bitácora de Auditoría Filtrada</h4>
+                    <small style="color:var(--text-muted);">Registros de cambios y operaciones</small>
+                </div>
                 <span id="contador-rep-aud" class="badge badge-info">0 registros</span>
             </div>
             <table class="data-table">
@@ -155,7 +182,7 @@
                         <th>Fecha y Hora</th>
                         <th>Operación</th>
                         <th>Entidad / Recurso</th>
-                        <th>Usuario</th>
+                        <th>Usuario Responsable</th>
                         <th>Descripción del Cambio</th>
                     </tr>
                 </thead>
@@ -165,11 +192,5 @@
             </table>
         </div>
     </div>
-
-    <!-- ===== TAB 4: MATRIZ DE CLASIFICACIÓN ABC ===== -->
-    <div id="tab-content-abc" class="reporte-tab-content" style="display:none;">
-        <div id="abc-container">
-            <p style="color:var(--text-muted); text-align:center; padding:2rem;">Cargando matriz de clasificación ABC...</p>
-        </div>
-    </div>
 </section>
+

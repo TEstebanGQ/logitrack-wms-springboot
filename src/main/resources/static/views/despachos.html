@@ -10,11 +10,14 @@
         </div>
     </div>
 
-    <!-- Guías de Despacho -->
+    <!-- 1. Guías de Despacho Activas (En Tránsito / Pendientes de Entrega) -->
     <div class="table-container card" style="margin-bottom:24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Guías de Envío Activas</h4>
-            <span id="contador-guias" class="badge badge-info">0 guías</span>
+            <div>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Guías de Despacho en Ruta</h4>
+                <small style="color:var(--text-muted);">Envíos en tránsito hacia el cliente pendientes de confirmación de entrega.</small>
+            </div>
+            <span id="contador-guias-activas" class="badge badge-warning">0 en ruta</span>
         </div>
         <table class="data-table">
             <thead>
@@ -26,14 +29,43 @@
                     <th>Vehículo / Conductor</th>
                     <th>Fecha Despacho</th>
                     <th>Estado Envío</th>
-                    <th>Acciones</th>
+                    <th>Acción del Operario</th>
                 </tr>
             </thead>
-            <tbody id="tabla-guias-body">
-                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando guías de despacho...</td></tr>
+            <tbody id="tabla-guias-activas-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando guías en ruta...</td></tr>
             </tbody>
         </table>
     </div>
+
+    <!-- 2. Historial de Guías Entregadas -->
+    <div class="table-container card" style="margin-bottom:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Historial de Guías Entregadas</h4>
+                <small style="color:var(--text-muted);">Despachos finalizados y recibidos por el cliente final.</small>
+            </div>
+            <span id="contador-guias-historial" class="badge badge-success">0 entregadas</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nº Guía</th>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Transportadora</th>
+                    <th>Vehículo / Conductor</th>
+                    <th>Fecha Despacho</th>
+                    <th>Estado Envío</th>
+                    <th>Confirmación</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-guias-historial-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando guías entregadas...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
 
     <!-- Transportadoras Registradas -->
     <div class="table-container card">

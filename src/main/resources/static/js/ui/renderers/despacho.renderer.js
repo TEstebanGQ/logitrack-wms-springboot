@@ -4,44 +4,85 @@
 
 const DespachoRenderer = {
     renderGuias(guias) {
-        const tbody = document.getElementById('tabla-guias-body');
-        const badgeCount = document.getElementById('contador-guias');
-        if (badgeCount) badgeCount.innerText = `${guias ? guias.length : 0} guías`;
-        if (!tbody) return;
+        const list = Array.isArray(guias) ? guias : (guias && Array.isArray(guias.content) ? guias.content : []);
 
-        if (!guias || guias.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No se encontraron guías de despacho.</td></tr>`;
-            return;
+        const activas = list.filter(g => g.estadoEnvio !== 'ENTREGADO' && g.estadoEnvio !== 'DEVUELTO');
+        const entregadas = list.filter(g => g.estadoEnvio === 'ENTREGADO' || g.estadoEnvio === 'DEVUELTO');
+
+        // Contadores
+        const badgeActivas = document.getElementById('contador-guias-activas');
+        if (badgeActivas) badgeActivas.innerText = `${activas.length} en ruta`;
+
+        const badgeHistorial = document.getElementById('contador-guias-historial');
+        if (badgeHistorial) badgeHistorial.innerText = `${entregadas.length} entregadas`;
+
+        const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+        const canDeliver = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+
+        // 1. Render Guías en Ruta (Activas)
+        const tbodyActivas = document.getElementById('tabla-guias-activas-body');
+        if (tbodyActivas) {
+            if (activas.length === 0) {
+                tbodyActivas.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No hay guías de despacho en tránsito pendientes de entrega.</td></tr>`;
+            } else {
+                tbodyActivas.innerHTML = activas.map(g => {
+                    let badgeClass = 'badge-warning';
+                    if (g.estadoEnvio === 'CON_NOVEDAD') badgeClass = 'badge-danger';
+
+                    const fecha = g.fechaDespacho ? new Date(g.fechaDespacho).toLocaleDateString() : '-';
+
+                    return `
+                        <tr>
+                            <td style="font-family:var(--font-mono); font-weight:600; color:var(--accent);">${g.numeroGuia}</td>
+                            <td><strong style="color:var(--text-bright); font-family:var(--font-mono);">${g.codigoPedido || 'PED-' + g.pedidoId}</strong></td>
+                            <td><strong>${g.clienteNombre || '-'}</strong></td>
+                            <td>${g.transportadoraNombre}</td>
+                            <td><small>${g.conductorNombre || '-'}<br><span style="color:var(--text-muted);">${g.placaVehiculo || ''}</span></small></td>
+                            <td style="font-size:12px;">${fecha}</td>
+                            <td><span class="badge ${badgeClass}">${g.estadoEnvio}</span></td>
+                            <td>
+                                ${canDeliver ? `
+                                    <button class="btn btn-sm btn-success" onclick="DespachoController.marcarEntregado(${g.id})">
+                                        Entregado
+                                    </button>
+                                ` : '<span style="color:var(--text-muted); font-size:12px;">Lectura</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
         }
 
-        tbody.innerHTML = guias.map(g => {
-            let badgeClass = 'badge-info';
-            if (g.estadoEnvio === 'EN_TRANSITO') badgeClass = 'badge-warning';
-            if (g.estadoEnvio === 'ENTREGADO') badgeClass = 'badge-success';
-            if (g.estadoEnvio === 'DEVUELTO' || g.estadoEnvio === 'CON_NOVEDAD') badgeClass = 'badge-danger';
+        // 2. Render Historial de Guías Entregadas
+        const tbodyHistorial = document.getElementById('tabla-guias-historial-body');
+        if (tbodyHistorial) {
+            if (entregadas.length === 0) {
+                tbodyHistorial.innerHTML = `<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No hay guías entregadas en el historial.</td></tr>`;
+            } else {
+                tbodyHistorial.innerHTML = entregadas.map(g => {
+                    const fecha = g.fechaDespacho ? new Date(g.fechaDespacho).toLocaleDateString() : '-';
 
-            const fecha = g.fechaDespacho ? new Date(g.fechaDespacho).toLocaleDateString() : '-';
-
-            const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-            const canDeliver = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
-
-            return `
-                <tr>
-                    <td style="font-family:var(--font-mono); font-weight:600; color:var(--accent);">${g.numeroGuia}</td>
-                    <td><strong>${g.codigoPedido || 'PED-' + g.pedidoId}</strong></td>
-                    <td>${g.clienteNombre || '-'}</td>
-                    <td>${g.transportadoraNombre}</td>
-                    <td><small>${g.conductorNombre || '-'}<br><span style="color:var(--text-muted);">${g.placaVehiculo || ''}</span></small></td>
-                    <td style="font-size:12px;">${fecha}</td>
-                    <td><span class="badge ${badgeClass}">${g.estadoEnvio}</span></td>
-                    <td>
-                        ${(g.estadoEnvio !== 'ENTREGADO' && canDeliver) ? `<button class="btn btn-sm btn-success" onclick="DespachoController.marcarEntregado(${g.id})">Entregado</button>` : (g.estadoEnvio === 'ENTREGADO') ? '<span style="color:var(--success); font-size:12px;"> Completado</span>' : '<span style="color:var(--text-muted); font-size:12px;">Lectura</span>'}
-                    </td>
-                </tr>
-            `;
-        }).join('');
-
+                    return `
+                        <tr>
+                            <td style="font-family:var(--font-mono); font-weight:600; color:var(--text-muted);">${g.numeroGuia}</td>
+                            <td><strong style="color:var(--text-bright); font-family:var(--font-mono);">${g.codigoPedido || 'PED-' + g.pedidoId}</strong></td>
+                            <td><strong>${g.clienteNombre || '-'}</strong></td>
+                            <td>${g.transportadoraNombre}</td>
+                            <td><small>${g.conductorNombre || '-'}<br><span style="color:var(--text-muted);">${g.placaVehiculo || ''}</span></small></td>
+                            <td style="font-size:12px;">${fecha}</td>
+                            <td><span class="badge badge-success">${g.estadoEnvio}</span></td>
+                            <td>
+                                <span class="badge badge-success">
+                                    Entregado al Cliente
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
     },
+
 
     renderTransportadoras(transportadoras) {
         const tbody = document.getElementById('tabla-transportadoras-body');

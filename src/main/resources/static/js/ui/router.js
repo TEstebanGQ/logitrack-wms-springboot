@@ -102,9 +102,12 @@ const Router = {
             link.classList.toggle('active', link.getAttribute('data-view') === viewId);
         });
 
-        // Cerrar menú hamburguesa móvil si está abierto
+        // Cerrar menú hamburguesa móvil y drawer lateral si están abiertos
         if (window.App && typeof window.App.closeSidebar === 'function') {
             window.App.closeSidebar();
+        }
+        if (window.App && typeof window.App.closeDrawer === 'function') {
+            window.App.closeDrawer();
         }
 
         // Actualizar título topbar

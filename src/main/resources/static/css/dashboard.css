@@ -1484,3 +1484,192 @@
     padding: 1px 4px;
     color: var(--text-muted);
 }
+
+/* ==========================================
+   Filtros Modernos y Barras de Control WMS
+   ========================================== */
+.filters-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filters-bar .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filters-bar .filter-group label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    margin: 0;
+}
+
+.filters-bar .form-control,
+.filters-bar input[type="text"],
+.filters-bar select {
+    background: #0B111E;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-bright, #F8FAFC);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-width: 180px;
+}
+
+.filters-bar .form-control:focus,
+.filters-bar input[type="text"]:focus,
+.filters-bar select:focus {
+    outline: none;
+    border-color: var(--accent, #FF6A2B);
+    box-shadow: 0 0 0 2px rgba(255, 106, 43, 0.2);
+}
+
+.filters-bar .btn-outline {
+    background: rgba(255, 179, 0, 0.08);
+    border: 1px solid rgba(255, 179, 0, 0.35);
+    color: #FFB800;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.filters-bar .btn-outline:hover {
+    background: rgba(255, 179, 0, 0.18);
+    border-color: #FFB800;
+    transform: translateY(-1px);
+}
+
+/* ==========================================
+   Secciones y Tablas de Historial WMS
+   ========================================= */
+.wms-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 28px 0 14px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wms-section-header h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-bright);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.wms-section-header .section-badge {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-family: var(--font-mono);
+}
+
+.table-container {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.table-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.data-table th {
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    vertical-align: middle;
+}
+
+.data-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.order-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+}
+
+.order-detail-grid .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.order-detail-grid .meta-item label {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.order-detail-grid .meta-item span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-bright);
+}
+

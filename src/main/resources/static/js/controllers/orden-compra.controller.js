@@ -54,6 +54,22 @@ const OrdenCompraController = {
         }
     },
 
+    async verDetalle(id) {
+        try {
+            const orden = await OrdenCompraService.getById(id);
+            if (!orden) {
+                Toast.error('No se pudo obtener el detalle de la orden');
+                return;
+            }
+            OrdenCompraRenderer.renderModalDetalle(orden);
+            App.openModal('modal-detalle-orden');
+        } catch (err) {
+            console.error('Error obteniendo detalle de orden:', err);
+            Toast.error('Error al cargar detalle de la orden');
+        }
+    },
+
+
     setupListeners() {
         const filtroEstado = document.getElementById('filtro-orden-estado');
         filtroEstado?.addEventListener('change', async (e) => {

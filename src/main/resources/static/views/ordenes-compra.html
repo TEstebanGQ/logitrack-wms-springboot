@@ -24,12 +24,20 @@
     <label>Filtrar por Estado:</label>
     <select id="filtro-orden-estado" class="form-control">
       <option value="">Todos los estados</option>
-      <option value="PENDIENTE">Pendientes</option>
-      <option value="APROBADA">Aprobadas</option>
-      <option value="RECIBIDA">Recibidas en Bodega</option>
+      <option value="PENDIENTE">Pendientes de Aprobación</option>
+      <option value="APROBADA">Aprobadas (Por Recibir)</option>
+      <option value="RECIBIDA">Recibidas (Completadas)</option>
       <option value="CANCELADA">Canceladas</option>
     </select>
   </div>
+</div>
+
+<!-- 1. Órdenes Activas / Operativas -->
+<div class="wms-section-header">
+  <h3>
+    <span>🟡</span> Órdenes Activas en Proceso
+    <span id="badge-contador-activas" class="section-badge">0 pendientes</span>
+  </h3>
 </div>
 
 <div class="table-container card">
@@ -48,9 +56,83 @@
     </thead>
     <tbody id="tabla-ordenes-body">
       <tr>
-        <td colspan="8" class="text-center py-4">Cargando órdenes de compra...</td>
+        <td colspan="8" class="text-center py-4">Cargando órdenes activas...</td>
       </tr>
     </tbody>
   </table>
 </div>
+
+<!-- 2. Historial de Órdenes Finalizadas -->
+<div class="wms-section-header" style="margin-top: 36px;">
+  <h3>
+    <span>📋</span> Historial de Órdenes Finalizadas
+    <span id="badge-contador-historial" class="section-badge">0 finalizadas</span>
+  </h3>
+</div>
+
+<div class="table-container card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Fecha Solicitud</th>
+        <th>Proveedor</th>
+        <th>Bodega Destino</th>
+        <th>Total Estimado</th>
+        <th>Estado</th>
+        <th>Entrega / Cierre</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-ordenes-historial-body">
+      <tr>
+        <td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No hay órdenes en el historial.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Detalle Completo de Orden de Compra -->
+<div id="modal-detalle-orden" class="modal-overlay" style="display:none;">
+  <div class="modal-container" style="max-width: 750px;">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <h3 id="modal-doc-codigo" style="margin:0; font-family:var(--font-display); font-size:18px;">Detalle de Orden</h3>
+        <span id="modal-doc-estado" class="badge" style="margin-left: 8px;">ESTADO</span>
+      </div>
+      <button type="button" class="btn-close-modal" onclick="App.closeModal('modal-detalle-orden')">✕</button>
+    </div>
+    <div class="modal-body" style="padding: 20px;">
+      <div class="order-detail-grid" id="modal-doc-meta">
+        <!-- Metadata dinámica -->
+      </div>
+      <h4 style="font-size: 13px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); margin: 16px 0 8px 0;">
+        📦 Ítems y Productos Solicitados
+      </h4>
+      <div class="table-container" style="margin-bottom: 16px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="modal-doc-items-body">
+            <!-- Ítems dinámicos -->
+          </tbody>
+        </table>
+      </div>
+      <div id="modal-doc-observaciones-wrap" style="display:none; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px;">
+        <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase;">Observaciones / Justificación:</div>
+        <div id="modal-doc-observaciones" style="color: var(--text); font-size: 13px; margin-top: 4px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.08);">
+      <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-detalle-orden')">Cerrar</button>
+    </div>
+  </div>
+</div>
 </section>
+

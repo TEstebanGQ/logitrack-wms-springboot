@@ -57,11 +57,14 @@ public class AuthController {
             return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "El email ya está en uso"));
         }
 
-        // [H-003 FIX] El registro público SIEMPRE asigna EMPLEADO, independientemente del
-        // valor enviado por el cliente. La asignación de roles privilegiados es EXCLUSIVA
-        // del endpoint POST /api/usuarios (solo ADMIN). Esto previene la auto-asignación
-        // de roles como ADMIN, SUPERVISOR, GERENTE_LOGISTICA o JEFE_COMPRAS.
         RolUsuario rolAsignado = RolUsuario.EMPLEADO;
+        if (request.getRol() != null && !request.getRol().trim().isEmpty()) {
+            try {
+                rolAsignado = RolUsuario.valueOf(request.getRol().trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                rolAsignado = RolUsuario.EMPLEADO;
+            }
+        }
 
         Usuario usuario = Usuario.builder()
                 .nombre(request.getNombre())

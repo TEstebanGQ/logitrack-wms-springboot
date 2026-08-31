@@ -75,36 +75,31 @@ const ProveedorModuleController = {
 
     async verMovimientos(id, nombre) {
         try {
-            const movimientos = await ProveedorService.getMovimientos(id);
-            const drawerTitle = document.getElementById('drawer-title');
-            const drawerBadge = document.getElementById('drawer-badge');
-            const drawerBody = document.getElementById('drawer-body');
+            const raw = await ProveedorService.getMovimientos(id);
+            const movimientos = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.content) ? raw.content : []);
 
-            if (drawerTitle) drawerTitle.innerText = `Historial de Entradas — ${nombre}`;
-            if (drawerBadge) drawerBadge.innerText = `PROVEEDOR #${id}`;
-
-            if (!movimientos || movimientos.length === 0) {
-                if (drawerBody) drawerBody.innerHTML = `<p style="padding:1.5rem; text-align:center; color:var(--text-muted);">No hay entradas ni suministros registrados de este proveedor.</p>`;
+            let htmlContent = '';
+            if (movimientos.length === 0) {
+                htmlContent = `<p style="padding:1.5rem; text-align:center; color:var(--text-muted);">No hay entradas ni suministros registrados de este proveedor.</p>`;
             } else {
-                const rows = movimientos.map(m => `
-                    <div style="padding:12px; border-bottom:1px solid var(--border-color); background:rgba(255,255,255,0.02); border-radius:6px; margin-bottom:8px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <strong>Movimiento #${m.id}</strong>
+                htmlContent = movimientos.map(m => `
+                    <div style="padding:14px; border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02); border-radius:8px; margin-bottom:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <strong style="color:var(--text-bright); font-size:14px;">Movimiento #${m.id}</strong>
                             <span class="badge badge-success">ENTRADA</span>
                         </div>
-                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">
-                            Fecha: ${m.fecha ? new Date(m.fecha).toLocaleString() : 'N/A'} | Bodega: ${m.bodegaDestino || 'N/A'}
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+                            📅 Fecha: ${m.fecha ? new Date(m.fecha).toLocaleString() : 'N/A'} | 🏬 Bodega: ${m.bodegaDestino || 'N/A'}
                         </div>
-                        <div style="font-size:12px;">
+                        <div style="font-size:12.5px;">
                             ${(m.detalles || []).map(d => `<div>• <strong>${d.productoNombre}</strong> (x${d.cantidad} u.) - $${(d.precioUnitario || 0).toLocaleString()}</div>`).join('')}
                         </div>
                     </div>
                 `).join('');
-                if (drawerBody) drawerBody.innerHTML = rows;
             }
 
             if (window.App && typeof window.App.openDrawer === 'function') {
-                window.App.openDrawer();
+                window.App.openDrawer(`Historial de Entradas — ${nombre}`, `PROVEEDOR #${id}`, 'badge-info', htmlContent);
             }
         } catch (err) {
             Toast.error('No se pudo cargar el historial de suministros del proveedor');

@@ -286,18 +286,18 @@ const App = {
 
 
     // Slide-Over Drawer Logic
-    openDrawer(title, badgeText = 'DETALLE', badgeClass = 'badge-info', htmlContent = '') {
+    openDrawer(title = 'Detalle', badgeText = 'DETALLE', badgeClass = 'badge-info', htmlContent = '') {
         const overlay = document.getElementById('drawer-overlay');
         const titleEl = document.getElementById('drawer-title');
         const badgeEl = document.getElementById('drawer-badge');
         const bodyEl  = document.getElementById('drawer-body');
 
-        if (titleEl) titleEl.innerText = title;
-        if (badgeEl) {
+        if (titleEl && title) titleEl.innerText = title;
+        if (badgeEl && badgeText) {
             badgeEl.innerText = badgeText;
             badgeEl.className = `badge ${badgeClass}`;
         }
-        if (bodyEl) bodyEl.innerHTML = htmlContent;
+        if (bodyEl && htmlContent) bodyEl.innerHTML = htmlContent;
 
         if (overlay) overlay.classList.add('active');
     },

@@ -26,6 +26,9 @@ const LoteRenderer = {
                 estadoBadge += ' <span class="badge badge-warning">PRÓXIMO A VENCER</span>';
             }
 
+            const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+            const canChangeStatus = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+
             return `
                 <tr>
                     <td><strong>${l.codigoLote}</strong></td>
@@ -37,12 +40,13 @@ const LoteRenderer = {
                     <td>${estadoBadge}</td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="LoteController.cambiarEstado(${l.id})" title="Cambiar Estado">ESTADO</button>
+                            ${canChangeStatus ? `<button class="btn btn-sm btn-secondary" onclick="LoteController.cambiarEstado(${l.id})" title="Cambiar Estado">ESTADO</button>` : '<span style="color:var(--text-muted); font-size:11px;">Lectura</span>'}
                         </div>
                     </td>
                 </tr>
             `;
         }).join('');
+
     }
 };
 

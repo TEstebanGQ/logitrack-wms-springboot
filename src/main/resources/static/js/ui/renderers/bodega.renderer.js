@@ -15,7 +15,7 @@ const BodegaRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+        const canManage = currentUser && currentUser.rol === 'ADMIN';
 
         const rows = list.map(b => `
             <tr>
@@ -34,6 +34,7 @@ const BodegaRenderer = {
                 </td>
             </tr>
         `).join('');
+
 
         container.innerHTML = `
             <div class="table-container">

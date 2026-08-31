@@ -94,20 +94,42 @@ public class AuthController {
             }
 
             String email = (String) googleUser.get("email");
-            String nombre = (String) googleUser.getOrDefault("given_name", googleUser.getOrDefault("name", "Usuario"));
-            String apellido = (String) googleUser.getOrDefault("family_name", "Google");
+            String fullName = (String) googleUser.getOrDefault("name", "");
+            String givenName = (String) googleUser.get("given_name");
+            String familyName = (String) googleUser.get("family_name");
+
+            String nombre = "Usuario";
+            String apellido = "";
+
+            if (givenName != null && !givenName.trim().isEmpty()) {
+                nombre = givenName.trim();
+                if (familyName != null && !familyName.trim().isEmpty()) {
+                    apellido = familyName.trim();
+                } else if (fullName != null && fullName.trim().contains(" ")) {
+                    String[] parts = fullName.trim().split("\\s+", 2);
+                    if (parts.length > 1) {
+                        apellido = parts[1].trim();
+                    }
+                }
+            } else if (fullName != null && !fullName.trim().isEmpty()) {
+                String[] parts = fullName.trim().split("\\s+", 2);
+                nombre = parts[0].trim();
+                apellido = parts.length > 1 ? parts[1].trim() : "";
+            }
 
             java.util.Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
             if (usuarioOpt.isPresent()) {
                 Usuario usuario = usuarioOpt.get();
                 String token = jwtUtil.generateToken(usuario);
+                String nombreCompleto = ((usuario.getNombre() != null ? usuario.getNombre() : "") + " " +
+                        (usuario.getApellido() != null ? usuario.getApellido() : "")).trim();
                 return ResponseEntity.ok(com.proyecto.proyectoSpringBoot.dto.response.GoogleAuthResponse.builder()
                         .registrado(true)
                         .token(token)
                         .tipo("Bearer")
                         .id(usuario.getId())
-                        .nombre(usuario.getNombre() + " " + usuario.getApellido())
+                        .nombre(nombreCompleto.isEmpty() ? usuario.getEmail() : nombreCompleto)
                         .email(usuario.getEmail())
                         .rol(usuario.getRol().name())
                         .build());

@@ -72,9 +72,40 @@ const AuthService = {
         return userStr ? JSON.parse(userStr) : null;
     },
 
+    getRol() {
+        const u = this.getCurrentUser();
+        return u ? u.rol : null;
+    },
+
+    hasRole(...roles) {
+        const rol = this.getRol();
+        return roles.includes(rol);
+    },
+
+    isAdmin() {
+        return this.getRol() === 'ADMIN';
+    },
+
+    isSupervisor() {
+        return this.getRol() === 'SUPERVISOR';
+    },
+
+    isEmpleado() {
+        return this.getRol() === 'EMPLEADO';
+    },
+
+    isCompras() {
+        return this.getRol() === 'JEFE_COMPRAS';
+    },
+
+    isGerente() {
+        return this.getRol() === 'GERENTE_LOGISTICA';
+    },
+
     isAuthenticated() {
         return !!ApiService.getToken();
     }
 };
 
 window.AuthService = AuthService;
+

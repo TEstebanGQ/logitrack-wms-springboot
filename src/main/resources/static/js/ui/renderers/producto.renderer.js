@@ -15,7 +15,8 @@ const ProductoRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS');
+        const canManage = currentUser && currentUser.rol === 'ADMIN';
+
 
         const getCatClass = (cat) => {
             if (!cat) return 'badge-info';

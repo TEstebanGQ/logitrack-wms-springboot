@@ -87,11 +87,11 @@ const App = {
             try {
                 const res = await AuthService.loginWithGoogle(response.credential);
                 if (res && res.registrado) {
-                    Toast.success('¡Autenticado con éxito usando tu cuenta de Google!');
+                    Toast.success('¡Sesión iniciada exitosamente!');
                     this.updateUserInfo();
                     Router.navigate('dashboard');
                 } else if (res && !res.registrado) {
-                    Toast.info('Por favor completa tu rol y asigna una contraseña para finalizar el registro');
+                    Toast.info('Por favor confirma tus datos, asigna tu rol y define tu contraseña');
                     this.openGoogleModal(res.email, res.nombre, res.apellido);
                 }
             } catch (err) {
@@ -934,31 +934,60 @@ const App = {
         const isGerente = role === 'GERENTE_LOGISTICA';
         const isSupervisor = role === 'SUPERVISOR';
         const isCompras = role === 'JEFE_COMPRAS';
+        const isEmpleado = role === 'EMPLEADO';
 
-        const canSeeControl = isAdmin || isSupervisor || isGerente;
-        const canManage = isAdmin || isSupervisor || isCompras;
-        const canRegisterMovement = isAdmin || isSupervisor || isCompras || role === 'EMPLEADO';
-
-        // Mostrar / Ocultar grupo Administración (Usuarios) -> Solo ADMIN
-        document.querySelectorAll('.nav-admin-only').forEach(el => {
+        // 1. Grupo Administración (Usuarios) -> Solo ADMIN
+        document.querySelectorAll('.nav-admin-only, .btn-admin-only, #btn-nuevo-usuario').forEach(el => {
             el.style.display = isAdmin ? '' : 'none';
         });
 
-        // Mostrar / Ocultar grupo Control (Auditoría y Reportes) -> ADMIN, SUPERVISOR o GERENTE_LOGISTICA
+        // 2. Grupo Control (Auditoría y Reportes) -> ADMIN, SUPERVISOR o GERENTE_LOGISTICA
         document.querySelectorAll('.nav-control-only').forEach(el => {
-            el.style.display = canSeeControl ? '' : 'none';
+            el.style.display = (isAdmin || isSupervisor || isGerente) ? '' : 'none';
         });
 
-        // Mostrar / Ocultar botones de creación (+ Nueva Bodega, + Nuevo Producto) -> ADMIN, SUPERVISOR o JEFE_COMPRAS
-        document.querySelectorAll('.btn-manage-only').forEach(el => {
-            el.style.display = canManage ? '' : 'none';
+        // 3. Catálogo Base (+ Nueva Bodega, + Nuevo Producto, + Nueva Categoría) -> Solo ADMIN
+        document.querySelectorAll('.btn-manage-only, #btn-nueva-bodega, #btn-nuevo-producto, #btn-nueva-categoria').forEach(el => {
+            el.style.display = isAdmin ? '' : 'none';
         });
 
-        // Mostrar / Ocultar botón (+ Registrar Movimiento) -> Deshabilitado para GERENTE_LOGISTICA
-        document.querySelectorAll('.btn-op-only').forEach(el => {
+        // 4. Órdenes de Compra (+ Nueva Orden de Compra) -> ADMIN, SUPERVISOR, JEFE_COMPRAS
+        document.querySelectorAll('#btn-nueva-orden-compra').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor || isCompras) ? '' : 'none';
+        });
+
+        // 5. Pedidos de Clientes (+ Nuevo Pedido) -> ADMIN, SUPERVISOR, EMPLEADO
+        document.querySelectorAll('#btn-nuevo-pedido').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor || isEmpleado) ? '' : 'none';
+        });
+
+        // 6. Ajustes de Inventario / Mermas (+ Registrar Ajuste) -> ADMIN, SUPERVISOR, GERENTE_LOGISTICA
+        document.querySelectorAll('#btn-nuevo-ajuste').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor || isGerente) ? '' : 'none';
+        });
+
+        // 7. Lotes (+ Registrar Lote) -> ADMIN, SUPERVISOR, EMPLEADO
+        document.querySelectorAll('#btn-nuevo-lote').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor || isEmpleado) ? '' : 'none';
+        });
+
+        // 8. Conteos Cíclicos (+ Programar Auditoría) -> ADMIN, SUPERVISOR
+        document.querySelectorAll('#btn-nuevo-conteo, #btn-programar-conteo').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor) ? '' : 'none';
+        });
+
+        // 9. Despachos y Guías (+ Generar Guía, + Transportadora) -> ADMIN, SUPERVISOR, EMPLEADO
+        document.querySelectorAll('#btn-nueva-guia, #btn-nueva-transp').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor || isEmpleado) ? '' : 'none';
+        });
+
+        // 10. Movimientos Manuales (+ Registrar Movimiento) -> Deshabilitado para GERENTE_LOGISTICA
+        const canRegisterMovement = isAdmin || isSupervisor || isCompras || isEmpleado;
+        document.querySelectorAll('.btn-op-only, #btn-nuevo-movimiento').forEach(el => {
             el.style.display = canRegisterMovement ? '' : 'none';
         });
     },
+
 
     async loadViewData(view) {
         try {

@@ -45,6 +45,9 @@ public class EmailServiceImpl implements IEmailService {
         }
         String nombreCompleto = ((usuario.getNombre() != null ? usuario.getNombre() : "") + " " +
                 (usuario.getApellido() != null ? usuario.getApellido() : "")).trim();
+        if (nombreCompleto.isBlank()) {
+            nombreCompleto = usuario.getEmail();
+        }
         enviarCorreoBienvenida(nombreCompleto, usuario.getEmail(), usuario.getRol());
     }
 

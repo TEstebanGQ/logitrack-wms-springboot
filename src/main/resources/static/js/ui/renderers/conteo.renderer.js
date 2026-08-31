@@ -48,9 +48,13 @@ const ConteoRenderer = {
             badge.innerHTML = `<span class="badge badge-info">${conteo.estado}</span> &nbsp; <small style="color:var(--text-muted);">${conteo.codigoConteo} - ${conteo.bodegaNombre}</small>`;
         }
 
+        const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
+        const canConciliar = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+
         if (btnConciliar) {
-            btnConciliar.style.display = (conteo.estado === 'CERRADO') ? 'none' : 'inline-block';
+            btnConciliar.style.display = (conteo.estado !== 'CERRADO' && canConciliar) ? 'inline-block' : 'none';
         }
+
 
         const detalles = conteo.detalles || [];
         if (detalles.length === 0) {

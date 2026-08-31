@@ -101,6 +101,14 @@ public class PedidoClienteServiceImpl implements IPedidoClienteService {
             Producto producto = productoRepository.findById(detReq.getProductoId())
                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + detReq.getProductoId()));
 
+            // Validar existencia y disponibilidad de stock en la bodega de origen
+            inventarioBodegaRepository.findByBodegaIdAndProductoId(bodega.getId(), producto.getId())
+                    .ifPresent(inv -> {
+                        if (inv.getStockActual() < detReq.getCantidadSolicitada()) {
+                            throw new IllegalStateException("Stock insuficiente en " + bodega.getNombre() + " para el producto: " + producto.getNombre() + ". Disponible: " + inv.getStockActual() + " u.");
+                        }
+                    });
+
             BigDecimal precio = detReq.getPrecioUnitario() != null ? detReq.getPrecioUnitario() : producto.getPrecio();
             BigDecimal subtotal = precio.multiply(BigDecimal.valueOf(detReq.getCantidadSolicitada()));
             total = total.add(subtotal);
@@ -144,6 +152,18 @@ public class PedidoClienteServiceImpl implements IPedidoClienteService {
     public PedidoClienteResponse cambiarEstado(Long id, EstadoPedido nuevoEstado, String observaciones) {
         PedidoCliente pedido = pedidoClienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido de cliente no encontrado con id: " + id));
+
+        if (nuevoEstado == EstadoPedido.EN_PREPARACION || nuevoEstado == EstadoPedido.EMPACADO) {
+            // Validar que exista suficiente stock disponible en la bodega de origen para reservar
+            for (PedidoClienteDetalle det : pedido.getDetalles()) {
+                InventarioBodega inv = inventarioBodegaRepository.findByBodegaIdAndProductoId(pedido.getBodegaOrigen().getId(), det.getProducto().getId())
+                        .orElseThrow(() -> new IllegalStateException("El producto " + det.getProducto().getNombre() + " no posee registro de inventario en la bodega " + pedido.getBodegaOrigen().getNombre()));
+
+                if (inv.getStockActual() < det.getCantidadSolicitada()) {
+                    throw new IllegalStateException("Imposible pasar a " + nuevoEstado + ": Stock insuficiente en " + pedido.getBodegaOrigen().getNombre() + " para " + det.getProducto().getNombre() + ". Disponible: " + inv.getStockActual() + " u., Requerido: " + det.getCantidadSolicitada() + " u.");
+                }
+            }
+        }
 
         pedido.setEstado(nuevoEstado);
         if (observaciones != null && !observaciones.isBlank()) {

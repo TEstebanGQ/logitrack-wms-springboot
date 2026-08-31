@@ -37,152 +37,158 @@ public class EmailTemplateBuilder {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Bienvenido a LogiTrack S.A.</title>
             <style>
+                @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
                 body {
                     margin: 0;
                     padding: 0;
-                    background-color: #f1f5f9;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-                    color: #1e293b;
+                    background-color: #0d1117;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    color: #e2e8f0;
                     -webkit-font-smoothing: antialiased;
                 }
                 .container {
                     max-width: 620px;
-                    margin: 24px auto;
-                    background: #ffffff;
-                    border-radius: 16px;
+                    margin: 28px auto;
+                    background: #161b22;
+                    border-radius: 14px;
                     overflow: hidden;
-                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-                    border: 1px solid #e2e8f0;
+                    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+                    border: 1px solid #30363d;
                 }
                 .header {
-                    background: linear-gradient(135deg, #0f172a 0%%, #1e293b 50%%, #334155 100%%);
-                    padding: 36px 32px;
+                    background: linear-gradient(180deg, #12161d 0%%, #161b22 100%%);
+                    padding: 36px 32px 30px 32px;
                     text-align: center;
-                    color: #ffffff;
+                    border-bottom: 3px solid #ff6a2b;
+                }
+                .logo-container {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    margin-bottom: 8px;
                 }
                 .logo-title {
-                    font-size: 28px;
-                    font-weight: 800;
-                    letter-spacing: -0.5px;
-                    margin: 0 0 4px 0;
+                    font-family: 'Oswald', 'Segoe UI', sans-serif;
+                    font-size: 30px;
+                    font-weight: 700;
+                    letter-spacing: 0.5px;
+                    margin: 0;
                     color: #ffffff;
+                    text-transform: uppercase;
+                }
+                .logo-title span {
+                    color: #ff6a2b;
                 }
                 .logo-subtitle {
-                    font-size: 13px;
+                    font-size: 11px;
                     text-transform: uppercase;
-                    letter-spacing: 2px;
-                    color: #94a3b8;
+                    letter-spacing: 2.5px;
+                    color: #8b949e;
                     font-weight: 600;
-                    margin: 0;
+                    margin: 8px 0 0 0;
                 }
                 .content {
-                    padding: 32px 32px 24px 32px;
+                    padding: 32px 32px 28px 32px;
                 }
                 .greeting {
-                    font-size: 20px;
+                    font-size: 22px;
                     font-weight: 700;
-                    color: #0f172a;
-                    margin: 0 0 12px 0;
+                    color: #ffffff;
+                    margin: 0 0 14px 0;
                 }
                 .intro-text {
-                    font-size: 15px;
-                    line-height: 1.6;
-                    color: #475569;
-                    margin: 0 0 24px 0;
+                    font-size: 14.5px;
+                    line-height: 1.65;
+                    color: #94a3b8;
+                    margin: 0 0 26px 0;
+                }
+                .intro-text code {
+                    background: #21262d;
+                    color: #ffb020;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                    font-family: monospace;
+                    border: 1px solid #30363d;
                 }
                 .role-card {
-                    background: #f8fafc;
-                    border: 1px solid #e2e8f0;
-                    border-left: 5px solid %s;
+                    background: #0d1117;
+                    border: 1px solid #30363d;
+                    border-left: 4px solid %s;
                     border-radius: 10px;
-                    padding: 20px;
-                    margin-bottom: 24px;
+                    padding: 22px;
+                    margin-bottom: 26px;
                 }
                 .role-badge {
                     display: inline-block;
                     background-color: %s;
                     color: #ffffff;
-                    font-size: 12px;
+                    font-size: 11.5px;
                     font-weight: 700;
-                    padding: 4px 12px;
-                    border-radius: 9999px;
+                    padding: 5px 14px;
+                    border-radius: 6px;
                     text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    margin-bottom: 8px;
+                    letter-spacing: 0.8px;
+                    margin-bottom: 10px;
                 }
                 .role-title {
-                    font-size: 16px;
+                    font-size: 17px;
                     font-weight: 700;
-                    color: #1e293b;
-                    margin: 4px 0 6px 0;
+                    color: #ffffff;
+                    margin: 4px 0 8px 0;
                 }
                 .role-desc {
-                    font-size: 14px;
-                    color: #64748b;
+                    font-size: 13.5px;
+                    color: #8b949e;
                     margin: 0 0 14px 0;
-                    line-height: 1.5;
+                    line-height: 1.55;
                 }
                 .duties-list {
                     margin: 0;
                     padding-left: 18px;
-                    font-size: 13.5px;
-                    color: #334155;
-                    line-height: 1.6;
+                    font-size: 13px;
+                    color: #cbd5e1;
+                    line-height: 1.65;
                 }
                 .duties-list li {
                     margin-bottom: 6px;
                 }
-                .info-box {
-                    background-color: #f0fdf4;
-                    border: 1px solid #bbf7d0;
-                    border-radius: 10px;
-                    padding: 16px 20px;
-                    margin-bottom: 24px;
-                }
-                .info-title {
-                    font-size: 14px;
-                    font-weight: 700;
-                    color: #166534;
-                    margin: 0 0 4px 0;
-                }
-                .info-text {
-                    font-size: 13px;
-                    color: #15803d;
-                    margin: 0;
-                    line-height: 1.5;
-                }
-                .action-container {
-                    text-align: center;
-                    margin: 28px 0;
-                }
-                .cta-button {
-                    display: inline-block;
-                    background: linear-gradient(135deg, #2563eb 0%%, #1d4ed8 100%%);
-                    color: #ffffff !important;
-                    text-decoration: none;
-                    font-size: 15px;
-                    font-weight: 700;
-                    padding: 14px 32px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-                }
                 .security-note {
-                    background: #fffbeb;
-                    border: 1px solid #fef3c7;
+                    background: rgba(255, 106, 43, 0.08);
+                    border: 1px solid rgba(255, 106, 43, 0.25);
                     border-radius: 8px;
                     padding: 14px 18px;
                     font-size: 12.5px;
-                    color: #92400e;
-                    line-height: 1.5;
-                    margin-bottom: 24px;
+                    color: #ffb020;
+                    line-height: 1.55;
+                    margin-bottom: 26px;
+                }
+                .action-container {
+                    text-align: center;
+                    margin: 32px 0 12px 0;
+                }
+                .cta-button {
+                    display: inline-block;
+                    background: linear-gradient(135deg, #ff6a2b 0%%, #e55d22 100%%);
+                    color: #ffffff !important;
+                    text-decoration: none;
+                    font-family: 'Oswald', 'Segoe UI', sans-serif;
+                    font-size: 16px;
+                    font-weight: 700;
+                    letter-spacing: 0.5px;
+                    text-transform: uppercase;
+                    padding: 14px 36px;
+                    border-radius: 6px;
+                    box-shadow: 0 4px 16px rgba(255, 106, 43, 0.4);
+                    transition: all 0.2s ease;
                 }
                 .footer {
-                    background-color: #f8fafc;
-                    border-top: 1px solid #e2e8f0;
+                    background-color: #0d1117;
+                    border-top: 1px solid #21262d;
                     padding: 24px 32px;
                     text-align: center;
                     font-size: 12px;
-                    color: #94a3b8;
+                    color: #6e7681;
                     line-height: 1.6;
                 }
                 .footer p {
@@ -192,10 +198,21 @@ public class EmailTemplateBuilder {
         </head>
         <body>
             <div class="container">
-                <!-- Header -->
+                <!-- Header with SVG Brand Logo -->
                 <div class="header">
-                    <h1 class="logo-title">📦 LogiTrack S.A.</h1>
-                    <p class="logo-subtitle">Sistema Integral WMS & ERP Industrial</p>
+                    <div class="logo-container">
+                        <!-- Isometric Hexagonal Cube Logo Icon -->
+                        <svg width="44" height="44" viewBox="0 0 200 200" style="vertical-align: middle;">
+                            <path d="M 100 22 L 168 61 L 168 139 L 100 178 L 32 139 L 32 61 Z" fill="none" stroke="#FF6A2B" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 32 61 L 100 100 L 168 61" fill="none" stroke="#FF6A2B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 66 80 L 66 122 L 100 141" fill="none" stroke="#FF6A2B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 100 100 L 100 156" fill="none" stroke="#FFB020" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 76 100 L 138 64" fill="none" stroke="#FFB020" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 112 59 L 147 59 L 144 94" fill="none" stroke="#FFB020" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <h1 class="logo-title">Logi<span>Track</span> S.A.</h1>
+                    </div>
+                    <p class="logo-subtitle">Sistema Integral WMS &amp; ERP Industrial</p>
                 </div>
 
                 <!-- Main Content -->
@@ -261,13 +278,13 @@ public class EmailTemplateBuilder {
     }
 
     private String getRoleBadgeColor(RolUsuario rol) {
-        if (rol == null) return "#64748b";
+        if (rol == null) return "#8993a8";
         return switch (rol) {
-            case ADMIN -> "#4f46e5";            // Indigo
-            case SUPERVISOR -> "#d97706";       // Amber / Gold
-            case GERENTE_LOGISTICA -> "#059669";// Emerald Green
-            case JEFE_COMPRAS -> "#0284c7";     // Cyan / Sky Blue
-            case EMPLEADO -> "#2563eb";         // Royal Blue
+            case ADMIN -> "#ff6a2b";            // Accent Orange
+            case SUPERVISOR -> "#ffb020";       // Amber Gold
+            case GERENTE_LOGISTICA -> "#33d6a6";// Emerald Teal
+            case JEFE_COMPRAS -> "#4ea1ff";     // Cyber Cyan
+            case EMPLEADO -> "#8993a8";         // Industrial Slate
         };
     }
 

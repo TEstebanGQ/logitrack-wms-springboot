@@ -13,7 +13,7 @@
     <!-- Guías de Despacho -->
     <div class="table-container card" style="margin-bottom:24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🚚 Guías de Envío Activas</h4>
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Guías de Envío Activas</h4>
             <span id="contador-guias" class="badge badge-info">0 guías</span>
         </div>
         <table class="data-table">
@@ -38,7 +38,7 @@
     <!-- Transportadoras Registradas -->
     <div class="table-container card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🏢 Empresas Transportadoras y Flotas</h4>
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Empresas Transportadoras y Flotas</h4>
             <span id="contador-transportadoras" class="badge badge-info">0 empresas</span>
         </div>
         <table class="data-table">
@@ -64,7 +64,7 @@
         <div class="modal-dialog card" style="max-width:550px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Generar Guía de Despacho</h3>
-                <button class="btn btn-sm btn-secondary" onclick="DespachoController.cerrarModalGuia()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="DespachoController.cerrarModalGuia()">&times;</button>
             </div>
             <form id="form-guia" onsubmit="DespachoController.guardarGuia(event)">
                 <div class="form-group" style="margin-bottom:12px;">
@@ -106,7 +106,7 @@
         <div class="modal-dialog card" style="max-width:500px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Registrar Transportadora</h3>
-                <button class="btn btn-sm btn-secondary" onclick="DespachoController.cerrarModalTransportadora()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="DespachoController.cerrarModalTransportadora()">&times;</button>
             </div>
             <form id="form-transp" onsubmit="DespachoController.guardarTransportadora(event)">
                 <div class="form-group" style="margin-bottom:12px;">

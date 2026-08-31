@@ -19,8 +19,8 @@ const Toast = {
         toast.className = `toast toast-${type}`;
         
         let icon = 'ℹ️';
-        if (type === 'success') icon = '✅';
-        if (type === 'error') icon = '❌';
+        if (type === 'success') icon = '';
+        if (type === 'error') icon = '';
 
         toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
         this.container.appendChild(toast);

@@ -89,7 +89,7 @@ const ProveedorModuleController = {
                             <span class="badge badge-success">ENTRADA</span>
                         </div>
                         <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
-                            📅 Fecha: ${m.fecha ? new Date(m.fecha).toLocaleString() : 'N/A'} | 🏬 Bodega: ${m.bodegaDestino || 'N/A'}
+                            Fecha: ${m.fecha ? new Date(m.fecha).toLocaleString() : 'N/A'} | Bodega: ${m.bodegaDestino || 'N/A'}
                         </div>
                         <div style="font-size:12.5px;">
                             ${(m.detalles || []).map(d => `<div>• <strong>${d.productoNombre}</strong> (x${d.cantidad} u.) - $${(d.precioUnitario || 0).toLocaleString()}</div>`).join('')}

@@ -5,7 +5,7 @@
             <p>Asignación de tareas operativas, ubicación de origen y avance de recolección en estantería.</p>
         </div>
         <div class="view-actions">
-            <button class="btn btn-secondary" onclick="PickingController.load()">🔄 Actualizar Tareas</button>
+            <button class="btn btn-secondary" onclick="PickingController.load()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Actualizar Tareas</button>
         </div>
     </div>
 
@@ -31,7 +31,7 @@
     <!-- Tabla de Tareas de Picking -->
     <div class="table-container card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">📋 Órdenes de Extracción Activas</h4>
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Órdenes de Extracción Activas</h4>
             <span id="contador-picking" class="badge badge-info">0 tareas</span>
         </div>
         <table class="data-table">
@@ -58,7 +58,7 @@
         <div class="modal-dialog card" style="max-width:450px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Avance de Picking</h3>
-                <button class="btn btn-sm btn-secondary" onclick="PickingController.cerrarModal()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="PickingController.cerrarModal()">&times;</button>
             </div>
             <form id="form-picking-accion" onsubmit="PickingController.guardarAvance(event)">
                 <input type="hidden" id="pck-tarea-id">

@@ -26,7 +26,7 @@ const BodegaRenderer = {
                 <td>${b.encargado || '-'}</td>
                 <td><span class="badge ${b.activo !== false ? 'badge-success' : 'badge-danger'}">${b.activo !== false ? 'Activo' : 'Inactivo'}</span></td>
                 <td>
-                    <button class="btn btn-secondary btn-sm" onclick="BodegaModuleController.verInventario(${b.id})">📦 Inventario</button>
+                    <button class="btn btn-secondary btn-sm" onclick="BodegaModuleController.verInventario(${b.id})">Inventario</button>
                     ${canManage ? `
                         <button class="btn btn-secondary btn-sm" onclick="BodegaModuleController.edit(${b.id})">Editar</button>
                         <button class="btn btn-danger btn-sm" onclick="BodegaModuleController.delete(${b.id})">Eliminar</button>

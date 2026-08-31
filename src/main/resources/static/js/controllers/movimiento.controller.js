@@ -190,7 +190,7 @@ const MovimientoModuleController = {
         const prodOpts = productos.map(p => {
             if (porBodega) {
                 const stockVal = p.stockEnBodega || 0;
-                const textStatus = stockVal > 0 ? `${stockVal} u. disponibles en bodega` : '⚠️ Sin stock en esta bodega';
+                const textStatus = stockVal > 0 ? `${stockVal} u. disponibles en bodega` : 'Sin stock en esta bodega';
                 return `<option value="${p.id}">${p.nombre} — [${textStatus}]</option>`;
             } else {
                 return `<option value="${p.id}">${p.nombre} (Stock Global: ${p.stock} u.)</option>`;

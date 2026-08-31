@@ -39,7 +39,7 @@ const ProductoRenderer = {
                     <td><span class="badge ${catBadgeClass}">${catName}</span></td>
                     <td>
                         <span class="badge ${lowStock ? 'badge-danger' : 'badge-success'}">
-                            ${p.stock} unidades ${lowStock ? '⚠️ Bajo Stock' : ''}
+                            ${p.stock} unidades ${lowStock ? 'Bajo Stock' : ''}
                         </span>
                     </td>
                     <td><strong style="color:var(--accent); font-family:var(--font-mono);">$${Number(p.precio).toLocaleString('es-CO')}</strong></td>

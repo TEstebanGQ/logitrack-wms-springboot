@@ -31,7 +31,7 @@ const ConteoRenderer = {
                     <td><span class="badge badge-info">${lineas} productos</span></td>
                     <td><span class="badge ${badgeClass}">${c.estado}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="ConteoController.verDetalles(${c.id})">🔍 Inspeccionar / Contar</button>
+                        <button class="btn btn-sm btn-primary" onclick="ConteoController.verDetalles(${c.id})">Inspeccionar / Contar</button>
                     </td>
                 </tr>
             `;

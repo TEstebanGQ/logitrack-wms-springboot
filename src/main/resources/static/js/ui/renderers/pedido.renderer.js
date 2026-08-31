@@ -42,8 +42,8 @@ const PedidoRenderer = {
                     <td><span class="badge ${badgeClass}">${p.estado}</span></td>
                     <td>
                         <div style="display:flex; gap:6px;">
-                            ${canDespachar ? `<button class="btn btn-sm btn-primary" title="Despachar pedido" onclick="PedidoController.despachar(${p.id})">🚀 Despachar</button>` : ''}
-                            ${canCancelar ? `<button class="btn btn-sm btn-secondary" title="Cancelar pedido" onclick="PedidoController.cancelar(${p.id})">✕</button>` : ''}
+                            ${canDespachar ? `<button class="btn btn-sm btn-primary" title="Despachar pedido" onclick="PedidoController.despachar(${p.id})">Despachar</button>` : ''}
+                            ${canCancelar ? `<button class="btn btn-sm btn-secondary" title="Cancelar pedido" onclick="PedidoController.cancelar(${p.id})"></button>` : ''}
                         </div>
                     </td>
                 </tr>

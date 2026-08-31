@@ -39,7 +39,7 @@ const PickingRenderer = {
                     <td>
                         ${t.estado !== 'COMPLETADA' && t.estado !== 'CANCELADA' ? `
                             <button class="btn btn-sm btn-primary" onclick="PickingController.abrirModalRecoleccion(${t.id}, '${t.productoNombre}', ${t.cantidadRequerida}, ${t.cantidadRecogida})">
-                                📦 Recolectar
+                                Recolectar
                             </button>
                         ` : '<span style="color:var(--text-muted); font-size:12px;">Finalizada</span>'}
                     </td>

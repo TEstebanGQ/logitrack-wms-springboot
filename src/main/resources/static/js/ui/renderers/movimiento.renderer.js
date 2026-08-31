@@ -30,7 +30,7 @@ const MovimientoRenderer = {
                 ? m.detalles.map(d => `<span class="badge badge-secondary" style="font-weight:600;">${d.cantidad} un.</span>`).join('<br>')
                 : (m.cantidad ? `<span class="badge badge-secondary" style="font-weight:600;">${m.cantidad} un.</span>` : '-');
 
-            const socioStr = m.proveedorNombre ? `<span style="color:var(--success);">📥 ${m.proveedorNombre}</span>` : (m.clienteNombre ? `<span style="color:var(--danger);">📦 ${m.clienteNombre}</span>` : '-');
+            const socioStr = m.proveedorNombre ? `<span style="color:var(--success);">${m.proveedorNombre}</span>` : (m.clienteNombre ? `<span style="color:var(--danger);">${m.clienteNombre}</span>` : '-');
 
             return `
                 <tr style="cursor:pointer;" onclick="App.openMovimientoDrawer(${m.id})" title="Haga clic para abrir ficha completa en el panel lateral">

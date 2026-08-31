@@ -43,12 +43,12 @@ const ReporteRenderer = {
         container.innerHTML = `
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
                 <div class="report-card">
-                    <h4 style="margin-bottom: 1.25rem; font-size: 1.1rem; color:var(--text-bright);">🏬 Stock Total Acumulado por Bodega</h4>
+                    <h4 style="margin-bottom: 1.25rem; font-size: 1.1rem; color:var(--text-bright);">Stock Total Acumulado por Bodega</h4>
                     ${bodegasHtml || '<p style="color: var(--text-muted);">Sin datos de stock.</p>'}
                 </div>
 
                 <div class="report-card">
-                    <h4 style="margin-bottom: 1.25rem; font-size: 1.1rem; color:var(--text-bright);">🔥 Top Productos Más Movidos</h4>
+                    <h4 style="margin-bottom: 1.25rem; font-size: 1.1rem; color:var(--text-bright);">Top Productos Más Movidos</h4>
                     <div class="table-container">
                         <table class="table">
                             <thead>
@@ -87,7 +87,7 @@ const ReporteRenderer = {
 
             const fecha = m.fecha ? new Date(m.fecha).toLocaleString() : '-';
             const productos = (m.detalles || []).map(d => `${d.productoNombre} (<b>${d.cantidad}u</b>)`).join(', ') || 'Sin detalle';
-            const contacto = m.proveedorNombre ? `🏢 ${m.proveedorNombre}` : (m.clienteNombre ? `👤 ${m.clienteNombre}` : (m.usuarioNombre || '-'));
+            const contacto = m.proveedorNombre ? m.proveedorNombre : (m.clienteNombre ? m.clienteNombre : (m.usuarioNombre || '-'));
 
             return `
                 <tr>
@@ -187,7 +187,7 @@ const ReporteRenderer = {
 
             <div style="display:grid; grid-template-columns:1fr; gap:20px;">
                 <div class="card" style="padding:16px;">
-                    <h4 style="margin:0 0 12px 0; color:#60a5fa;">🔵 Productos Clase A (Top 80% Valor)</h4>
+                    <h4 style="margin:0 0 12px 0; color:#60a5fa;">Productos Clase A (Top 80% Valor)</h4>
                     <table class="data-table">
                         <thead><tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Valor Total</th><th>% Ponderado</th></tr></thead>
                         <tbody>${renderTableItems(abcData.itemsA, 'badge-abc-a')}</tbody>
@@ -195,7 +195,7 @@ const ReporteRenderer = {
                 </div>
 
                 <div class="card" style="padding:16px;">
-                    <h4 style="margin:0 0 12px 0; color:#c084fc;">🟣 Productos Clase B (Siguiente 15% Valor)</h4>
+                    <h4 style="margin:0 0 12px 0; color:#c084fc;">Productos Clase B (Siguiente 15% Valor)</h4>
                     <table class="data-table">
                         <thead><tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Valor Total</th><th>% Ponderado</th></tr></thead>
                         <tbody>${renderTableItems(abcData.itemsB, 'badge-abc-b')}</tbody>
@@ -203,7 +203,7 @@ const ReporteRenderer = {
                 </div>
 
                 <div class="card" style="padding:16px;">
-                    <h4 style="margin:0 0 12px 0; color:#94a3b8;">⚪ Productos Clase C (Restante 5% Valor)</h4>
+                    <h4 style="margin:0 0 12px 0; color:#94a3b8;">Productos Clase C (Restante 5% Valor)</h4>
                     <table class="data-table">
                         <thead><tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Valor Total</th><th>% Ponderado</th></tr></thead>
                         <tbody>${renderTableItems(abcData.itemsC, 'badge-abc-c')}</tbody>

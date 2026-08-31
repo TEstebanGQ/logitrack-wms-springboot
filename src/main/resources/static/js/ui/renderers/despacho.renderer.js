@@ -32,7 +32,7 @@ const DespachoRenderer = {
                     <td style="font-size:12px;">${fecha}</td>
                     <td><span class="badge ${badgeClass}">${g.estadoEnvio}</span></td>
                     <td>
-                        ${g.estadoEnvio !== 'ENTREGADO' ? `<button class="btn btn-sm btn-success" onclick="DespachoController.marcarEntregado(${g.id})">✓ Entregado</button>` : '<span style="color:var(--success); font-size:12px;">✓ Completado</span>'}
+                        ${g.estadoEnvio !== 'ENTREGADO' ? `<button class="btn btn-sm btn-success" onclick="DespachoController.marcarEntregado(${g.id})">Entregado</button>` : '<span style="color:var(--success); font-size:12px;"> Completado</span>'}
                     </td>
                 </tr>
             `;

@@ -30,7 +30,7 @@ const BodegaModuleController = {
             const subEl = document.getElementById('inv-bodega-subtitle');
             const bodyEl = document.getElementById('inv-bodega-body');
 
-            if (titleEl) titleEl.innerText = `📦 Inventario Almacenado — ${bodega.nombre}`;
+            if (titleEl) titleEl.innerText = `Inventario Almacenado — ${bodega.nombre}`;
             if (subEl) subEl.innerText = `Ubicación: ${bodega.ubicacion} | Encargado: ${bodega.encargado} | Capacidad Max: ${bodega.capacidad ? bodega.capacidad.toLocaleString() : 0} u.`;
 
             if (!inventario || inventario.length === 0) {

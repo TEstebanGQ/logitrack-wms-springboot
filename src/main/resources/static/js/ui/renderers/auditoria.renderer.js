@@ -17,7 +17,7 @@ const AuditoriaRenderer = {
             <div class="card" style="margin-bottom: 18px; padding: 14px 18px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color);">
                 <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
                     <div style="flex: 1; min-width: 220px;">
-                        <input type="text" id="aud-search-input" class="form-input" placeholder="🔍 Buscar por producto, bodega, usuario..." oninput="AuditoriaRenderer.filterTable()">
+                        <input type="text" id="aud-search-input" class="form-input" placeholder="Buscar por producto, bodega, usuario..." oninput="AuditoriaRenderer.filterTable()">
                     </div>
                     <div style="width: 170px;">
                         <select id="aud-filter-entidad" class="form-select" onchange="AuditoriaRenderer.filterTable()">
@@ -96,7 +96,7 @@ const AuditoriaRenderer = {
                     <td><span style="font-family:var(--font-mono); font-size:12px; color:var(--text-bright);">${usuarioStr}</span></td>
                     <td><small style="font-family:var(--font-mono); color:var(--text-dim);">${fecha}</small></td>
                     <td>
-                        <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 11px;" onclick="AuditoriaModuleController.inspect(${a.id})">🔍 Inspeccionar Cambios</button>
+                        <button class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 11px;" onclick="AuditoriaModuleController.inspect(${a.id})"> Inspeccionar Cambios</button>
                     </td>
                 </tr>
             `;

@@ -108,14 +108,14 @@ const AuditoriaModuleController = {
             return `
                 <div style="margin-top: 12px;">
                     <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px;">
-                        ⚡ Atributos Modificados (Comparación Campo por Campo):
+                        Atributos Modificados (Comparación Campo por Campo):
                     </h4>
                     <table class="table" style="font-size: 12px;">
                         <thead>
                             <tr>
                                 <th>Campo Modificado</th>
-                                <th>Valor Anterior 🔴</th>
-                                <th>Valor Nuevo 🟢</th>
+                                <th>Valor Anterior</th>
+                                <th>Valor Nuevo</th>
                             </tr>
                         </thead>
                         <tbody>${rows}</tbody>
@@ -133,13 +133,13 @@ const AuditoriaModuleController = {
             return `
                 <div style="margin-top: 12px;">
                     <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #10b981; margin-bottom: 8px;">
-                        ✨ Atributos del Recurso Creado:
+                        Atributos del Recurso Creado:
                     </h4>
                     <table class="table" style="font-size: 12px;">
                         <thead>
                             <tr>
                                 <th>Atributo</th>
-                                <th>Valor Registrado 🟢</th>
+                                <th>Valor Registrado</th>
                             </tr>
                         </thead>
                         <tbody>${rows}</tbody>
@@ -157,13 +157,13 @@ const AuditoriaModuleController = {
             return `
                 <div style="margin-top: 12px;">
                     <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #ef4444; margin-bottom: 8px;">
-                        🗑️ Atributos del Recurso Eliminado:
+                        Atributos del Recurso Eliminado:
                     </h4>
                     <table class="table" style="font-size: 12px;">
                         <thead>
                             <tr>
                                 <th>Atributo</th>
-                                <th>Último Valor Registrado 🔴</th>
+                                <th>Último Valor Registrado</th>
                             </tr>
                         </thead>
                         <tbody>${rows}</tbody>

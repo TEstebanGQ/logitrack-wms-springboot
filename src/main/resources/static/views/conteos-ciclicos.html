@@ -12,7 +12,7 @@
     <!-- Lista de Auditorías -->
     <div class="table-container card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">📑 Historial de Auditorías Físicas</h4>
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Historial de Auditorías Físicas</h4>
             <span id="contador-conteos" class="badge badge-info">0 auditorías</span>
         </div>
         <table class="data-table">
@@ -38,7 +38,7 @@
         <div class="modal-dialog card" style="max-width:550px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Programar Conteo Cíclico</h3>
-                <button class="btn btn-sm btn-secondary" onclick="ConteoController.cerrarModalProgramar()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="ConteoController.cerrarModalProgramar()">&times;</button>
             </div>
             <form id="form-conteo" onsubmit="ConteoController.guardarProgramacion(event)">
                 <div class="form-group" style="margin-bottom:12px;">
@@ -77,7 +77,7 @@
                 <span id="conteo-status-badge"></span>
                 <div style="display:flex; gap:12px;">
                     <button type="button" class="btn btn-secondary" onclick="ConteoController.cerrarModalDetalles()">Cerrar</button>
-                    <button id="btn-conciliar-conteo" type="button" class="btn btn-success" onclick="ConteoController.conciliarConteo()">⚡ Conciliar y Ajustar Inventario</button>
+                    <button id="btn-conciliar-conteo" type="button" class="btn btn-success" onclick="ConteoController.conciliarConteo()">Conciliar y Ajustar Inventario</button>
                 </div>
             </div>
         </div>

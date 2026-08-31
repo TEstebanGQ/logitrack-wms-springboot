@@ -365,7 +365,7 @@ const App = {
                         <div class="drawer-field">
                             <div class="drawer-field-label">${m.proveedorNombre ? 'Proveedor de Mercancía' : 'Cliente Receptor / Despacho'}</div>
                             <div class="drawer-field-value" style="font-weight:600; color:var(--text-bright);">
-                                ${m.proveedorNombre ? `🏢 ${m.proveedorNombre}` : `👤 ${m.clienteNombre}`}
+                                ${m.proveedorNombre ? m.proveedorNombre : (m.clienteNombre || "Operación interna")}
                             </div>
                         </div>
                     </div>
@@ -413,18 +413,18 @@ const App = {
             if (inventario && inventario.length > 0) {
                 bodegasHtml = inventario.map(inv => `
                     <span class="badge badge-bodega">
-                        🏢 ${inv.bodegaNombre}: <strong>${inv.stockActual} u.</strong>
+                        <span class="status-indicator completed" style="margin-right:4px;"></span> ${inv.bodegaNombre}: <strong>${inv.stockActual} u.</strong>
                     </span>
                 `).join('');
             } else if (p.bodegaNombre && p.bodegaNombre !== 'Sin asignar') {
-                bodegasHtml = `<span class="badge badge-bodega">🏢 ${p.bodegaNombre}</span>`;
+                bodegasHtml = `<span class="badge badge-bodega"><span class="status-indicator completed" style="margin-right:4px;"></span> ${p.bodegaNombre}</span>`;
             } else {
-                bodegasHtml = `<span class="badge badge-warning">⚠️ Sin asignación de bodega</span>`;
+                bodegasHtml = `<span class="badge badge-warning">Sin asignación de bodega</span>`;
             }
 
             const htmlContent = `
                 <div class="drawer-card" style="text-align:center; padding: 22px 16px; background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);">
-                    <div style="font-size:2.8rem; margin-bottom:10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));">📦</div>
+                    <div style="display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:12px; background:rgba(255,106,43,0.1); border:1px solid rgba(255,106,43,0.25); color:var(--accent); margin-bottom:12px; box-shadow:0 0 16px rgba(255,106,43,0.2);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div>
                     <h4 style="font-family:var(--font-display); font-size:1.5rem; color:var(--text); margin:0 0 8px; letter-spacing:0.02em;">${p.nombre}</h4>
                     <span class="badge ${catBadgeClass}">${catName}</span>
                 </div>
@@ -435,7 +435,7 @@ const App = {
                             <div class="drawer-field-label">Stock Total</div>
                             <div class="drawer-field-value">
                                 <span class="badge ${stockBadge}" style="font-size:12.5px; font-weight:700;">
-                                    ${p.stock} UNIDADES ${lowStock ? '⚠️ BAJO' : ''}
+                                    ${p.stock} UNIDADES ${lowStock ? '· BAJO' : ''}
                                 </span>
                             </div>
                         </div>
@@ -1124,9 +1124,9 @@ const App = {
             }
             container.innerHTML = notifs.map(n => {
                 let icon = 'ℹ️';
-                if (n.tipo === 'ALERTA') icon = '⚠️';
-                else if (n.tipo === 'EXITO') icon = '✓';
-                else if (n.tipo === 'ERROR') icon = '✕';
+                if (n.tipo === 'ALERTA') icon = '[ALERTA]';
+                else if (n.tipo === 'EXITO') icon = '[OK]';
+                else if (n.tipo === 'ERROR') icon = '[ERROR]';
 
                 const hora = n.fechaCreacion ? new Date(n.fechaCreacion).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
                 return `

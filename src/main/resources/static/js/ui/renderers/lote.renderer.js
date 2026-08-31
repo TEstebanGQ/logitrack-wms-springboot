@@ -23,7 +23,7 @@ const LoteRenderer = {
             if (l.estado === 'VENCIDO' || l.vencido) estadoBadge = '<span class="badge badge-danger">VENCIDO</span>';
             if (l.estado === 'AGOTADO') estadoBadge = '<span class="badge badge-secondary">AGOTADO</span>';
             if (l.proximoAVencer && l.estado === 'DISPONIBLE') {
-                estadoBadge += ' <span class="badge badge-warning">⚠️ PRÓXIMO A VENCER</span>';
+                estadoBadge += ' <span class="badge badge-warning">PRÓXIMO A VENCER</span>';
             }
 
             return `

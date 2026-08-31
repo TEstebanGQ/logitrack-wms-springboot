@@ -14,7 +14,7 @@
     <!-- Trazabilidad de Números de Serie -->
     <div class="table-container card" style="margin-bottom:24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🏷️ Trazabilidad de Números de Serie Unitarios</h4>
+            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Trazabilidad de Números de Serie Unitarios</h4>
             <span id="contador-series" class="badge badge-info">0 series</span>
         </div>
         <table class="data-table">
@@ -38,7 +38,7 @@
         <!-- Zonas de Bodega -->
         <div class="table-container card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">🏬 Zonas Operativas de Bodega</h4>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Zonas Operativas de Bodega</h4>
                 <span id="contador-zonas" class="badge badge-info">0 zonas</span>
             </div>
             <table class="data-table">
@@ -59,7 +59,7 @@
         <!-- Unidades de Medida -->
         <div class="table-container card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">⚖️ Unidades de Medida y Empaque</h4>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Unidades de Medida y Empaque</h4>
                 <span id="contador-unidades" class="badge badge-info">0 unidades</span>
             </div>
             <table class="data-table">
@@ -83,7 +83,7 @@
         <div class="modal-dialog card" style="max-width:500px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Número de Serie</h3>
-                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalSerie()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalSerie()">&times;</button>
             </div>
             <form id="form-serie" onsubmit="ZonasSeriesController.guardarSerie(event)">
                 <div class="form-group" style="margin-bottom:12px;">
@@ -115,7 +115,7 @@
         <div class="modal-dialog card" style="max-width:500px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Zona de Bodega</h3>
-                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalZona()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalZona()">&times;</button>
             </div>
             <form id="form-zona" onsubmit="ZonasSeriesController.guardarZona(event)">
                 <div class="form-group" style="margin-bottom:12px;">
@@ -153,7 +153,7 @@
         <div class="modal-dialog card" style="max-width:450px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.15rem; color:var(--text-bright);">Registrar Unidad de Medida</h3>
-                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalUnidad()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="ZonasSeriesController.cerrarModalUnidad()">&times;</button>
             </div>
             <form id="form-unidad" onsubmit="ZonasSeriesController.guardarUnidad(event)">
                 <div class="form-group" style="margin-bottom:12px;">

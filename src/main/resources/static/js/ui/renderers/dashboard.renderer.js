@@ -39,7 +39,7 @@ const DashboardRenderer = {
                     <div class="bodega-foot" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>ENC: ${b.encargado || 'Operador'}</span>
                         <div style="display: flex; gap: 6px;">
-                            <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.verInventario(${b.id})">📦 Inventario</button>
+                            <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.verInventario(${b.id})">Inventario</button>
                             ${canManage ? `
                                 <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.edit(${b.id})">Editar</button>
                                 <button class="btn btn-danger btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="BodegaModuleController.delete(${b.id})">Eliminar</button>

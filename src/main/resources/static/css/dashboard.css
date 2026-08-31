@@ -958,20 +958,25 @@
 /* 1. Desktop & Laptop Layout Override (>= 901px) */
 @media (min-width: 901px) {
     #app-layout {
-        display: grid;
-        grid-template-columns: 245px 1fr;
+        display: block;
+        width: 100%;
     }
 
     .main-wrapper {
         margin-left: 245px;
         width: calc(100% - 245px);
+        min-height: 100vh;
     }
 
     .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
         width: 245px;
         transform: translateX(0) !important;
         box-shadow: none;
-        background: rgba(27, 33, 44, 0.65);
+        background: rgba(27, 33, 44, 0.95);
         z-index: 100;
     }
 

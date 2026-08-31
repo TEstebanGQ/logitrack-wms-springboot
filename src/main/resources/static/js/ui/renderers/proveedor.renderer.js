@@ -20,21 +20,21 @@ const ProveedorRenderer = {
 
         const rows = list.map(p => `
             <tr>
-                <td>#${p.id}</td>
-                <td><strong>${p.nombre}</strong></td>
-                <td><span style="font-family:var(--font-mono);">${p.ruc || 'N/A'}</span></td>
+                <td style="font-family:var(--font-mono); font-weight:600; color:var(--text-muted); text-align:center;">#${p.id}</td>
+                <td><strong style="color:var(--text-bright); font-size:14px;">${p.nombre}</strong></td>
+                <td><span style="font-family:var(--font-mono); font-weight:600;">${p.ruc || 'N/A'}</span></td>
                 <td>${p.telefono || 'N/A'}</td>
-                <td>${p.email || 'N/A'}</td>
-                <td><small style="color:var(--text-muted);">${p.direccion || 'N/A'}</small></td>
-                <td><span class="badge ${p.activo ? 'badge-success' : 'badge-warning'}">${p.activo ? 'Activo' : 'Inactivo'}</span></td>
-                <td>
-                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                        <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="ProveedorModuleController.verMovimientos(${p.id}, '${p.nombre.replace(/'/g, "\\'")}')">📥 Entradas/Suministros</button>
+                <td><span style="color:var(--info);">${p.email || 'N/A'}</span></td>
+                <td><span style="color:var(--text-muted); font-size:12.5px;">${p.direccion || 'N/A'}</span></td>
+                <td style="text-align:center;"><span class="badge ${p.activo ? 'badge-success' : 'badge-warning'}">${p.activo ? 'Activo' : 'Inactivo'}</span></td>
+                <td style="text-align:center;">
+                    <div style="display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:nowrap;">
+                        <button class="btn btn-secondary btn-sm" style="padding:4px 10px; font-size:11px; white-space:nowrap;" onclick="ProveedorModuleController.verMovimientos(${p.id}, '${p.nombre.replace(/'/g, "\\'")}')"> Entradas / Suministros</button>
                         ${canManage ? `
-                            <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="ProveedorModuleController.edit(${p.id})">Editar</button>
+                            <button class="btn btn-secondary btn-sm" style="padding:4px 10px; font-size:11px; white-space:nowrap;" onclick="ProveedorModuleController.edit(${p.id})">Editar</button>
                         ` : ''}
                         ${isAdmin ? `
-                            <button class="btn btn-danger btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="ProveedorModuleController.delete(${p.id})">Eliminar</button>
+                            <button class="btn btn-danger btn-sm" style="padding:4px 10px; font-size:11px; white-space:nowrap;" onclick="ProveedorModuleController.delete(${p.id})">Eliminar</button>
                         ` : ''}
                     </div>
                 </td>
@@ -42,18 +42,18 @@ const ProveedorRenderer = {
         `).join('');
 
         container.innerHTML = `
-            <div class="table-container">
-                <table class="table">
+            <div class="table-container" style="width:100%; overflow-x:auto;">
+                <table class="table" style="width:100%; border-collapse:collapse;">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th style="width:60px; text-align:center;">ID</th>
                             <th>Razón Social / Proveedor</th>
-                            <th>RUC / NIT</th>
-                            <th>Teléfono</th>
-                            <th>Email</th>
+                            <th style="width:140px;">RUC / NIT</th>
+                            <th style="width:140px;">Teléfono</th>
+                            <th style="width:190px;">Email</th>
                             <th>Dirección</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
+                            <th style="width:110px; text-align:center;">Estado</th>
+                            <th style="width:250px; text-align:center;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>${rows}</tbody>

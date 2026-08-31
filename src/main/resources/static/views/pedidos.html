@@ -29,7 +29,7 @@
                 </select>
             </div>
             <div class="filter-group">
-                <button class="btn btn-secondary" onclick="PedidoController.load()" style="width:100%;">🔄 Actualizar</button>
+                <button class="btn btn-secondary" onclick="PedidoController.load()" style="width:100%;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Actualizar</button>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@
         <div class="modal-dialog card" style="max-width:600px; padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; font-size:1.2rem; color:var(--text-bright);">Crear Nuevo Pedido de Cliente</h3>
-                <button class="btn btn-sm btn-secondary" onclick="PedidoController.cerrarModal()">✕</button>
+                <button class="btn btn-sm btn-secondary" onclick="PedidoController.cerrarModal()">&times;</button>
             </div>
             <form id="form-pedido" onsubmit="PedidoController.guardar(event)">
                 <div class="form-group" style="margin-bottom:12px;">

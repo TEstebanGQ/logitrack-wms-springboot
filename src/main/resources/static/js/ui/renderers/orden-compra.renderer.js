@@ -20,7 +20,7 @@ const OrdenCompraRenderer = {
         // 1. Renderizar Órdenes Activas
         if (tbodyActivas) {
             if (activas.length === 0) {
-                tbodyActivas.innerHTML = '<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">🎉 No hay órdenes pendientes por gestionar.</td></tr>';
+                tbodyActivas.innerHTML = '<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No hay órdenes pendientes por gestionar.</td></tr>';
             } else {
                 tbodyActivas.innerHTML = activas.map(o => this.buildRow(o, true)).join('');
             }
@@ -49,17 +49,17 @@ const OrdenCompraRenderer = {
         let acciones = '';
         if (o.estado === 'PENDIENTE') {
             acciones = `
-                <button class="btn btn-sm btn-info" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.aprobar(${o.id})" title="Aprobar Orden">✓ Aprobar</button>
-                <button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.cancelar(${o.id})" title="Cancelar Orden">✕ Cancelar</button>
+                <button class="btn btn-sm btn-info" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.aprobar(${o.id})" title="Aprobar Orden">Aprobar</button>
+                <button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.cancelar(${o.id})" title="Cancelar Orden">Cancelar</button>
             `;
         } else if (o.estado === 'APROBADA') {
             acciones = `
-                <button class="btn btn-sm btn-primary" style="padding: 3px 10px; font-size: 11px; background:var(--accent); border-color:var(--accent);" onclick="OrdenCompraController.recibir(${o.id})">📥 Recibir Mercancía</button>
+                <button class="btn btn-sm btn-primary" style="padding: 3px 10px; font-size: 11px; background:var(--accent); border-color:var(--accent);" onclick="OrdenCompraController.recibir(${o.id})">Recibir Mercancía</button>
             `;
         }
 
         acciones += `
-            <button class="btn btn-sm btn-secondary" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.verDetalle(${o.id})" title="Ver Información Detallada">👁️ Detalle</button>
+            <button class="btn btn-sm btn-secondary" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.verDetalle(${o.id})" title="Ver Información Detallada">Detalle</button>
         `;
 
         return `

@@ -1,16 +1,102 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
   <defs>
-    <linearGradient id="ltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FF7A00"/>
-      <stop offset="100%" stop-color="#FF3E00"/>
+    <!-- Gradiente Naranja Primario para el Cubo / L -->
+    <linearGradient id="cubeOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A30"/>
+      <stop offset="100%" stop-color="#FF4B1F"/>
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="4" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    
+    <!-- Gradiente Amarillo / Dorado para la T y la Flecha -->
+    <linearGradient id="arrowYellow" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF9E1B"/>
+      <stop offset="100%" stop-color="#FFC038"/>
+    </linearGradient>
+
+    <!-- Filtro de resplandor suave -->
+    <filter id="logoGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#FF5722" flood-opacity="0.35"/>
     </filter>
   </defs>
-  <rect width="90" height="90" x="5" y="5" rx="20" fill="url(#ltGrad)" filter="url(#glow)"/>
-  <path d="M28 28 L28 72 L52 72" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <path d="M48 28 L74 28 M61 28 L61 72" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="72" cy="72" r="5" fill="#FFFFFF"/>
+
+  <g filter="url(#logoGlow)">
+    <!-- 1. Estructura Hexagonal Exterior (Líneas Naranjas) -->
+    <!-- Cara Superior & Contorno Izquierdo / L -->
+    <path d="M100 24 
+             L164 61 
+             L164 100 
+             M164 124 
+             L164 139 
+             L100 176 
+             L36 139 
+             L36 61 
+             L100 24 Z" 
+          fill="none" 
+          stroke="url(#cubeOrange)" 
+          stroke-width="7" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Línea interna superior del cubo -->
+    <path d="M48 68 L100 38 L142 63" 
+          fill="none" 
+          stroke="url(#cubeOrange)" 
+          stroke-width="6" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- L interna (Cara izquierda del cubo) -->
+    <path d="M64 85 
+             L64 132 
+             L100 153 
+             L100 140" 
+          fill="none" 
+          stroke="url(#cubeOrange)" 
+          stroke-width="7" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <path d="M100 153 L126 138" 
+          fill="none" 
+          stroke="url(#cubeOrange)" 
+          stroke-width="6.5" 
+          stroke-linecap="round"/>
+
+    <!-- 2. Letra 'T' y Flecha Isométrica (Amarillo / Ámbar) -->
+    <!-- Brazo izquierdo de la T -->
+    <path d="M76 89 L98 102" 
+          fill="none" 
+          stroke="url(#arrowYellow)" 
+          stroke-width="8" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Tallo izquierdo de la T -->
+    <path d="M98 102 L98 135" 
+          fill="none" 
+          stroke="url(#arrowYellow)" 
+          stroke-width="8" 
+          stroke-linecap="round"/>
+
+    <!-- Tallo central largo de la T -->
+    <path d="M130 83 L130 155" 
+          fill="none" 
+          stroke="url(#arrowYellow)" 
+          stroke-width="8" 
+          stroke-linecap="round"/>
+
+    <!-- Brazo derecho de la T que sube en diagonal hacia la flecha -->
+    <path d="M98 102 L146 74" 
+          fill="none" 
+          stroke="url(#arrowYellow)" 
+          stroke-width="8" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Punta de la Flecha (Arrowhead) -->
+    <path d="M135 63 L164 66 L152 92 Z" 
+          fill="url(#arrowYellow)" 
+          stroke="url(#arrowYellow)" 
+          stroke-width="2" 
+          stroke-linejoin="round"/>
+  </g>
 </svg>

@@ -91,35 +91,60 @@ const LoteController = {
             try {
                 const res = await LoteService.getProximosVencer(30);
                 LoteRenderer.renderTabla(res);
-                if (typeof ToastService !== 'undefined') ToastService.info(`Se encontraron ${res.length} lotes próximos a vencer`);
+                if (typeof ToastService !== 'undefined') ToastService.info(`Mostrando ${res.length} lotes próximos a vencer`);
             } catch (error) {
                 if (typeof ToastService !== 'undefined') ToastService.error('Error al consultar lotes próximos a vencer');
             }
         });
 
-        const btnExport = document.getElementById('btn-exportar-lotes-csv');
-        btnExport?.addEventListener('click', async () => {
+        const btnVerTodos = document.getElementById('btn-ver-todos-lotes');
+        btnVerTodos?.addEventListener('click', async () => {
+            try {
+                const todos = await LoteService.getAll();
+                LoteRenderer.renderTabla(todos);
+                if (typeof ToastService !== 'undefined') ToastService.info(`Mostrando todos los lotes (${todos.length})`);
+            } catch (error) {
+                if (typeof ToastService !== 'undefined') ToastService.error('Error al cargar todos los lotes');
+            }
+        });
+
+        const getHeaders = () => [
+            { label: 'Código Lote', key: 'codigoLote' },
+            { label: 'Producto', key: 'productoNombre' },
+            { label: 'Bodega', key: 'bodegaNombre' },
+            { label: 'Stock Actual', key: 'stockActual' },
+            { label: 'Stock Inicial', key: 'stockInicial' },
+            { label: 'Fecha Fabricación', key: 'fechaFabricacion' },
+            { label: 'Fecha Vencimiento', key: 'fechaVencimiento' },
+            { label: 'Estado', key: 'estado' }
+        ];
+
+        const btnExportExcel = document.getElementById('btn-exportar-lotes-excel') || document.getElementById('btn-exportar-lotes-csv');
+        btnExportExcel?.addEventListener('click', async () => {
             try {
                 const lotes = await LoteService.getAll();
-                const headers = [
-                    { label: 'Código Lote', key: 'codigoLote' },
-                    { label: 'Producto', key: 'productoNombre' },
-                    { label: 'Bodega', key: 'bodegaNombre' },
-                    { label: 'Stock Actual', key: 'stockActual' },
-                    { label: 'Stock Inicial', key: 'stockInicial' },
-                    { label: 'Fecha Fabricación', key: 'fechaFabricacion' },
-                    { label: 'Fecha Vencimiento', key: 'fechaVencimiento' },
-                    { label: 'Estado', key: 'estado' }
-                ];
                 if (typeof ExportService !== 'undefined') {
-                    ExportService.exportarCSV(lotes, headers, `logitrack-lotes-${new Date().toISOString().split('T')[0]}.csv`);
+                    ExportService.exportarCSV(lotes, getHeaders(), `logitrack-lotes-${new Date().toISOString().split('T')[0]}.csv`);
                 }
             } catch (err) {
-                if (typeof ToastService !== 'undefined') ToastService.error('Error al exportar lotes');
+                if (typeof ToastService !== 'undefined') ToastService.error('Error al exportar lotes a Excel');
+            }
+        });
+
+        const btnExportPdf = document.getElementById('btn-exportar-lotes-pdf');
+        btnExportPdf?.addEventListener('click', async () => {
+            try {
+                const lotes = await LoteService.getAll();
+                if (typeof ExportService !== 'undefined') {
+                    ExportService.exportarPDFTabular('Lotes y Vencimientos (FEFO)', getHeaders(), lotes, `logitrack-lotes-${new Date().toISOString().split('T')[0]}.pdf`);
+                }
+            } catch (err) {
+                if (typeof ToastService !== 'undefined') ToastService.error('Error al exportar lotes a PDF');
             }
         });
     }
 };
+
 
 window.LoteController = LoteController;
 window.loteController = LoteController;

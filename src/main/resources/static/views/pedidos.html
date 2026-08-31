@@ -10,29 +10,31 @@
     </div>
 
     <!-- Filtros y buscador -->
-    <div class="filters-bar card" style="margin-bottom:1.5rem; padding:1.25rem;">
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; align-items:flex-end;">
-            <div class="filter-group">
-                <label>Buscar Pedido:</label>
-                <input type="text" id="filtro-ped-search" class="form-control" placeholder="Código, cliente...">
-            </div>
-            <div class="filter-group">
-                <label>Filtrar por Estado:</label>
-                <select id="filtro-ped-estado" class="form-control">
-                    <option value="">Todos los estados</option>
-                    <option value="PENDIENTE">PENDIENTE</option>
-                    <option value="EN_PREPARACION">EN PREPARACIÓN</option>
-                    <option value="EMPACADO">EMPACADO</option>
-                    <option value="DESPACHADO">DESPACHADO</option>
-                    <option value="ENTREGADO">ENTREGADO</option>
-                    <option value="CANCELADO">CANCELADO</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <button class="btn btn-secondary" onclick="PedidoController.load()" style="width:100%;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Actualizar</button>
-            </div>
+    <div class="filters-bar">
+        <div class="filter-group">
+            <label>Buscar Pedido:</label>
+            <input type="text" id="filtro-ped-search" class="form-control" placeholder="Código, cliente...">
+        </div>
+        <div class="filter-group">
+            <label>Filtrar por Estado:</label>
+            <select id="filtro-ped-estado" class="form-control">
+                <option value="">Todos los estados</option>
+                <option value="PENDIENTE">PENDIENTE</option>
+                <option value="EN_PREPARACION">EN PREPARACIÓN</option>
+                <option value="EMPACADO">EMPACADO</option>
+                <option value="DESPACHADO">DESPACHADO</option>
+                <option value="ENTREGADO">ENTREGADO</option>
+                <option value="CANCELADO">CANCELADO</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <button class="btn btn-secondary" onclick="PedidoController.load()" style="font-size: 12px; padding: 7px 12px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 5px; vertical-align: middle;"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                Actualizar
+            </button>
         </div>
     </div>
+
 
     <!-- Tabla de Pedidos -->
     <div class="table-container card">

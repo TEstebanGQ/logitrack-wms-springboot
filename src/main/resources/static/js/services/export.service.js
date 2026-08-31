@@ -59,8 +59,88 @@ const ExportService = {
     link.href = csvContent;
     link.download = nombreArchivo;
     link.click();
-    Toast.success(`Exportación CSV '${nombreArchivo}' completada`);
+    Toast.success(`Exportación Excel/CSV '${nombreArchivo}' completada`);
+  },
+
+  exportarPDFTabular(titulo, encabezados, datos, nombreArchivo) {
+    if (!datos || !datos.length) {
+      Toast.error('No hay datos disponibles para exportar a PDF');
+      return;
+    }
+
+    const ventana = window.open('', '_blank');
+    if (!ventana) {
+      Toast.error('Por favor permite ventanas emergentes para generar el PDF');
+      return;
+    }
+
+    const filasHtml = datos.map(item => {
+      const celdas = encabezados.map(h => {
+        let val = typeof h.key === 'function' ? h.key(item) : item[h.key];
+        if (val === null || val === undefined) val = '';
+        return `<td style="padding: 7px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px;">${val}</td>`;
+      }).join('');
+      return `<tr>${celdas}</tr>`;
+    }).join('');
+
+    const headersHtml = encabezados.map(h => `<th style="background: #0f172a; color: #f8fafc; padding: 8px 10px; text-align: left; font-size: 11px; text-transform: uppercase;">${h.label}</th>`).join('');
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${titulo} - LogiTrack S.A.</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; color: #1e293b; }
+          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FF6A2B; padding-bottom: 12px; margin-bottom: 16px; }
+          .title h2 { margin: 0; color: #0f172a; font-size: 18px; }
+          .title p { margin: 4px 0 0 0; font-size: 11px; color: #64748b; }
+          .meta { text-align: right; font-size: 11px; color: #64748b; font-family: monospace; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          tr:nth-child(even) { background-color: #f8fafc; }
+          @media print {
+            body { margin: 0; }
+            @page { size: landscape; margin: 15mm; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="title">
+            <h2>LOGITRACK S.A. &mdash; ${titulo}</h2>
+            <p>Reporte Oficial de Auditoría y Trazabilidad de Inventario WMS</p>
+          </div>
+          <div class="meta">
+            <div>Fecha: ${new Date().toLocaleString()}</div>
+            <div>Registros: ${datos.length}</div>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>${headersHtml}</tr>
+          </thead>
+          <tbody>
+            ${filasHtml}
+          </tbody>
+        </table>
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 300);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    ventana.document.open();
+    ventana.document.write(html);
+    ventana.document.close();
+    Toast.success(`Vista de impresión / PDF generada para ${titulo}`);
   }
 };
 
 window.ExportService = ExportService;
+

@@ -41,12 +41,13 @@ const PedidoRenderer = {
                     <td style="font-weight:600; color:var(--text-bright);">${total}</td>
                     <td><span class="badge ${badgeClass}">${p.estado}</span></td>
                     <td>
-                        <div style="display:flex; gap:6px;">
-                            ${canDespachar ? `<button class="btn btn-sm btn-primary" title="Despachar pedido" onclick="PedidoController.despachar(${p.id})">Despachar</button>` : ''}
-                            ${canCancelar ? `<button class="btn btn-sm btn-secondary" title="Cancelar pedido" onclick="PedidoController.cancelar(${p.id})"></button>` : ''}
+                        <div class="table-actions">
+                            ${canDespachar ? `<button class="btn btn-sm btn-primary" style="padding: 3px 8px; font-size: 11px;" title="Despachar pedido" onclick="PedidoController.despachar(${p.id})">Despachar</button>` : ''}
+                            ${canCancelar ? `<button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" title="Cancelar pedido" onclick="PedidoController.cancelar(${p.id})">Cancelar</button>` : ''}
                         </div>
                     </td>
                 </tr>
+
             `;
         }).join('');
     }

@@ -66,16 +66,16 @@
     </div>
 
     <!-- Modal Detalles y Conteo Físico -->
-    <div id="modal-conteo-detalles" class="modal-backdrop" style="display:none;">
-        <div class="modal-dialog card" style="max-width:750px; padding:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3 id="modal-conteo-titulo" style="margin:0; font-size:1.2rem; color:var(--text-bright);">Detalles de Auditoría</h3>
-                <button class="btn btn-sm btn-secondary" onclick="ConteoController.cerrarModalDetalles()">✕</button>
+    <div id="modal-conteo-detalles" class="modal-overlay" style="display:none;">
+        <div class="modal-content" style="max-width:900px; width:92%; max-height:85vh; overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="modal-conteo-titulo" class="modal-title">Detalles de Auditoría Cíclica</h3>
+                <button class="modal-close" onclick="ConteoController.cerrarModalDetalles()">&times;</button>
             </div>
             <div id="modal-conteo-lineas-container"></div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; flex-wrap:wrap; gap:12px;">
                 <span id="conteo-status-badge"></span>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:12px;">
                     <button type="button" class="btn btn-secondary" onclick="ConteoController.cerrarModalDetalles()">Cerrar</button>
                     <button id="btn-conciliar-conteo" type="button" class="btn btn-success" onclick="ConteoController.conciliarConteo()">⚡ Conciliar y Ajustar Inventario</button>
                 </div>

@@ -153,14 +153,13 @@ CREATE TABLE IF NOT EXISTS notificaciones (
 
 
 
--- [H-011 FIX] Migración de datos: eliminar columna categoria VARCHAR legada y asegurar categoria_id obligatoria
 ALTER TABLE productos DROP COLUMN IF EXISTS categoria;
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS categoria_id BIGINT REFERENCES categorias(id);
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS stock_minimo INT NOT NULL DEFAULT 10;
 ALTER TABLE movimientos ADD COLUMN IF NOT EXISTS proveedor_id BIGINT REFERENCES proveedores(id);
 ALTER TABLE movimientos ADD COLUMN IF NOT EXISTS cliente_id BIGINT REFERENCES clientes(id);
 
--- [H-005 FIX] Secuencia para generación atómica de códigos de orden de compra.
+
 -- Reemplaza la generación con new Random() que tenía condición de carrera bajo concurrencia.
 -- El valor de la secuencia es único a nivel de base de datos y no puede colisionar.
 CREATE SEQUENCE IF NOT EXISTS orden_compra_seq START WITH 1 INCREMENT BY 1;

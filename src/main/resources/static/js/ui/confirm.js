@@ -69,6 +69,7 @@ const ConfirmDialog = {
             const titleEl = document.getElementById('prompt-modal-title');
             const msgEl = document.getElementById('prompt-modal-message');
             const inputEl = document.getElementById('prompt-modal-input');
+            const selectEl = document.getElementById('prompt-modal-select');
             const btnConfirm = document.getElementById('btn-prompt-confirm');
             const btnCancel = document.getElementById('btn-prompt-cancel');
 
@@ -87,9 +88,12 @@ const ConfirmDialog = {
 
             if (titleEl) titleEl.innerText = title;
             if (msgEl) msgEl.innerText = message;
+            if (btnConfirm) btnConfirm.innerText = confirmText;
+
+            if (selectEl) selectEl.style.display = 'none';
+            inputEl.style.display = 'block';
             inputEl.value = defaultValue;
             inputEl.placeholder = placeholder;
-            if (btnConfirm) btnConfirm.innerText = confirmText;
 
             modal.style.display = 'flex';
             modal.classList.add('active');
@@ -130,6 +134,81 @@ const ConfirmDialog = {
         });
     },
 
+    select({ title = 'Seleccionar Opción', message = 'Selecciona una de las opciones disponibles:', options = [], defaultValue = '', confirmText = 'Guardar' }) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('modal-prompt');
+            const titleEl = document.getElementById('prompt-modal-title');
+            const msgEl = document.getElementById('prompt-modal-message');
+            const inputEl = document.getElementById('prompt-modal-input');
+            const selectEl = document.getElementById('prompt-modal-select');
+            const btnConfirm = document.getElementById('btn-prompt-confirm');
+            const btnCancel = document.getElementById('btn-prompt-cancel');
+
+            if (!modal || !selectEl || !btnConfirm || !btnCancel) {
+                resolve(null);
+                return;
+            }
+
+            document.querySelectorAll('.modal-overlay.active, .modal-backdrop.active').forEach(m => {
+                if (m.id !== 'modal-confirm' && m.id !== 'modal-prompt') {
+                    m.classList.remove('active');
+                    m.style.display = 'none';
+                }
+            });
+
+            if (titleEl) titleEl.innerText = title;
+            if (msgEl) msgEl.innerText = message;
+            if (btnConfirm) btnConfirm.innerText = confirmText;
+
+            if (inputEl) inputEl.style.display = 'none';
+            selectEl.style.display = 'block';
+
+            selectEl.innerHTML = options.map(opt => {
+                const val = typeof opt === 'object' ? opt.value : opt;
+                const lbl = typeof opt === 'object' ? (opt.label || opt.value) : opt;
+                const isSelected = val === defaultValue ? 'selected' : '';
+                return `<option value="${val}" ${isSelected}>${lbl}</option>`;
+            }).join('');
+
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+            setTimeout(() => selectEl.focus(), 100);
+
+            const handleConfirm = () => {
+                const val = selectEl.value;
+                cleanup();
+                resolve(val || null);
+            };
+
+            const handleCancel = () => {
+                cleanup();
+                resolve(null);
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleConfirm();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    handleCancel();
+                }
+            };
+
+            const cleanup = () => {
+                btnConfirm.removeEventListener('click', handleConfirm);
+                btnCancel.removeEventListener('click', handleCancel);
+                selectEl.removeEventListener('keydown', handleKeyDown);
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            };
+
+            btnConfirm.addEventListener('click', handleConfirm);
+            btnCancel.addEventListener('click', handleCancel);
+            selectEl.addEventListener('keydown', handleKeyDown);
+        });
+    },
+
     cancelPrompt() {
         const modal = document.getElementById('modal-prompt');
         if (modal) {
@@ -140,3 +219,4 @@ const ConfirmDialog = {
 };
 
 window.ConfirmDialog = ConfirmDialog;
+

@@ -37,17 +37,30 @@ const LoteController = {
     },
 
     async cambiarEstado(id) {
-        const nuevoEstado = await ConfirmDialog.prompt({ title: 'Cambiar Estado de Lote', message: 'Ingresa el nuevo estado (DISPONIBLE, CUARENTENA, VENCIDO, AGOTADO):', placeholder: 'DISPONIBLE...' });
+        const nuevoEstado = await ConfirmDialog.select({
+            title: 'Cambiar Estado de Lote',
+            message: 'Selecciona el nuevo estado operacional del lote:',
+            options: [
+                { value: 'DISPONIBLE', label: 'DISPONIBLE — Apto para rotación y despacho' },
+                { value: 'CUARENTENA', label: 'CUARENTENA — Bloqueado por calidad / revisión' },
+                { value: 'VENCIDO', label: 'VENCIDO — Caducado / Dado de baja' },
+                { value: 'AGOTADO', label: 'AGOTADO — Sin existencias físicas' }
+            ],
+            defaultValue: 'DISPONIBLE',
+            confirmText: 'Actualizar Estado'
+        });
+
         if (nuevoEstado) {
             try {
-                await LoteService.updateEstado(id, nuevoEstado.toUpperCase());
-                if (typeof ToastService !== 'undefined') ToastService.success('Estado del lote actualizado');
+                await LoteService.updateEstado(id, nuevoEstado);
+                if (typeof ToastService !== 'undefined') ToastService.success('Estado del lote actualizado exitosamente');
                 this.init();
             } catch (err) {
                 if (typeof ToastService !== 'undefined') ToastService.error(err.message || 'Error al actualizar estado del lote');
             }
         }
     },
+
 
     setupListeners() {
         const filtroBodega = document.getElementById('filtro-lote-bodega');

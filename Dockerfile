@@ -29,9 +29,13 @@ FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-# Crear usuario sin privilegios por seguridad
-RUN addgroup -S logitrack && adduser -S logitrack -G logitrack
+ENV TZ=America/Bogota
+
+# Instalar zona horaria y crear usuario sin privilegios por seguridad
+RUN apk add --no-cache tzdata && \
+    addgroup -S logitrack && adduser -S logitrack -G logitrack
 USER logitrack:logitrack
+
 
 # Copiar únicamente el archivo JAR generado desde la etapa de compilación
 COPY --from=builder /app/target/*.jar app.jar

@@ -12,12 +12,19 @@
 
     <!-- ===== VISTA: PRODUCTOS ===== -->
     <section id="view-productos" class="view-section">
-        <div class="section-title" style="margin-bottom:18px;">
-            <h2>Catálogo de productos</h2>
-            <button class="btn btn-primary btn-sm btn-manage-only" onclick="App.openProductoModal()">+ Nuevo Producto</button>
+        <div class="section-title" style="margin-bottom:18px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h2>Catálogo de Productos</h2>
+                <p style="margin:0; font-size:13px; color:var(--text-muted);">Administración del catálogo, precios, stock y familias de productos.</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button id="btn-nueva-categoria" class="btn btn-secondary btn-sm btn-admin-only" onclick="ProductoModuleController.openCrearCategoriaModal()">+ Nueva Categoría</button>
+                <button id="btn-nuevo-producto" class="btn btn-primary btn-sm btn-admin-only" onclick="App.openProductoModal()">+ Nuevo Producto</button>
+            </div>
         </div>
         <div id="productos-list-container"></div>
     </section>
+
 
 </body>
 </html>

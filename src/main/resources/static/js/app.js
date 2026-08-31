@@ -190,11 +190,11 @@ const App = {
             let html = '';
 
             if (matchedBodegas.length > 0) {
-                html += `<div class="cmd-group-title">🏢 Bodegas (${matchedBodegas.length})</div>`;
+                html += `<div class="cmd-group-title">BODEGAS (${matchedBodegas.length})</div>`;
                 html += matchedBodegas.slice(0, 4).map(b => `
                     <div class="cmd-item" onclick="App.closeCommandPalette(); window.location.hash='#/bodegas';">
                         <div class="cmd-item-left">
-                            <span style="font-size:16px;">🏬</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v14M21 7v14M6 21V11m4 10V11m4 10V11m4 10V11M3 7l9-4 9 4"></path></svg>
                             <div>
                                 <div class="cmd-item-title">${b.nombre}</div>
                                 <div class="cmd-item-sub">${b.ubicacion || 'Nivel Nacional'}</div>
@@ -206,11 +206,11 @@ const App = {
             }
 
             if (matchedProductos.length > 0) {
-                html += `<div class="cmd-group-title">📦 Productos (${matchedProductos.length})</div>`;
+                html += `<div class="cmd-group-title">PRODUCTOS (${matchedProductos.length})</div>`;
                 html += matchedProductos.slice(0, 4).map(p => `
                     <div class="cmd-item" onclick="App.closeCommandPalette(); App.openProductoDrawer(${p.id});">
                         <div class="cmd-item-left">
-                            <span style="font-size:16px;">📦</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                             <div>
                                 <div class="cmd-item-title">${p.nombre}</div>
                                 <div class="cmd-item-sub">Stock: ${p.stock} un. · $${Number(p.precio).toLocaleString('es-CO')}</div>
@@ -222,7 +222,7 @@ const App = {
             }
 
             if (matchedMovimientos.length > 0) {
-                html += `<div class="cmd-group-title">🔄 Movimientos (${matchedMovimientos.length})</div>`;
+                html += `<div class="cmd-group-title">MOVIMIENTOS (${matchedMovimientos.length})</div>`;
                 html += matchedMovimientos.slice(0, 4).map(m => {
                     let badgeClass = 'badge-info';
                     if (m.tipoMovimiento === 'ENTRADA') badgeClass = 'badge-success';
@@ -232,7 +232,7 @@ const App = {
                     return `
                         <div class="cmd-item" onclick="App.closeCommandPalette(); App.openMovimientoDrawer(${m.id});">
                             <div class="cmd-item-left">
-                                <span style="font-size:16px;">📋</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 <div>
                                     <div class="cmd-item-title">Movimiento #${m.id}</div>
                                     <div class="cmd-item-sub">${m.usuarioNombre || 'Sistema'} · ${m.fecha ? new Date(m.fecha).toLocaleDateString() : ''}</div>
@@ -442,13 +442,26 @@ const App = {
     togglePasswordVisibility(inputId, btn) {
         const input = document.getElementById(inputId);
         if (!input) return;
-        const iconSpan = btn.querySelector('.eye-icon');
-        if (input.type === 'password') {
-            input.type = 'text';
-            if (iconSpan) iconSpan.textContent = '🙈';
+        
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+
+        if (isPassword) {
+            btn.classList.add('peek-active');
+            btn.setAttribute('title', 'Ocultar contraseña');
+            btn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="eye-svg peek-eye">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3" fill="var(--accent)"></circle>
+                </svg>`;
         } else {
-            input.type = 'password';
-            if (iconSpan) iconSpan.textContent = '👁️';
+            btn.classList.remove('peek-active');
+            btn.setAttribute('title', 'Mostrar contraseña');
+            btn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-svg">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>`;
         }
     },
 
@@ -1146,16 +1159,32 @@ const App = {
 
     // Shortcuts para modales
     openModal(modalId) {
+        // Garantizar modal único activo: cerrar cualquier otro modal u overlay activo para evitar superposiciones
+        if (modalId !== 'modal-confirm' && modalId !== 'modal-prompt') {
+            document.querySelectorAll('.modal-overlay.active, .modal-backdrop.active, .drawer-overlay.active, .cmd-overlay.active').forEach(m => {
+                if (m.id !== modalId && m.id !== 'modal-confirm' && m.id !== 'modal-prompt') {
+                    m.classList.remove('active');
+                    m.style.display = 'none';
+                }
+            });
+        }
+
         const modal = document.getElementById(modalId);
-        if (modal) modal.classList.add('active');
-        if (modalId === 'modal-movimiento') {
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+        }
+        if (modalId === 'modal-movimiento' && typeof MovimientoModuleController !== 'undefined') {
             MovimientoModuleController.populateSelects();
         }
     },
 
     closeModal(modalId) {
         const modal = document.getElementById(modalId);
-        if (modal) modal.classList.remove('active');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
     },
 
     openBodegaModal() {

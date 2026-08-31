@@ -1,9 +1,9 @@
 /* ==========================================
-   LogiTrack S.A. - Custom Confirm Modal Component
+   LogiTrack S.A. - Custom Confirm & Prompt Modal Component
    ========================================== */
 
 const ConfirmDialog = {
-    show({ title = '¿Confirmar Acción?', message = '¿Estás seguro de realizar esta acción?', confirmText = 'Sí, Eliminar', cancelText = 'Cancelar', type = 'danger' }) {
+    show({ title = '¿Confirmar Acción?', message = '¿Estás seguro de realizar esta acción?', confirmText = 'Sí, Confirmar', cancelText = 'Cancelar', type = 'danger' }) {
         return new Promise((resolve) => {
             const modal = document.getElementById('modal-confirm');
             const titleEl = document.getElementById('confirm-modal-title');
@@ -17,6 +17,14 @@ const ConfirmDialog = {
                 return;
             }
 
+            // Close any existing open form modals to avoid stacking overlays
+            document.querySelectorAll('.modal-overlay.active, .modal-backdrop.active').forEach(m => {
+                if (m.id !== 'modal-confirm' && m.id !== 'modal-prompt') {
+                    m.classList.remove('active');
+                    m.style.display = 'none';
+                }
+            });
+
             titleEl.innerText = title;
             msgEl.innerText = message;
             btnConfirm.innerText = confirmText;
@@ -24,34 +32,110 @@ const ConfirmDialog = {
 
             if (type === 'danger') {
                 btnConfirm.className = 'btn btn-danger';
-                if (iconEl) iconEl.innerText = '⚠️';
+                if (iconEl) iconEl.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
             } else {
                 btnConfirm.className = 'btn btn-primary';
-                if (iconEl) iconEl.innerText = '❓';
+                if (iconEl) iconEl.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
             }
 
+            modal.style.display = 'flex';
             modal.classList.add('active');
 
             const handleConfirm = () => {
                 cleanup();
-                modal.classList.remove('active');
                 resolve(true);
             };
 
             const handleCancel = () => {
                 cleanup();
-                modal.classList.remove('active');
                 resolve(false);
             };
 
             const cleanup = () => {
                 btnConfirm.removeEventListener('click', handleConfirm);
                 btnCancel.removeEventListener('click', handleCancel);
+                modal.classList.remove('active');
+                modal.style.display = 'none';
             };
 
             btnConfirm.addEventListener('click', handleConfirm);
             btnCancel.addEventListener('click', handleCancel);
         });
+    },
+
+    prompt({ title = 'Información Requerida', message = 'Ingresa la información solicitada:', placeholder = 'Escribe el motivo...', defaultValue = '', confirmText = 'Aceptar' }) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('modal-prompt');
+            const titleEl = document.getElementById('prompt-modal-title');
+            const msgEl = document.getElementById('prompt-modal-message');
+            const inputEl = document.getElementById('prompt-modal-input');
+            const btnConfirm = document.getElementById('btn-prompt-confirm');
+            const btnCancel = document.getElementById('btn-prompt-cancel');
+
+            if (!modal || !inputEl || !btnConfirm || !btnCancel) {
+                resolve(window.prompt(message, defaultValue));
+                return;
+            }
+
+            // Close any existing open form modals to avoid stacking overlays
+            document.querySelectorAll('.modal-overlay.active, .modal-backdrop.active').forEach(m => {
+                if (m.id !== 'modal-confirm' && m.id !== 'modal-prompt') {
+                    m.classList.remove('active');
+                    m.style.display = 'none';
+                }
+            });
+
+            if (titleEl) titleEl.innerText = title;
+            if (msgEl) msgEl.innerText = message;
+            inputEl.value = defaultValue;
+            inputEl.placeholder = placeholder;
+            if (btnConfirm) btnConfirm.innerText = confirmText;
+
+            modal.style.display = 'flex';
+            modal.classList.add('active');
+            setTimeout(() => inputEl.focus(), 100);
+
+            const handleConfirm = () => {
+                const val = inputEl.value.trim();
+                cleanup();
+                resolve(val || null);
+            };
+
+            const handleCancel = () => {
+                cleanup();
+                resolve(null);
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleConfirm();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    handleCancel();
+                }
+            };
+
+            const cleanup = () => {
+                btnConfirm.removeEventListener('click', handleConfirm);
+                btnCancel.removeEventListener('click', handleCancel);
+                inputEl.removeEventListener('keydown', handleKeyDown);
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            };
+
+            btnConfirm.addEventListener('click', handleConfirm);
+            btnCancel.addEventListener('click', handleCancel);
+            inputEl.addEventListener('keydown', handleKeyDown);
+        });
+    },
+
+    cancelPrompt() {
+        const modal = document.getElementById('modal-prompt');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
     }
 };
 

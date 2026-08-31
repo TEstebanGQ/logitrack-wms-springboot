@@ -42,21 +42,28 @@ const AuthService = {
     },
 
     async logout() {
-        const confirmed = typeof ConfirmDialog !== 'undefined' 
-            ? await ConfirmDialog.show({
+        let confirmed = false;
+        if (typeof ConfirmDialog !== 'undefined') {
+            confirmed = await ConfirmDialog.show({
                 title: '¿Cerrar Sesión?',
-                message: '¿Estás seguro de que deseas salir del sistema?',
+                message: '¿Estás seguro de que deseas salir del sistema LogiTrack S.A.?',
                 confirmText: 'Sí, Salir',
                 cancelText: 'Cancelar',
                 type: 'danger'
-            })
-            : window.confirm('¿Estás seguro de que deseas salir del sistema?');
+            });
+        } else {
+            confirmed = window.confirm('¿Estás seguro de que deseas salir del sistema LogiTrack S.A.?');
+        }
 
         if (confirmed) {
             ApiService.removeToken();
-            if (window.Router) {
-                window.Router.navigate('auth');
+            localStorage.clear();
+            sessionStorage.clear();
+            if (window.App && typeof window.App.closeSidebar === 'function') {
+                window.App.closeSidebar();
             }
+            window.location.href = window.location.origin + window.location.pathname + '#/auth';
+            window.location.reload();
         }
     },
 

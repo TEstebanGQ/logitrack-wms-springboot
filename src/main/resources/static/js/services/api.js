@@ -80,6 +80,10 @@ const ApiService = {
         return this.request(endpoint, { method: 'PUT', body: JSON.stringify(body) });
     },
 
+    patch(endpoint, body) {
+        return this.request(endpoint, { method: 'PATCH', body: body ? JSON.stringify(body) : null });
+    },
+
     delete(endpoint) {
         return this.request(endpoint, { method: 'DELETE' });
     }

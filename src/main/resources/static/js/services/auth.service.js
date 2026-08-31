@@ -104,8 +104,13 @@ const AuthService = {
 
     isAuthenticated() {
         return !!ApiService.getToken();
+    },
+
+    getToken() {
+        return ApiService.getToken();
     }
 };
 
 window.AuthService = AuthService;
+
 

@@ -792,12 +792,12 @@
                 <input type="text" id="cliente-nombre" class="form-input" required placeholder="Empresa ABC S.A.S.">
             </div>
             <div class="form-group">
-                <label class="form-label" for="cliente-ruc">RUC / NIT / DNI</label>
-                <input type="text" id="cliente-ruc" class="form-input" placeholder="900111222-1">
+                <label class="form-label" for="cliente-ruc">NIT / RUC / Cédula (Solo Números)</label>
+                <input type="text" id="cliente-ruc" class="form-input" placeholder="900111222" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="form-group">
                 <label class="form-label" for="cliente-telefono">Teléfono de Contacto</label>
-                <input type="text" id="cliente-telefono" class="form-input" placeholder="+57 601 444 0001">
+                <input type="text" id="cliente-telefono" class="form-input" placeholder="3001234567" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9+\s\-()]/g, '')">
             </div>
             <div class="form-group">
                 <label class="form-label" for="cliente-email">Correo Electrónico</label>
@@ -829,13 +829,14 @@
                 <input type="text" id="proveedor-nombre" class="form-input" required placeholder="TechSupplies S.A.">
             </div>
             <div class="form-group">
-                <label class="form-label" for="proveedor-ruc">RUC / NIT / Identificación</label>
-                <input type="text" id="proveedor-ruc" class="form-input" placeholder="900123456-1">
+                <label class="form-label" for="proveedor-ruc">NIT / RUC / Identificación (Solo Números)</label>
+                <input type="text" id="proveedor-ruc" class="form-input" placeholder="900123456" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="form-group">
                 <label class="form-label" for="proveedor-telefono">Teléfono Comercial</label>
-                <input type="text" id="proveedor-telefono" class="form-input" placeholder="+57 601 555 0001">
+                <input type="text" id="proveedor-telefono" class="form-input" placeholder="3005550001" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9+\s\-()]/g, '')">
             </div>
+
             <div class="form-group">
                 <label class="form-label" for="proveedor-email">Correo Electrónico</label>
                 <input type="email" id="proveedor-email" class="form-input" placeholder="ventas@techsupplies.co">

@@ -737,18 +737,7 @@ const App = {
                         cantidadNueva: parseInt(document.getElementById('ajuste-cantidad-nueva').value),
                         justificacion: document.getElementById('ajuste-justificacion').value
                     };
-                    const res = await fetch('/api/ajustes', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${AuthService.getToken()}`
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    if (!res.ok) {
-                        const err = await res.json().catch(() => ({}));
-                        throw new Error(err.mensaje || 'Error al registrar ajuste');
-                    }
+                    await ApiService.post('/ajustes', data);
                     Toast.success('Ajuste de inventario registrado exitosamente');
                     App.closeModal('modal-ajuste');
                     if (typeof AjusteController !== 'undefined') AjusteController.init();
@@ -778,18 +767,7 @@ const App = {
                             }
                         ]
                     };
-                    const res = await fetch('/api/ordenes-compra', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${AuthService.getToken()}`
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    if (!res.ok) {
-                        const err = await res.json().catch(() => ({}));
-                        throw new Error(err.mensaje || 'Error al generar orden de compra');
-                    }
+                    await ApiService.post('/ordenes-compra', data);
                     Toast.success('Orden de compra generada exitosamente');
                     App.closeModal('modal-orden-compra');
                     if (typeof OrdenCompraController !== 'undefined') OrdenCompraController.init();
@@ -814,18 +792,7 @@ const App = {
                         fechaFabricacion: document.getElementById('lote-fecha-fab').value || null,
                         fechaVencimiento: document.getElementById('lote-fecha-venc').value || null
                     };
-                    const res = await fetch('/api/lotes', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${AuthService.getToken()}`
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    if (!res.ok) {
-                        const err = await res.json().catch(() => ({}));
-                        throw new Error(err.mensaje || 'Error al registrar lote');
-                    }
+                    await ApiService.post('/lotes', data);
                     Toast.success('Lote registrado exitosamente');
                     App.closeModal('modal-lote');
                     if (typeof LoteController !== 'undefined') LoteController.init();
@@ -833,6 +800,7 @@ const App = {
                 } catch (err) {
                     Toast.error(err.message || 'Error al registrar lote');
                 }
+
             });
         }
 

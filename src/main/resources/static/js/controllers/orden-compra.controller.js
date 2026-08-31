@@ -5,7 +5,8 @@
 const OrdenCompraController = {
     async init() {
         try {
-            const ordenes = await OrdenCompraService.getAll();
+            const raw = await OrdenCompraService.getAll();
+            const ordenes = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.content) ? raw.content : []);
             OrdenCompraRenderer.renderTabla(ordenes);
             this.setupListeners();
         } catch (error) {
@@ -103,3 +104,4 @@ const OrdenCompraController = {
 };
 
 window.OrdenCompraController = OrdenCompraController;
+window.ordenCompraController = OrdenCompraController;

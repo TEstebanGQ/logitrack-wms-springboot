@@ -29,11 +29,14 @@ const DespachoController = {
             DespachoService.getTransportadoras().catch(() => [])
         ]);
 
+        const pedidosList = Array.isArray(pedidos) ? pedidos : (pedidos && Array.isArray(pedidos.content) ? pedidos.content : []);
+        const transpsList = Array.isArray(transps) ? transps : (transps && Array.isArray(transps.content) ? transps.content : []);
+
         const selPedido = document.getElementById('guia-pedido');
         const selTransp = document.getElementById('guia-transportadora');
 
-        if (selPedido) selPedido.innerHTML = pedidos.map(p => `<option value="${p.id}">${p.codigoPedido} - ${p.clienteNombre} (${p.estado})</option>`).join('');
-        if (selTransp) selTransp.innerHTML = transps.map(t => `<option value="${t.id}">${t.nombre} (${t.tipoServicio})</option>`).join('');
+        if (selPedido) selPedido.innerHTML = pedidosList.map(p => `<option value="${p.id}">${p.codigoPedido} - ${p.clienteNombre} (${p.estado})</option>`).join('');
+        if (selTransp) selTransp.innerHTML = transpsList.map(t => `<option value="${t.id}">${t.nombre} (${t.tipoServicio})</option>`).join('');
 
         const modal = document.getElementById('modal-guia');
         if (modal) modal.style.display = 'flex';

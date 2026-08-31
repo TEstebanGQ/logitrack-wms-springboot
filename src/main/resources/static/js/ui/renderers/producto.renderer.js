@@ -7,7 +7,9 @@ const ProductoRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        if (!productos || productos.length === 0) {
+        const list = Array.isArray(productos) ? productos : (productos && Array.isArray(productos.content) ? productos.content : []);
+
+        if (list.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">No hay productos registrados.</p>`;
             return;
         }
@@ -25,7 +27,7 @@ const ProductoRenderer = {
             return 'badge-info';
         };
 
-        const rows = productos.map(p => {
+        const rows = list.map(p => {
             const lowStock = p.stock < (p.stockMinimo || 10);
             const catName = p.categoriaNombre || p.categoria || 'General';
             const catBadgeClass = getCatClass(catName);

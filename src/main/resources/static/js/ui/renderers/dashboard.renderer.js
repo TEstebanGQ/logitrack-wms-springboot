@@ -122,9 +122,10 @@ const DashboardRenderer = {
                         <div class="alert-name"><strong>${a.productoNombre || 'Producto'}</strong></div>
                         <div class="alert-cat" style="color: var(--text-muted); font-size: 11px;">${a.bodegaNombre || 'Bodega'} · Mín: ${a.stockMinimo} u.</div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
                         <div class="alert-stock" style="margin-right: 4px; color: var(--danger); font-weight: 700;">${a.stockActual} u.</div>
-                        <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px; border-color: var(--success); color: var(--success);" onclick="App.resolverAlertaStock(${a.id})" title="Marcar como resuelta">✓ Resolver</button>
+                        <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="ProductoModuleController.edit(${a.productoId})" title="Editar producto y ajustar stock mínimo">Editar</button>
+                        <button class="btn btn-danger btn-sm" style="padding: 2px 8px; font-size: 10px;" onclick="App.eliminarAlertaStock(${a.id})" title="Descartar / Eliminar alerta">Eliminar</button>
                     </div>
                 </div>
             `).join('');

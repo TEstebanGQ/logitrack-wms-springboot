@@ -7,7 +7,9 @@ const ClienteRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        if (!clientes || clientes.length === 0) {
+        const list = Array.isArray(clientes) ? clientes : (clientes && Array.isArray(clientes.content) ? clientes.content : []);
+
+        if (list.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">No hay clientes registrados.</p>`;
             return;
         }
@@ -16,7 +18,7 @@ const ClienteRenderer = {
         const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'GERENTE_LOGISTICA');
         const isAdmin = currentUser && currentUser.rol === 'ADMIN';
 
-        const rows = clientes.map(c => `
+        const rows = list.map(c => `
             <tr>
                 <td>#${c.id}</td>
                 <td><strong>${c.nombre}</strong></td>

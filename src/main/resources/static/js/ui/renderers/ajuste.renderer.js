@@ -7,12 +7,14 @@ const AjusteRenderer = {
         const tbody = document.getElementById('tabla-ajustes-body');
         if (!tbody) return;
 
-        if (!ajustes || ajustes.length === 0) {
+        const list = Array.isArray(ajustes) ? ajustes : (ajustes && Array.isArray(ajustes.content) ? ajustes.content : []);
+
+        if (list.length === 0) {
             tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4" style="color:var(--text-muted);">No hay registros de ajustes o mermas.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = ajustes.map(a => {
+        tbody.innerHTML = list.map(a => {
             const fechaFormateada = a.fecha ? new Date(a.fecha).toLocaleString() : 'N/A';
             const difBadge = a.diferencia < 0
                 ? `<span class="badge badge-danger">${a.diferencia} u.</span>`

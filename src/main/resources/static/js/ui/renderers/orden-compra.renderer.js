@@ -7,12 +7,14 @@ const OrdenCompraRenderer = {
         const tbody = document.getElementById('tabla-ordenes-body');
         if (!tbody) return;
 
-        if (!ordenes || ordenes.length === 0) {
+        const list = Array.isArray(ordenes) ? ordenes : (ordenes && Array.isArray(ordenes.content) ? ordenes.content : []);
+
+        if (list.length === 0) {
             tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No hay órdenes de compra registradas.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = ordenes.map(o => {
+        tbody.innerHTML = list.map(o => {
             const fechaSol = o.fechaSolicitud ? new Date(o.fechaSolicitud).toLocaleDateString() : 'N/A';
             const fechaEnt = o.fechaEntregaEsperada ? o.fechaEntregaEsperada : 'No definida';
             const totalFmt = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(o.totalEstimado || 0);

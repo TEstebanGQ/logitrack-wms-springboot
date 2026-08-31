@@ -7,7 +7,8 @@ const PedidoController = {
 
     async load() {
         try {
-            this.pedidosList = await PedidoService.getAll().catch(() => []);
+            const raw = await PedidoService.getAll().catch(() => []);
+            this.pedidosList = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.content) ? raw.content : []);
             this.aplicarFiltros();
             this.initFilterListeners();
         } catch (err) {
@@ -20,7 +21,7 @@ const PedidoController = {
         const search = (document.getElementById('filtro-ped-search')?.value || '').toLowerCase().trim();
         const estado = document.getElementById('filtro-ped-estado')?.value || '';
 
-        let filtrados = this.pedidosList;
+        let filtrados = Array.isArray(this.pedidosList) ? this.pedidosList : [];
         if (search) {
             filtrados = filtrados.filter(p =>
                 (p.codigoPedido && p.codigoPedido.toLowerCase().includes(search)) ||
@@ -40,11 +41,15 @@ const PedidoController = {
     },
 
     async abrirModalCrear() {
-        const [clientes, bodegas, productos] = await Promise.all([
+        const [clientesRaw, bodegasRaw, productosRaw] = await Promise.all([
             typeof ClienteService !== 'undefined' ? ClienteService.getAll().catch(() => []) : [],
             typeof BodegaService !== 'undefined' ? BodegaService.getAll().catch(() => []) : [],
             typeof ProductoService !== 'undefined' ? ProductoService.getAll().catch(() => []) : []
         ]);
+
+        const clientes = Array.isArray(clientesRaw) ? clientesRaw : (clientesRaw?.content || []);
+        const bodegas = Array.isArray(bodegasRaw) ? bodegasRaw : (bodegasRaw?.content || []);
+        const productos = Array.isArray(productosRaw) ? productosRaw : (productosRaw?.content || []);
 
         const selCliente = document.getElementById('ped-cliente');
         const selBodega = document.getElementById('ped-bodega');

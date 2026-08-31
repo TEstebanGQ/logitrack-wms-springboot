@@ -5,10 +5,13 @@
 const AjusteController = {
     async init() {
         try {
-            const [ajustes, bodegas] = await Promise.all([
+            const [ajustesRaw, bodegasRaw] = await Promise.all([
                 AjusteService.getAll(),
                 BodegaService.getAll(true)
             ]);
+
+            const ajustes = Array.isArray(ajustesRaw) ? ajustesRaw : (ajustesRaw && Array.isArray(ajustesRaw.content) ? ajustesRaw.content : []);
+            const bodegas = Array.isArray(bodegasRaw) ? bodegasRaw : (bodegasRaw && Array.isArray(bodegasRaw.content) ? bodegasRaw.content : []);
 
             AjusteRenderer.renderTabla(ajustes);
 
@@ -92,3 +95,4 @@ const AjusteController = {
 };
 
 window.AjusteController = AjusteController;
+window.ajusteController = AjusteController;

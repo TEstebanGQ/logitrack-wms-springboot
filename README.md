@@ -12,6 +12,9 @@
 
 El proyecto cuenta con protección mediante **Spring Security + JWT**, soporte completo para **PostgreSQL**, documentación interactiva **Swagger/OpenAPI 3** y un cliente web frontend modular en HTML5/CSS3/JavaScript Vanilla.
 
+> 📚 **¿Quieres entender toda la lógica del negocio de principio a fin de forma sencilla y didáctica?**
+> Consulta el documento dedicado: [**EXPLICACION_LOGICA_NEGOCIO.md**](./EXPLICACION_LOGICA_NEGOCIO.md).
+
 ---
 
 ## 🛠️ Tecnologías Utilizadas

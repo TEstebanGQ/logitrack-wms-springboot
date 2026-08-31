@@ -5,12 +5,23 @@
 const LoteController = {
     async init() {
         try {
-            const [lotes, bodegas] = await Promise.all([
+            const [lotesRaw, productosRaw, bodegasRaw] = await Promise.all([
                 LoteService.getAll(),
+                ProductoService.getAll(),
                 BodegaService.getAll(true)
             ]);
 
+            const lotes = Array.isArray(lotesRaw) ? lotesRaw : (lotesRaw && Array.isArray(lotesRaw.content) ? lotesRaw.content : []);
+            const productos = Array.isArray(productosRaw) ? productosRaw : (productosRaw && Array.isArray(productosRaw.content) ? productosRaw.content : []);
+            const bodegas = Array.isArray(bodegasRaw) ? bodegasRaw : (bodegasRaw && Array.isArray(bodegasRaw.content) ? bodegasRaw.content : []);
+
             LoteRenderer.renderTabla(lotes);
+
+            const selectProd = document.getElementById('filtro-lote-producto');
+            if (selectProd && productos) {
+                selectProd.innerHTML = '<option value="">Todos los productos</option>' +
+                    productos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+            }
 
             const selectBodega = document.getElementById('filtro-lote-bodega');
             if (selectBodega && bodegas) {
@@ -98,3 +109,4 @@ const LoteController = {
 };
 
 window.LoteController = LoteController;
+window.loteController = LoteController;

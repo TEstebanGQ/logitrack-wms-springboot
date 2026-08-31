@@ -7,7 +7,9 @@ const ProveedorRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        if (!proveedores || proveedores.length === 0) {
+        const list = Array.isArray(proveedores) ? proveedores : (proveedores && Array.isArray(proveedores.content) ? proveedores.content : []);
+
+        if (list.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">No hay proveedores registrados.</p>`;
             return;
         }
@@ -16,7 +18,7 @@ const ProveedorRenderer = {
         const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS' || currentUser.rol === 'GERENTE_LOGISTICA');
         const isAdmin = currentUser && currentUser.rol === 'ADMIN';
 
-        const rows = proveedores.map(p => `
+        const rows = list.map(p => `
             <tr>
                 <td>#${p.id}</td>
                 <td><strong>${p.nombre}</strong></td>

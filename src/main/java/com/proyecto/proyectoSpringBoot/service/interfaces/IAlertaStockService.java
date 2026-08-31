@@ -11,4 +11,5 @@ public interface IAlertaStockService {
     List<AlertaStockResponse> listarPendientes();
     List<AlertaStockResponse> listarPorProducto(Long productoId);
     void resolver(Long alertaId, String emailUsuario);
+    void eliminar(Long alertaId);
 }

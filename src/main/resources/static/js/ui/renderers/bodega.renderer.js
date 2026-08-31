@@ -7,7 +7,9 @@ const BodegaRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        if (!bodegas || bodegas.length === 0) {
+        const list = Array.isArray(bodegas) ? bodegas : (bodegas && Array.isArray(bodegas.content) ? bodegas.content : []);
+
+        if (list.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">No hay bodegas registradas.</p>`;
             return;
         }
@@ -15,7 +17,7 @@ const BodegaRenderer = {
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
         const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
 
-        const rows = bodegas.map(b => `
+        const rows = list.map(b => `
             <tr>
                 <td>#${b.id}</td>
                 <td><strong>${b.nombre}</strong></td>

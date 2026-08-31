@@ -751,7 +751,8 @@ const App = {
                     }
                     Toast.success('Ajuste de inventario registrado exitosamente');
                     App.closeModal('modal-ajuste');
-                    if (typeof ajusteController !== 'undefined') ajusteController.init();
+                    if (typeof AjusteController !== 'undefined') AjusteController.init();
+                    else if (typeof ajusteController !== 'undefined') ajusteController.init();
                 } catch (err) {
                     Toast.error(err.message || 'Error al registrar ajuste');
                 }
@@ -791,7 +792,8 @@ const App = {
                     }
                     Toast.success('Orden de compra generada exitosamente');
                     App.closeModal('modal-orden-compra');
-                    if (typeof ordenCompraController !== 'undefined') ordenCompraController.init();
+                    if (typeof OrdenCompraController !== 'undefined') OrdenCompraController.init();
+                    else if (typeof ordenCompraController !== 'undefined') ordenCompraController.init();
                 } catch (err) {
                     Toast.error(err.message || 'Error al generar orden de compra');
                 }
@@ -826,7 +828,8 @@ const App = {
                     }
                     Toast.success('Lote registrado exitosamente');
                     App.closeModal('modal-lote');
-                    if (typeof loteController !== 'undefined') loteController.init();
+                    if (typeof LoteController !== 'undefined') LoteController.init();
+                    else if (typeof loteController !== 'undefined') loteController.init();
                 } catch (err) {
                     Toast.error(err.message || 'Error al registrar lote');
                 }
@@ -984,11 +987,14 @@ const App = {
             } else if (view === 'proveedores') {
                 await ProveedorModuleController.load();
             } else if (view === 'ajustes') {
-                if (typeof ajusteController !== 'undefined') await ajusteController.init();
+                if (typeof AjusteController !== 'undefined') await AjusteController.init();
+                else if (typeof ajusteController !== 'undefined') await ajusteController.init();
             } else if (view === 'ordenes-compra') {
-                if (typeof ordenCompraController !== 'undefined') await ordenCompraController.init();
+                if (typeof OrdenCompraController !== 'undefined') await OrdenCompraController.init();
+                else if (typeof ordenCompraController !== 'undefined') await ordenCompraController.init();
             } else if (view === 'lotes') {
-                if (typeof loteController !== 'undefined') await loteController.init();
+                if (typeof LoteController !== 'undefined') await LoteController.init();
+                else if (typeof loteController !== 'undefined') await loteController.init();
             } else if (view === 'auditorias') {
                 await AuditoriaModuleController.load();
             } else if (view === 'usuarios') {
@@ -1001,11 +1007,15 @@ const App = {
 
     async loadDashboardData() {
         try {
-            const [bodegas, productos, movimientos] = await Promise.all([
+            const [bodegasRaw, productosRaw, movimientosRaw] = await Promise.all([
                 BodegaService.getAll().catch(() => []),
                 ProductoService.getAll().catch(() => []),
                 MovimientoService.getAll().catch(() => [])
             ]);
+
+            const bodegas = Array.isArray(bodegasRaw) ? bodegasRaw : (bodegasRaw?.content || []);
+            const productos = Array.isArray(productosRaw) ? productosRaw : (productosRaw?.content || []);
+            const movimientos = Array.isArray(movimientosRaw) ? movimientosRaw : (movimientosRaw?.content || []);
 
             const bodegasActivas = bodegas.filter(b => b.activo !== false);
 
@@ -1013,7 +1023,10 @@ const App = {
             if (totalBodegasEl) totalBodegasEl.innerText = String(bodegasActivas.length || 0).padStart(2, '0');
 
             const totalMovimientosEl = document.getElementById('metric-total-movimientos');
-            if (totalMovimientosEl) totalMovimientosEl.innerText = movimientos.length || 0;
+            const totalMovs = (movimientosRaw && typeof movimientosRaw.totalElements === 'number')
+                ? movimientosRaw.totalElements
+                : movimientos.length;
+            if (totalMovimientosEl) totalMovimientosEl.innerText = totalMovs || 0;
 
             // Calcular el inventario disponible EXCLUSIVAMENTE en bodegas activas
             const inventariosActivos = await Promise.all(
@@ -1022,7 +1035,8 @@ const App = {
 
             let stockTotalActivo = 0;
             inventariosActivos.forEach(invList => {
-                (invList || []).forEach(item => {
+                const list = Array.isArray(invList) ? invList : (invList?.content || []);
+                list.forEach(item => {
                     stockTotalActivo += (item.stockActual || 0);
                 });
             });
@@ -1167,9 +1181,21 @@ const App = {
             this.loadDashboard();
             this.loadNotificationCount();
         } catch (e) {
-            Toast.error('Error al resolver alerta');
+            Toast.error(e.message || 'Error al resolver alerta');
         }
     },
+
+    async eliminarAlertaStock(alertaId) {
+        try {
+            await AlertaStockService.eliminar(alertaId);
+            Toast.success('Alerta descartada con éxito');
+            this.loadDashboard();
+            this.loadNotificationCount();
+        } catch (e) {
+            Toast.error(e.message || 'Error al descartar alerta');
+        }
+    },
+
 
     async loadCharts() {
         try {

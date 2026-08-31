@@ -17,7 +17,12 @@ const AlertaStockService = {
 
     async resolver(alertaId) {
         return ApiService.put(`/alertas/${alertaId}/resolver`, {});
+    },
+
+    async eliminar(alertaId) {
+        return ApiService.delete(`/alertas/${alertaId}`);
     }
 };
+
 
 window.AlertaStockService = AlertaStockService;

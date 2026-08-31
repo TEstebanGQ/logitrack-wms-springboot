@@ -9,7 +9,7 @@ const AuditoriaRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        this.allAuditorias = auditorias || [];
+        this.allAuditorias = Array.isArray(auditorias) ? auditorias : (auditorias && Array.isArray(auditorias.content) ? auditorias.content : []);
         window.auditoriaDataStore = this.allAuditorias;
 
         container.innerHTML = `

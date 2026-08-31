@@ -7,7 +7,9 @@ const UsuarioRenderer = {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        if (!usuarios || usuarios.length === 0) {
+        const list = Array.isArray(usuarios) ? usuarios : (usuarios && Array.isArray(usuarios.content) ? usuarios.content : []);
+
+        if (list.length === 0) {
             container.innerHTML = `<p style="padding: 1rem; color: var(--text-muted);">No hay usuarios registrados.</p>`;
             return;
         }
@@ -16,7 +18,7 @@ const UsuarioRenderer = {
         const currentUserId = currentUser ? currentUser.id : null;
         const currentUserEmail = currentUser ? currentUser.email : null;
 
-        const rows = usuarios.map(u => {
+        const rows = list.map(u => {
             const isSelf = (currentUserId && u.id === currentUserId) || (currentUserEmail && u.email === currentUserEmail);
             const rolBadge = u.rol === 'ADMIN' ? 'badge-danger' : 'badge-info';
             const estadoBadge = u.activo ? 'badge-success' : 'badge-warning';

@@ -49,24 +49,24 @@ const BodegaModuleController = {
 
                     return `
                         <tr>
-                            <td>#${item.productoId}</td>
-                            <td><strong style="color:var(--text-bright);">${item.productoNombre}</strong></td>
-                            <td><strong style="font-family:var(--font-mono); font-size:14px; color:var(--accent-color);">${item.stockActual} u.</strong></td>
-                            <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                            <td style="text-align:center; font-family:var(--font-mono); font-weight:600;">#${item.productoId}</td>
+                            <td><strong style="color:var(--text-bright); font-size:14px;">${item.productoNombre}</strong></td>
+                            <td style="text-align:center;"><strong style="font-family:var(--font-mono); font-size:14px; color:var(--accent);">${item.stockActual} u.</strong></td>
+                            <td style="text-align:center;"><span class="badge ${badgeClass}">${statusText}</span></td>
                         </tr>
                     `;
                 }).join('');
 
                 if (bodyEl) {
                     bodyEl.innerHTML = `
-                        <div class="table-container">
-                            <table class="table">
+                        <div class="table-container" style="overflow-x:auto; border-radius:8px; border:1px solid var(--border-color);">
+                            <table class="table" style="width:100%; border-collapse:collapse;">
                                 <thead>
                                     <tr>
-                                        <th>ID Producto</th>
+                                        <th style="width:90px; text-align:center;">ID</th>
                                         <th>Nombre del Producto</th>
-                                        <th>Stock Físico en Bodega</th>
-                                        <th>Estado de Disponibilidad</th>
+                                        <th style="width:180px; text-align:center;">Stock en Bodega</th>
+                                        <th style="width:190px; text-align:center;">Disponibilidad</th>
                                     </tr>
                                 </thead>
                                 <tbody>${rows}</tbody>

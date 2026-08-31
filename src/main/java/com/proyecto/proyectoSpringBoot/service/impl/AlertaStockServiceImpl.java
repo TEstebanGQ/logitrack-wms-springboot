@@ -73,4 +73,12 @@ public class AlertaStockServiceImpl implements IAlertaStockService {
         alerta.setResueltaPor(usuario);
         repository.save(alerta);
     }
+
+    @Override
+    @Transactional
+    public void eliminar(Long alertaId) {
+        AlertaStock alerta = repository.findById(alertaId).orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada con id: " + alertaId));
+        repository.delete(alerta);
+    }
 }
+

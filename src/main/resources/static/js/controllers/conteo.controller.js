@@ -22,11 +22,14 @@ const ConteoController = {
             typeof ProductoService !== 'undefined' ? ProductoService.getAll().catch(() => []) : []
         ]);
 
+        const bodegasList = Array.isArray(bodegas) ? bodegas : (bodegas && Array.isArray(bodegas.content) ? bodegas.content : []);
+        const productosList = Array.isArray(productos) ? productos : (productos && Array.isArray(productos.content) ? productos.content : []);
+
         const selBodega = document.getElementById('conteo-bodega');
         const selProd = document.getElementById('conteo-producto');
 
-        if (selBodega) selBodega.innerHTML = bodegas.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
-        if (selProd) selProd.innerHTML = productos.map(p => `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`).join('');
+        if (selBodega) selBodega.innerHTML = bodegasList.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
+        if (selProd) selProd.innerHTML = productosList.map(p => `<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`).join('');
 
         const modal = document.getElementById('modal-conteo');
         if (modal) modal.style.display = 'flex';

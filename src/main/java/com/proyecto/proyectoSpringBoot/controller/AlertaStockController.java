@@ -46,7 +46,7 @@ public class AlertaStockController {
     }
 
     @PutMapping("/{id}/resolver")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR', 'GERENTE_LOGISTICA')")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Marcar una alerta como resuelta")
     public ResponseEntity<Void> resolver(
             @PathVariable Long id,
@@ -54,4 +54,13 @@ public class AlertaStockController {
         alertaStockService.resolver(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Eliminar o descartar una alerta de stock")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        alertaStockService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+

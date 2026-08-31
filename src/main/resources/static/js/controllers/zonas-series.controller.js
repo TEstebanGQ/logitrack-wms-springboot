@@ -35,11 +35,14 @@ const ZonasSeriesController = {
             typeof BodegaService !== 'undefined' ? BodegaService.getAll().catch(() => []) : []
         ]);
 
+        const productosList = Array.isArray(productos) ? productos : (productos && Array.isArray(productos.content) ? productos.content : []);
+        const bodegasList = Array.isArray(bodegas) ? bodegas : (bodegas && Array.isArray(bodegas.content) ? bodegas.content : []);
+
         const selProd = document.getElementById('serie-producto');
         const selBodega = document.getElementById('serie-bodega');
 
-        if (selProd) selProd.innerHTML = productos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
-        if (selBodega) selBodega.innerHTML = bodegas.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
+        if (selProd) selProd.innerHTML = productosList.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+        if (selBodega) selBodega.innerHTML = bodegasList.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
 
         const modal = document.getElementById('modal-serie');
         if (modal) modal.style.display = 'flex';

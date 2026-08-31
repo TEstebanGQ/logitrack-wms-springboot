@@ -28,11 +28,14 @@
         </div>
     </div>
 
-    <!-- Tabla de Tareas de Picking -->
-    <div class="table-container card">
+    <!-- 1. Tabla de Tareas de Picking Activas (Pendientes / En Proceso) -->
+    <div class="table-container card" style="margin-bottom: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Órdenes de Extracción Activas</h4>
-            <span id="contador-picking" class="badge badge-info">0 tareas</span>
+            <div>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Órdenes de Extracción Activas</h4>
+                <small style="color:var(--text-muted);">Tareas pendientes de recolección física en estantería.</small>
+            </div>
+            <span id="contador-picking-activas" class="badge badge-warning">0 pendientes</span>
         </div>
         <table class="data-table">
             <thead>
@@ -47,11 +50,40 @@
                     <th>Acción del Operario</th>
                 </tr>
             </thead>
-            <tbody id="tabla-picking-body">
-                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando tareas de picking...</td></tr>
+            <tbody id="tabla-picking-activas-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando tareas activas...</td></tr>
             </tbody>
         </table>
     </div>
+
+    <!-- 2. Historial de Tareas de Picking Finalizadas (Completadas / Canceladas) -->
+    <div class="table-container card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+                <h4 style="margin:0; font-size:1rem; color:var(--text-bright);">Historial de Extracciones Finalizadas</h4>
+                <small style="color:var(--text-muted);">Tareas de recolección completadas y confirmadas.</small>
+            </div>
+            <span id="contador-picking-historial" class="badge badge-success">0 finalizadas</span>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código Tarea</th>
+                    <th>Pedido Relacionado</th>
+                    <th>Producto</th>
+                    <th>Ubicación Estante</th>
+                    <th>Requerido</th>
+                    <th>Recolectado</th>
+                    <th>Estado</th>
+                    <th>Resultado</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-picking-historial-body">
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">Cargando historial de picking...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
 
     <!-- Modal Recolección de Picking -->
     <div id="modal-picking-accion" class="modal-backdrop" style="display:none;">

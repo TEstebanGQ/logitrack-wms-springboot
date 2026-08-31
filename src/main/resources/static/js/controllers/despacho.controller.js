@@ -35,12 +35,22 @@ const DespachoController = {
         const selPedido = document.getElementById('guia-pedido');
         const selTransp = document.getElementById('guia-transportadora');
 
-        if (selPedido) selPedido.innerHTML = pedidosList.map(p => `<option value="${p.id}">${p.codigoPedido} - ${p.clienteNombre} (${p.estado})</option>`).join('');
+        // Filtrar estrictamente los pedidos que están en estado DESPACHADO
+        const pedidosDespachados = pedidosList.filter(p => p.estado === 'DESPACHADO');
+
+        if (selPedido) {
+            if (pedidosDespachados.length === 0) {
+                selPedido.innerHTML = '<option value="">-- No hay pedidos con estado DESPACHADO disponibles --</option>';
+            } else {
+                selPedido.innerHTML = pedidosDespachados.map(p => `<option value="${p.id}">${p.codigoPedido} - ${p.clienteNombre} (${p.estado})</option>`).join('');
+            }
+        }
         if (selTransp) selTransp.innerHTML = transpsList.map(t => `<option value="${t.id}">${t.nombre} (${t.tipoServicio})</option>`).join('');
 
         const modal = document.getElementById('modal-guia');
         if (modal) modal.style.display = 'flex';
     },
+
 
     cerrarModalGuia() {
         const modal = document.getElementById('modal-guia');

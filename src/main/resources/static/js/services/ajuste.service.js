@@ -1,13 +1,31 @@
-/**
- * Servicio de Ajustes de Inventario y Mermas (API)
- */
-import { httpClient } from './http.js';
+/* ==========================================
+   LogiTrack S.A. - Servicio de Ajustes de Inventario
+   ========================================== */
 
-export const ajusteService = {
-  listar: async () => httpClient.get('/ajustes'),
-  obtenerPorId: async (id) => httpClient.get(`/ajustes/${id}`),
-  listarPorBodega: async (bodegaId) => httpClient.get(`/ajustes/bodega/${bodegaId}`),
-  listarPorProducto: async (productoId) => httpClient.get(`/ajustes/producto/${productoId}`),
-  listarPorTipo: async (tipo) => httpClient.get(`/ajustes/tipo/${tipo}`),
-  crear: async (datos) => httpClient.post('/ajustes', datos)
+const AjusteService = {
+    getAll() {
+        return ApiService.get('/ajustes');
+    },
+
+    getById(id) {
+        return ApiService.get(`/ajustes/${id}`);
+    },
+
+    getByBodega(bodegaId) {
+        return ApiService.get(`/ajustes/bodega/${bodegaId}`);
+    },
+
+    getByProducto(productoId) {
+        return ApiService.get(`/ajustes/producto/${productoId}`);
+    },
+
+    getByTipo(tipo) {
+        return ApiService.get(`/ajustes/tipo/${tipo}`);
+    },
+
+    create(datos) {
+        return ApiService.post('/ajustes', datos);
+    }
 };
+
+window.AjusteService = AjusteService;

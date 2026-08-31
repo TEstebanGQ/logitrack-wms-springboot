@@ -1,15 +1,39 @@
-/**
- * Servicio de Lotes y Vencimientos (API)
- */
-import { httpClient } from './http.js';
+/* ==========================================
+   LogiTrack S.A. - Servicio de Lotes y Vencimientos (FEFO)
+   ========================================== */
 
-export const loteService = {
-  listar: async () => httpClient.get('/lotes'),
-  obtenerPorId: async (id) => httpClient.get(`/lotes/${id}`),
-  listarPorProducto: async (productoId) => httpClient.get(`/lotes/producto/${productoId}`),
-  listarPorBodega: async (bodegaId) => httpClient.get(`/lotes/bodega/${bodegaId}`),
-  listarFEFO: async (productoId, bodegaId) => httpClient.get(`/lotes/fefo?productoId=${productoId}&bodegaId=${bodegaId}`),
-  listarProximosVencer: async (dias = 30) => httpClient.get(`/lotes/proximos-vencer?dias=${dias}`),
-  crear: async (datos) => httpClient.post('/lotes', datos),
-  actualizarEstado: async (id, estado) => httpClient.put(`/lotes/${id}/estado?estado=${estado}`, {})
+const LoteService = {
+    getAll() {
+        return ApiService.get('/lotes');
+    },
+
+    getById(id) {
+        return ApiService.get(`/lotes/${id}`);
+    },
+
+    getByProducto(productoId) {
+        return ApiService.get(`/lotes/producto/${productoId}`);
+    },
+
+    getByBodega(bodegaId) {
+        return ApiService.get(`/lotes/bodega/${bodegaId}`);
+    },
+
+    getFEFO(productoId, bodegaId) {
+        return ApiService.get(`/lotes/fefo?productoId=${productoId}&bodegaId=${bodegaId}`);
+    },
+
+    getProximosVencer(dias = 30) {
+        return ApiService.get(`/lotes/proximos-vencer?dias=${dias}`);
+    },
+
+    create(datos) {
+        return ApiService.post('/lotes', datos);
+    },
+
+    updateEstado(id, estado) {
+        return ApiService.put(`/lotes/${id}/estado?estado=${estado}`, {});
+    }
 };
+
+window.LoteService = LoteService;

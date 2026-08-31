@@ -79,19 +79,21 @@ const ConteoRenderer = {
         }).join('');
 
         container.innerHTML = `
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Ubicación</th>
-                        <th>Stock Teórico</th>
-                        <th>Conteo Real</th>
-                        <th>Diferencia</th>
-                        <th>Estado Línea</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
+            <div class="table-container" style="margin-top:12px;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>PRODUCTO</th>
+                            <th>UBICACIÓN</th>
+                            <th>STOCK TEÓRICO</th>
+                            <th>CONTEO REAL</th>
+                            <th>DIFERENCIA</th>
+                            <th>ESTADO LÍNEA</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
         `;
     }
 };

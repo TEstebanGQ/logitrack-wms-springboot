@@ -93,7 +93,8 @@ const ConteoController = {
     },
 
     async conciliarConteo() {
-        if (!confirm('¿Deseas conciliar las diferencias y generar automáticamente los ajustes de inventario pertinentes?')) return;
+        const ok = await ConfirmDialog.show({ title: 'Conciliar Auditoría Cíclica', message: '¿Deseas conciliar las diferencias y generar automáticamente los ajustes de inventario pertinentes?', type: 'info', confirmText: 'Sí, Conciliar' });
+        if (!ok) return;
         try {
             await ConteoService.conciliar(this.conteoActualId);
             Toast.success('Auditoría conciliada y stock ajustado exitosamente.');

@@ -92,7 +92,8 @@ const PedidoController = {
     },
 
     async despachar(id) {
-        if (!confirm('¿Deseas confirmar el despacho de este pedido? Se descontará el inventario y se generará movimiento de salida.')) return;
+        const ok = await ConfirmDialog.show({ title: 'Despachar Pedido', message: '¿Deseas confirmar el despacho de este pedido? Se descontará el inventario y se generará movimiento de salida.', type: 'info', confirmText: 'Sí, Despachar' });
+        if (!ok) return;
         try {
             await PedidoService.despachar(id);
             Toast.success('Pedido despachado con éxito.');
@@ -103,8 +104,8 @@ const PedidoController = {
     },
 
     async cancelar(id) {
-        const motivo = prompt('Ingresa el motivo de cancelación:');
-        if (motivo === null) return;
+        const motivo = await ConfirmDialog.prompt({ title: 'Cancelar Pedido Comercial', message: 'Ingresa el motivo de cancelación del pedido:', placeholder: 'Ej. Solicitud del cliente, falta de stock...' });
+        if (motivo === null || motivo === '') return;
         try {
             await PedidoService.cancelar(id, motivo);
             Toast.success('Pedido cancelado.');

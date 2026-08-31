@@ -1,15 +1,39 @@
-/**
- * Servicio de Órdenes de Compra (API)
- */
-import { httpClient } from './http.js';
+/* ==========================================
+   LogiTrack S.A. - Servicio de Órdenes de Compra
+   ========================================== */
 
-export const ordenCompraService = {
-  listar: async () => httpClient.get('/ordenes-compra'),
-  obtenerPorId: async (id) => httpClient.get(`/ordenes-compra/${id}`),
-  listarPorProveedor: async (proveedorId) => httpClient.get(`/ordenes-compra/proveedor/${proveedorId}`),
-  listarPorEstado: async (estado) => httpClient.get(`/ordenes-compra/estado/${estado}`),
-  crear: async (datos) => httpClient.post('/ordenes-compra', datos),
-  aprobar: async (id) => httpClient.put(`/ordenes-compra/${id}/aprobar`, {}),
-  cancelar: async (id, motivo) => httpClient.put(`/ordenes-compra/${id}/cancelar`, { motivo }),
-  recibir: async (id) => httpClient.put(`/ordenes-compra/${id}/recibir`, {})
+const OrdenCompraService = {
+    getAll() {
+        return ApiService.get('/ordenes-compra');
+    },
+
+    getById(id) {
+        return ApiService.get(`/ordenes-compra/${id}`);
+    },
+
+    getByProveedor(proveedorId) {
+        return ApiService.get(`/ordenes-compra/proveedor/${proveedorId}`);
+    },
+
+    getByEstado(estado) {
+        return ApiService.get(`/ordenes-compra/estado/${estado}`);
+    },
+
+    create(datos) {
+        return ApiService.post('/ordenes-compra', datos);
+    },
+
+    aprobar(id) {
+        return ApiService.put(`/ordenes-compra/${id}/aprobar`, {});
+    },
+
+    cancelar(id, motivo) {
+        return ApiService.put(`/ordenes-compra/${id}/cancelar`, { motivo });
+    },
+
+    recibir(id) {
+        return ApiService.put(`/ordenes-compra/${id}/recibir`, {});
+    }
 };
+
+window.OrdenCompraService = OrdenCompraService;

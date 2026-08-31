@@ -6,6 +6,7 @@ import com.proyecto.proyectoSpringBoot.model.entity.Usuario;
 import com.proyecto.proyectoSpringBoot.repository.AuditoriaRepository;
 import com.proyecto.proyectoSpringBoot.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuditoriaEventListener {
@@ -41,7 +43,7 @@ public class AuditoriaEventListener {
                     .build();
             auditoriaRepository.save(audit);
         } catch (Exception e) {
-            System.err.println("[AUDITORIA] Error guardando registro de auditoría: " + e.getMessage());
+            log.error("[AUDITORIA] Error guardando registro de auditoría: {}", e.getMessage(), e);
         }
     }
 }

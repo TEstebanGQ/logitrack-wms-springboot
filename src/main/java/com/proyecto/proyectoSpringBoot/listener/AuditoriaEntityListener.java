@@ -7,6 +7,7 @@ import com.proyecto.proyectoSpringBoot.model.entity.Auditoria;
 import com.proyecto.proyectoSpringBoot.model.entity.Usuario;
 import com.proyecto.proyectoSpringBoot.model.enums.TipoOperacion;
 import jakarta.persistence.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
  * Se activa en INSERT, UPDATE y DELETE sobre entidades que lo usen.
  * Nota: se registra manualmente desde cada entidad con @EntityListeners(AuditoriaEntityListener.class)
  */
+@Slf4j
 public class AuditoriaEntityListener {
 
     private static final ObjectMapper mapper = new ObjectMapper()
@@ -57,7 +59,7 @@ public class AuditoriaEntityListener {
             );
         } catch (Throwable e) {
             // Log silencioso para no interrumpir la operación principal
-            System.err.println("[AUDITORIA] Error al registrar: " + e.getMessage());
+            log.warn("[AUDITORIA] Error al registrar auditoría: {}", e.getMessage(), e);
         }
     }
 

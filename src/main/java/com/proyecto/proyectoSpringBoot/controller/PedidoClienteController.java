@@ -11,6 +11,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,9 +34,10 @@ public class PedidoClienteController {
     private final IPedidoClienteService pedidoClienteService;
 
     @GetMapping
-    @Operation(summary = "Listar todos los pedidos de clientes")
-    public ResponseEntity<List<PedidoClienteResponse>> listarTodos() {
-        return ResponseEntity.ok(pedidoClienteService.listarTodos());
+    @Operation(summary = "Listar todos los pedidos de clientes con paginación")
+    public ResponseEntity<Page<PedidoClienteResponse>> listarTodos(
+            @PageableDefault(size = 20, sort = "fechaPedido", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(pedidoClienteService.listarTodos(pageable));
     }
 
     @GetMapping("/cliente/{clienteId}")

@@ -9,6 +9,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,10 +49,11 @@ public class OrdenCompraController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Listar todas las órdenes de compra")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
-    public ResponseEntity<List<OrdenCompraResponse>> listar() {
-        return ResponseEntity.ok(ordenCompraService.listarTodas());
+    @Operation(summary = "Listar todas las órdenes de compra con paginación")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista paginada obtenida exitosamente")
+    public ResponseEntity<Page<OrdenCompraResponse>> listar(
+            @PageableDefault(size = 20, sort = "fechaSolicitud", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(ordenCompraService.listarTodas(pageable));
     }
 
     @GetMapping("/{id}")

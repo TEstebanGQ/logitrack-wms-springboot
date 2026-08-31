@@ -9,6 +9,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +43,10 @@ public class MovimientoController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos los movimientos")
-    public ResponseEntity<List<MovimientoResponse>> listar() {
-        return ResponseEntity.ok(movimientoService.listarTodos());
+    @Operation(summary = "Listar todos los movimientos con paginación")
+    public ResponseEntity<Page<MovimientoResponse>> listar(
+            @PageableDefault(size = 20, sort = "fecha", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(movimientoService.listarTodos(pageable));
     }
 
     @GetMapping("/{id}")

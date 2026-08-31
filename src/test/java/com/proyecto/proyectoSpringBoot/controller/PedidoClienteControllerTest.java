@@ -29,7 +29,7 @@ class PedidoClienteControllerTest {
     void testListarPedidos() throws Exception {
         mockMvc.perform(get("/api/pedidos"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.content").isArray());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.proyecto.proyectoSpringBoot.listener;
 
 import com.proyecto.proyectoSpringBoot.event.AuditoriaEvent;
 import com.proyecto.proyectoSpringBoot.model.enums.TipoOperacion;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  * Componente estático auxiliar que publica AuditoriaEvent
  * evitando llamadas síncronas al repositorio en callbacks JPA.
  */
+@Slf4j
 @Component
 public class AuditoriaRegistrar {
 
@@ -34,7 +36,7 @@ public class AuditoriaRegistrar {
                         .build());
             }
         } catch (Exception e) {
-            System.err.println("[AUDITORIA] No se pudo publicar evento: " + e.getMessage());
+            log.error("[AUDITORIA] No se pudo publicar evento: {}", e.getMessage(), e);
         }
     }
 }

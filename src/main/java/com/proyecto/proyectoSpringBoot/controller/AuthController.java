@@ -56,12 +56,19 @@ public class AuthController {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "El email ya está en uso"));
         }
+
+        // [H-003 FIX] El registro público SIEMPRE asigna EMPLEADO, independientemente del
+        // valor enviado por el cliente. La asignación de roles privilegiados es EXCLUSIVA
+        // del endpoint POST /api/usuarios (solo ADMIN). Esto previene la auto-asignación
+        // de roles como ADMIN, SUPERVISOR, GERENTE_LOGISTICA o JEFE_COMPRAS.
+        RolUsuario rolAsignado = RolUsuario.EMPLEADO;
+
         Usuario usuario = Usuario.builder()
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .rol(RolUsuario.valueOf(request.getRol().toUpperCase()))
+                .rol(rolAsignado)
                 .activo(true)
                 .build();
         Usuario guardado = usuarioRepository.save(usuario);
@@ -79,7 +86,8 @@ public class AuthController {
             java.util.Map<String, Object> googleUser = verifyAndDecodeGoogleToken(request.getCredential());
 
             if (googleUser == null || googleUser.get("email") == null) {
-                return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "Token de Google inválido o no se pudo decodificar"));
+                return ResponseEntity.badRequest().body(java.util.Map.of(
+                    "mensaje", "Token de Google inválido o servicio de Google no disponible. Intenta iniciar sesión con correo y contraseña."));
             }
 
             String email = (String) googleUser.get("email");
@@ -113,6 +121,17 @@ public class AuthController {
         }
     }
 
+    /**
+     * [H-001 FIX] Verifica el token de Google EXCLUSIVAMENTE contra el endpoint oficial de tokeninfo
+     * de Google, que valida la firma RSA del token de forma criptográficamente segura.
+     *
+     * El fallback de decodificación Base64 sin verificación de firma fue ELIMINADO porque
+     * permitía que un atacante construyera tokens falsos con cualquier email y el sistema
+     * los aceptara cuando Google estuviera inaccesible.
+     *
+     * Si Google no está disponible, se rechaza la autenticación. El usuario debe usar
+     * sus credenciales locales (email + contraseña) como alternativa.
+     */
     private java.util.Map<String, Object> verifyAndDecodeGoogleToken(String idToken) {
         try {
             org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
@@ -126,24 +145,13 @@ public class AuthController {
                 return googleUser;
             }
         } catch (Exception e) {
-            System.err.println("Advertencia: Falló consulta HTTP a Google tokeninfo (" + e.getMessage() + "). Usando fallback JWT local...");
-        }
-
-        try {
-            String[] parts = idToken.split("\\.");
-            if (parts.length >= 2) {
-                String payloadJson = new String(java.util.Base64.getUrlDecoder().decode(parts[1]), java.nio.charset.StandardCharsets.UTF_8);
-                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-                @SuppressWarnings("unchecked")
-                java.util.Map<String, Object> payload = mapper.readValue(payloadJson, java.util.Map.class);
-                if (payload != null && payload.get("email") != null) {
-                    return payload;
-                }
-            }
-        } catch (Exception ex) {
-            System.err.println("Error decodificando token JWT de Google: " + ex.getMessage());
+            // [H-001 FIX] NO hay fallback. Si Google no responde, se rechaza la autenticación.
+            // Esto previene la forja de tokens sin firma RSA válida.
+            org.slf4j.LoggerFactory.getLogger(AuthController.class)
+                    .warn("[Google Auth] Servicio de Google no disponible ({}). Autenticación rechazada por seguridad.", e.getMessage());
         }
         return null;
     }
 }
+
 

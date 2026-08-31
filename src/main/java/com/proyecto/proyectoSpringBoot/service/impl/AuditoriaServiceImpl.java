@@ -6,6 +6,8 @@ import com.proyecto.proyectoSpringBoot.model.enums.TipoOperacion;
 import com.proyecto.proyectoSpringBoot.repository.AuditoriaRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IAuditoriaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,12 @@ public class AuditoriaServiceImpl implements IAuditoriaService {
     public List<AuditoriaResponse> listarTodas() {
         return auditoriaRepository.findAll().stream()
                 .map(auditoriaMapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<AuditoriaResponse> listarTodas(Pageable pageable) {
+        return auditoriaRepository.findAll(pageable)
+                .map(auditoriaMapper::toResponse);
     }
 
     @Override

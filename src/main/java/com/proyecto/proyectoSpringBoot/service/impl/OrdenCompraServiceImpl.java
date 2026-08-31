@@ -16,15 +16,15 @@ import com.proyecto.proyectoSpringBoot.service.interfaces.IMovimientoService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IOrdenCompraService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,6 +108,13 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
     public List<OrdenCompraResponse> listarTodas() {
         return ordenCompraRepository.findAllByOrderByFechaSolicitudDesc().stream()
                 .map(mapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrdenCompraResponse> listarTodas(Pageable pageable) {
+        return ordenCompraRepository.findAll(pageable)
+                .map(mapper::toResponse);
     }
 
     @Override
@@ -214,15 +221,19 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
         return resp;
     }
 
+    /**
+     * [H-005 FIX] Genera un código de orden de compra usando una SECUENCIA de PostgreSQL.
+     * Esto reemplaza el uso de new Random() que tenía condición de carrera bajo concurrencia:
+     * dos peticiones simultáneas podían generar el mismo número aleatorio y pasar la
+     * validación de existsByCodigoOrden() al mismo tiempo, creando duplicados.
+     *
+     * nextval('orden_compra_seq') es atómico a nivel de base de datos y garantiza
+     * unicidad absoluta sin necesidad de bucles de reintento.
+     */
     private String generarCodigoOrden() {
-        String fechaStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        int randomNum = 1000 + new Random().nextInt(9000);
-        String codigo = "OC-" + fechaStr + "-" + randomNum;
-        while (ordenCompraRepository.existsByCodigoOrden(codigo)) {
-            randomNum = 1000 + new Random().nextInt(9000);
-            codigo = "OC-" + fechaStr + "-" + randomNum;
-        }
-        return codigo;
+        String fechaStr = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
+        Long seq = ordenCompraRepository.nextOrdenCompraSeq();
+        return String.format("OC-%s-%05d", fechaStr, seq);
     }
 
     private void publishAudit(String entidad, Long entidadId, TipoOperacion tipo, String ant, String nuevos, String desc, String email) {

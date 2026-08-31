@@ -15,7 +15,10 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:LoGiTraCkS3cr3tK3yP4r4JWT2024SuperSegura!}")
+    // [H-002 FIX] El secreto JWT se lee EXCLUSIVAMENTE desde la variable de entorno JWT_SECRET.
+    // No existe valor por defecto hardcodeado. Si la variable no está configurada,
+    // la aplicación fallará al arrancar con un error claro, evitando despliegues inseguros.
+    @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration:86400000}")

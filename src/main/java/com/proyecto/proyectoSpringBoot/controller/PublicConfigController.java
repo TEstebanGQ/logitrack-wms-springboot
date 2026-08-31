@@ -15,7 +15,8 @@ import java.util.Map;
 @Tag(name = "Configuración Pública", description = "Endpoints de configuración pública no sensible para clientes frontend")
 public class PublicConfigController {
 
-    @Value("${google.client.id:1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com}")
+    // [H-020 FIX] Sin fallback hardcodeado: el valor proviene de la variable de entorno GOOGLE_CLIENT_ID
+    @Value("${google.client.id:}")
     private String googleClientId;
 
     @GetMapping("/public")

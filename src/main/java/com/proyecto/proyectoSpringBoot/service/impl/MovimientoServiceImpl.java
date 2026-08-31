@@ -15,6 +15,8 @@ import com.proyecto.proyectoSpringBoot.service.interfaces.IAlertaStockService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IMovimientoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,6 +185,13 @@ public class MovimientoServiceImpl implements IMovimientoService {
     public List<MovimientoResponse> listarTodos() {
         return movimientoRepository.findAll().stream()
                 .map(movimientoMapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MovimientoResponse> listarTodos(Pageable pageable) {
+        return movimientoRepository.findAll(pageable)
+                .map(movimientoMapper::toResponse);
     }
 
     @Override

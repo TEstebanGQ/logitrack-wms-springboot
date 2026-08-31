@@ -1590,6 +1590,25 @@
     font-family: var(--font-mono);
 }
 
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.status-indicator.active {
+    background: #FFA000;
+    box-shadow: 0 0 8px rgba(255, 160, 0, 0.6);
+}
+
+.status-indicator.completed {
+    background: #00E676;
+    box-shadow: 0 0 8px rgba(0, 230, 118, 0.6);
+}
+
+
 .table-container {
     background: rgba(15, 23, 42, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.07);

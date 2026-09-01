@@ -68,15 +68,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler webSecurityExpressionHandler(
-            org.springframework.security.access.hierarchicalroles.RoleHierarchy roleHierarchy) {
-        org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler handler =
-                new org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler();
-        handler.setRoleHierarchy(roleHierarchy);
-        return handler;
-    }
-
-    @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);

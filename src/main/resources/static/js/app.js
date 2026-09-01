@@ -113,7 +113,7 @@ const App = {
                 }
 
                 if (!googleClientId) {
-                    googleClientId = "1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com";
+                    googleClientId = "134514735180-itup9unjaso8pr7lk8vvq9hk0bl81avm.apps.googleusercontent.com";
                 }
 
                 google.accounts.id.initialize({

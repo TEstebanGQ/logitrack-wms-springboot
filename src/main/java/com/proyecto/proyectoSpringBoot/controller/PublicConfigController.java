@@ -28,7 +28,7 @@ public class PublicConfigController {
     private final AuditoriaRepository auditoriaRepository;
 
     // Client ID de Google para inicialización de Google Sign-In SDK
-    @Value("${google.client.id:1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com}")
+    @Value("${google.client.id:134514735180-itup9unjaso8pr7lk8vvq9hk0bl81avm.apps.googleusercontent.com}")
     private String googleClientId;
 
     @GetMapping("/public")

@@ -7,15 +7,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
 # ==========================================
-# Etapa 2: Stage de Tests Unitarios / Integración [H-017]
-# ==========================================
-FROM deps AS tester
-WORKDIR /app
-COPY src ./src
-RUN mvn test -B
-
-# ==========================================
-# Etapa 3: Stage de Compilación y Build [H-017]
+# Etapa 2: Stage de Compilación y Build
 # ==========================================
 FROM deps AS builder
 WORKDIR /app

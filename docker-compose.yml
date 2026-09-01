@@ -43,7 +43,7 @@ services:
       # Nunca usar un valor por defecto en producción.
       JWT_SECRET: ${JWT_SECRET:-LogiTrackSecretKeyWMS2026MasterEnterpriseSuperSecureJWT256BitsKey!}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-1056581979401-4n88v213h468n4613n89.apps.googleusercontent.com}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-134514735180-itup9unjaso8pr7lk8vvq9hk0bl81avm.apps.googleusercontent.com}
       PORT: 8081
       SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-smtp.gmail.com}
       SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}

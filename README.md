@@ -1,3 +1,13 @@
+---
+title: LogiTrack WMS
+emoji: 📦
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8081
+pinned: false
+---
+
 # LogiTrack S.A. - Sistema Backend de Gestión y Auditoría de Bodegas
 
 ![Java](https://img.shields.io/badge/Java-17-orange.svg)

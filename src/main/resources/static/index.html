@@ -454,7 +454,7 @@
             <button class="modal-close" onclick="App.closeGoogleModal()">&times;</button>
         </div>
         <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-            ¡Bienvenido a LogiTrack S.A.! Confirma tus datos personales, asigna tu rol y define una contraseña para finalizar tu registro.
+            ¡Bienvenido a LogiTrack S.A.! Confirma tus datos y define <strong>obligatoriamente tu contraseña</strong> de acceso para finalizar tu registro con rol <strong>Empleado</strong>.
         </p>
         <form id="form-google-complete">
             <div class="form-group">
@@ -472,14 +472,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label" for="google-complete-rol">Rol a asignar en el sistema</label>
-                <select id="google-complete-rol" name="rol" class="form-select">
-                    <option value="EMPLEADO">EMPLEADO / OPERADOR</option>
-                    <option value="JEFE_COMPRAS">JEFE DE COMPRAS</option>
-                    <option value="GERENTE_LOGISTICA">GERENTE DE LOGÍSTICA</option>
-                    <option value="SUPERVISOR">SUPERVISOR / AUDITOR</option>
-                    <option value="ADMIN">ADMINISTRADOR</option>
-                </select>
+                <label class="form-label">Rol asignado en el sistema</label>
+                <input type="text" value="EMPLEADO / OPERADOR DE BODEGA 📦" class="form-input" readonly style="opacity:0.85; cursor:not-allowed; font-weight:600; color:var(--text-bright); background:var(--bg-card-hover);">
+                <input type="hidden" id="google-complete-rol" name="rol" value="EMPLEADO">
             </div>
             <div class="form-group">
                 <label class="form-label" for="google-complete-password">Asignar Contraseña</label>

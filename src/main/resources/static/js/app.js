@@ -92,7 +92,7 @@ const App = {
                     this.updateUserInfo();
                     Router.navigate('dashboard');
                 } else if (res && !res.registrado) {
-                    Toast.info('Por favor confirma tus datos, asigna tu rol y define tu contraseña');
+                    Toast.info('¡Bienvenido! Por favor define tu contraseña obligatoria para completar tu registro.');
                     this.openGoogleModal(res.email, res.nombre, res.apellido);
                 }
             } catch (err) {

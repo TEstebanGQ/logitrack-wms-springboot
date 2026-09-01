@@ -15,6 +15,13 @@ public class LogiTrackApplication {
     }
 
     public static void main(String[] args) {
+        String dbUrl = System.getenv("DB_URL");
+        if (dbUrl != null) {
+            if (dbUrl.startsWith("postgresql://")) {
+                dbUrl = "jdbc:" + dbUrl;
+            }
+            System.setProperty("spring.datasource.url", dbUrl);
+        }
         SpringApplication.run(LogiTrackApplication.class, args);
     }
 }

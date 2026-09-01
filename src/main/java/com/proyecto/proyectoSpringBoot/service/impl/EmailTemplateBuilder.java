@@ -13,6 +13,7 @@ public class EmailTemplateBuilder {
             return "Bienvenido a LogiTrack S.A. | Tu cuenta ha sido activada";
         }
         return switch (rol) {
+            case SUPER_ADMIN -> "Bienvenido a LogiTrack S.A. | Acceso de Super Administrador Global";
             case ADMIN -> "Bienvenido a LogiTrack S.A. | Acceso de Administrador del Sistema";
             case SUPERVISOR -> "Bienvenido a LogiTrack S.A. | Acceso de Supervisor de Operaciones";
             case GERENTE_LOGISTICA -> "Bienvenido a LogiTrack S.A. | Acceso de Gerencia Logística";
@@ -266,9 +267,75 @@ public class EmailTemplateBuilder {
         );
     }
 
+    public String buildSuperAdminNotificationHtml(String nombreAdmin, String nombreNuevoUsuario, String emailNuevoUsuario) {
+        int currentYear = Year.now().getValue();
+        return """
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Nuevo Registro de Usuario en LogiTrack S.A.</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+                body { margin: 0; padding: 0; background-color: #0d1117; font-family: 'Inter', sans-serif; color: #e2e8f0; }
+                .container { max-width: 620px; margin: 28px auto; background: #161b22; border-radius: 14px; overflow: hidden; border: 1px solid #30363d; }
+                .header { background: linear-gradient(180deg, #12161d 0%%, #161b22 100%%); padding: 32px; text-align: center; border-bottom: 3px solid #e11d48; }
+                .logo-title { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin: 0; }
+                .logo-title span { color: #ff6a2b; }
+                .content { padding: 32px; }
+                .alert-card { background: rgba(225, 29, 72, 0.08); border: 1px solid rgba(225, 29, 72, 0.3); border-left: 4px solid #e11d48; border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+                .cta-button { display: inline-block; background: linear-gradient(135deg, #e11d48 0%%, #be123c 100%%); color: #ffffff !important; text-decoration: none; font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 700; text-transform: uppercase; padding: 12px 30px; border-radius: 6px; }
+                .footer { background-color: #0d1117; border-top: 1px solid #21262d; padding: 20px; text-align: center; font-size: 12px; color: #6e7681; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <div style="margin-bottom:8px;">
+                        <svg width="40" height="40" viewBox="0 0 200 200" style="vertical-align: middle;">
+                            <path d="M 100 22 L 168 61 L 168 139 L 100 178 L 32 139 L 32 61 Z" fill="none" stroke="#FF6A2B" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 32 61 L 100 100 L 168 61" fill="none" stroke="#FF6A2B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 100 100 L 100 156" fill="none" stroke="#FFB020" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <h1 class="logo-title">Logi<span>Track</span> S.A.</h1>
+                    <p style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:#8b949e; margin:6px 0 0;">Control de Acceso &amp; Seguridad</p>
+                </div>
+                <div class="content">
+                    <h2 style="font-size:20px; color:#ffffff; margin-top:0;">👑 Hola, %s (Super Admin)</h2>
+                    <p style="font-size:14.5px; color:#94a3b8; line-height:1.6;">
+                        Se ha registrado una nueva persona en la plataforma de <strong>LogiTrack S.A.</strong> Por defecto se le asignó el rol de <strong>EMPLEADO</strong>.
+                    </p>
+                    <div class="alert-card">
+                        <span style="background:#e11d48; color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:4px; text-transform:uppercase;">NUEVO REGISTRO PENDIENTE</span>
+                        <h3 style="font-size:16px; color:white; margin:10px 0 6px;">%s</h3>
+                        <p style="font-size:13.5px; color:#cbd5e1; margin:0 0 10px;">Correo electrónico: <code style="background:#21262d; color:#ffb020; padding:2px 6px; border-radius:4px;">%s</code></p>
+                        <p style="font-size:12.5px; color:#8b949e; margin:0;">💬 <em>Mira, esta persona fue registrada en el sistema. Por favor verifica su labor corporativa y asígnale el rol correspondiente (ADMIN, SUPERVISOR, GERENTE, COMPRAS o EMPLEADO).</em></p>
+                    </div>
+                    <div style="text-align:center; margin-top:28px;">
+                        <a href="http://localhost:8081" class="cta-button" target="_blank">Gestionar Usuarios &amp; Asignar Rol</a>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p><strong>LogiTrack S.A.</strong> • Control de Seguridad y Accesos</p>
+                    <p>© %d LogiTrack S.A. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """.formatted(
+            nombreAdmin != null && !nombreAdmin.isBlank() ? nombreAdmin : "Super Admin",
+            nombreNuevoUsuario,
+            emailNuevoUsuario,
+            currentYear
+        );
+    }
+
     private String getRoleDisplayName(RolUsuario rol) {
         if (rol == null) return "Usuario Registrado";
         return switch (rol) {
+            case SUPER_ADMIN -> "Super Administrador Global";
             case ADMIN -> "Administrador del Sistema";
             case SUPERVISOR -> "Supervisor de Operaciones & Calidad";
             case GERENTE_LOGISTICA -> "Gerente de Logística & Distribución";
@@ -280,6 +347,7 @@ public class EmailTemplateBuilder {
     private String getRoleBadgeColor(RolUsuario rol) {
         if (rol == null) return "#8993a8";
         return switch (rol) {
+            case SUPER_ADMIN -> "#e11d48";       // Crimson Red
             case ADMIN -> "#ff6a2b";            // Accent Orange
             case SUPERVISOR -> "#ffb020";       // Amber Gold
             case GERENTE_LOGISTICA -> "#33d6a6";// Emerald Teal
@@ -291,6 +359,7 @@ public class EmailTemplateBuilder {
     private String getRoleIcon(RolUsuario rol) {
         if (rol == null) return "👤";
         return switch (rol) {
+            case SUPER_ADMIN -> "👑";
             case ADMIN -> "🛡️";
             case SUPERVISOR -> "📋";
             case GERENTE_LOGISTICA -> "📊";
@@ -304,6 +373,7 @@ public class EmailTemplateBuilder {
             return "Tienes acceso a los servicios básicos de la plataforma.";
         }
         return switch (rol) {
+            case SUPER_ADMIN -> "Cuentas con autoridad máxima en el sistema LogiTrack S.A. Recibes alertas prioritarias sobre nuevos registros de personal para verificar sus labores y asignarles el rol definitivo.";
             case ADMIN -> "Cuentas con privilegios totales de administración, auditoría global y parametrización general del sistema WMS/ERP.";
             case SUPERVISOR -> "Supervisas el flujo operacional de las bodegas, auditorías de inventario, picking y validación de conteos cíclicos.";
             case GERENTE_LOGISTICA -> "Lideras la estrategia de almacenamiento, rotación de inventarios, expedición de guías de despacho y métricas ABC.";
@@ -320,6 +390,11 @@ public class EmailTemplateBuilder {
             """;
         }
         return switch (rol) {
+            case SUPER_ADMIN -> """
+                <li><strong>Gestión Global de Personal:</strong> Notificaciones directas vía correo y asignación de roles para personal registrado.</li>
+                <li><strong>Administración Total:</strong> Control de seguridad, perfiles, bodegas, inventarios y finanzas.</li>
+                <li><strong>Auditoría Completa:</strong> Trazabilidad ilimitada de operaciones e inicio de sesión.</li>
+            """;
             case ADMIN -> """
                 <li><strong>Gestión de Usuarios & Seguridad:</strong> Creación, asignación de roles y control de acceso al sistema.</li>
                 <li><strong>Auditoría Global:</strong> Trazabilidad completa de operaciones críticas (INSERT, UPDATE, DELETE).</li>

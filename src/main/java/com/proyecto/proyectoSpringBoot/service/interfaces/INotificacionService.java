@@ -12,4 +12,5 @@ public interface INotificacionService {
     ContadorNotificacionesResponse contarNoLeidas(String emailUsuario);
     void marcarLeida(Long id, String emailUsuario);
     void marcarTodasLeidas(String emailUsuario);
+    void limpiarNotificacionesObsoletas(String nombreProducto, String nombreBodega);
 }

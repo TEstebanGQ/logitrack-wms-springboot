@@ -20,6 +20,7 @@ public class EmailServiceImpl implements IEmailService {
 
     private final JavaMailSender mailSender;
     private final EmailTemplateBuilder templateBuilder;
+    private final com.proyecto.proyectoSpringBoot.repository.UsuarioRepository usuarioRepository;
 
     @Value("${app.mail.enabled:true}")
     private boolean mailEnabled;
@@ -31,9 +32,11 @@ public class EmailServiceImpl implements IEmailService {
     private String smtpUsername;
 
     public EmailServiceImpl(ObjectProvider<JavaMailSender> mailSenderProvider,
-                            EmailTemplateBuilder templateBuilder) {
+                            EmailTemplateBuilder templateBuilder,
+                            com.proyecto.proyectoSpringBoot.repository.UsuarioRepository usuarioRepository) {
         this.mailSender = mailSenderProvider.getIfAvailable();
         this.templateBuilder = templateBuilder;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -89,6 +92,43 @@ public class EmailServiceImpl implements IEmailService {
         } catch (Exception e) {
             log.error("[EmailService] Error al enviar correo de bienvenida a '{}' ({}): {}", nombreCompleto, email, e.getMessage());
             // No propagamos la excepción para evitar interrumpir flujos de registro del usuario
+        }
+    }
+
+    @Override
+    @Async("mailTaskExecutor")
+    public void notificarRegistroASuperAdmin(Usuario nuevoUsuario) {
+        if (!mailEnabled || nuevoUsuario == null) return;
+
+        java.util.List<Usuario> superAdmins = usuarioRepository.findByRol(RolUsuario.SUPER_ADMIN);
+        if (superAdmins.isEmpty()) {
+            superAdmins = usuarioRepository.findByRol(RolUsuario.ADMIN);
+        }
+
+        String nombreNuevo = ((nuevoUsuario.getNombre() != null ? nuevoUsuario.getNombre() : "") + " " +
+                (nuevoUsuario.getApellido() != null ? nuevoUsuario.getApellido() : "")).trim();
+        if (nombreNuevo.isBlank()) nombreNuevo = nuevoUsuario.getEmail();
+
+        for (Usuario admin : superAdmins) {
+            try {
+                if (mailSender != null && admin.getEmail() != null) {
+                    MimeMessage message = mailSender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                    String remitente = (smtpUsername != null && !smtpUsername.isBlank()) ? smtpUsername : mailFrom;
+                    helper.setFrom(remitente, "LogiTrack S.A. | Control de Acceso");
+                    helper.setTo(admin.getEmail());
+                    helper.setSubject("🔔 Alerta de Registro: " + nombreNuevo + " fue registrado en el sistema");
+
+                    String htmlBody = templateBuilder.buildSuperAdminNotificationHtml(admin.getNombre(), nombreNuevo, nuevoUsuario.getEmail());
+                    helper.setText(htmlBody, true);
+
+                    mailSender.send(message);
+                    log.info("[EmailService] Notificación enviada a Super Admin: {}", admin.getEmail());
+                }
+            } catch (Exception e) {
+                log.error("[EmailService] Error enviando correo a Super Admin {}: {}", admin.getEmail(), e.getMessage());
+            }
         }
     }
 }

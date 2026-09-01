@@ -30,6 +30,9 @@ class EmailServiceTest {
     @Mock
     private ObjectProvider<JavaMailSender> mailSenderProvider;
 
+    @Mock
+    private com.proyecto.proyectoSpringBoot.repository.UsuarioRepository usuarioRepository;
+
     private EmailTemplateBuilder templateBuilder;
     private EmailServiceImpl emailService;
 
@@ -37,7 +40,7 @@ class EmailServiceTest {
     void setUp() {
         templateBuilder = new EmailTemplateBuilder();
         when(mailSenderProvider.getIfAvailable()).thenReturn(mailSender);
-        emailService = new EmailServiceImpl(mailSenderProvider, templateBuilder);
+        emailService = new EmailServiceImpl(mailSenderProvider, templateBuilder, usuarioRepository);
         ReflectionTestUtils.setField(emailService, "mailEnabled", true);
         ReflectionTestUtils.setField(emailService, "mailFrom", "no-reply@logitrack.com");
         ReflectionTestUtils.setField(emailService, "smtpUsername", "soporte@logitrack.com");

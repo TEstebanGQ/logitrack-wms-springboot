@@ -44,9 +44,11 @@ public class NotificacionServiceImpl implements INotificacionService {
     @Override
     @Transactional
     public void enviarATodosLosAdmins(String titulo, String mensaje, TipoNotificacion tipo) {
-        List<Usuario> admins = usuarioRepository.findByRol(RolUsuario.ADMIN);
-        for (Usuario admin : admins) {
-            enviar(admin.getId(), titulo, mensaje, tipo);
+        List<Usuario> destinatarios = usuarioRepository.findAll().stream()
+                .filter(u -> u.getRol() == RolUsuario.ADMIN || u.getRol() == RolUsuario.SUPERVISOR || u.getRol() == RolUsuario.GERENTE_LOGISTICA)
+                .collect(Collectors.toList());
+        for (Usuario u : destinatarios) {
+            enviar(u.getId(), titulo, mensaje, tipo);
         }
     }
 
@@ -86,5 +88,20 @@ public class NotificacionServiceImpl implements INotificacionService {
             n.setFechaLectura(LocalDateTime.now());
         });
         repository.saveAll(noLeidas);
+    }
+
+    @Override
+    @Transactional
+    public void limpiarNotificacionesObsoletas(String nombreProducto, String nombreBodega) {
+        String snippetProd = "producto " + nombreProducto;
+        String snippetBodega = "bodega " + nombreBodega;
+        List<Notificacion> notifs = repository.findAll().stream()
+                .filter(n -> !n.isLeida() && n.getMensaje() != null && n.getMensaje().contains(snippetProd) && n.getMensaje().contains(snippetBodega))
+                .collect(Collectors.toList());
+        for (Notificacion n : notifs) {
+            n.setLeida(true);
+            n.setFechaLectura(LocalDateTime.now());
+        }
+        repository.saveAll(notifs);
     }
 }

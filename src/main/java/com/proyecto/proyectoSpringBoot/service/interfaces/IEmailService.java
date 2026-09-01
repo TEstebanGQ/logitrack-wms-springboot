@@ -20,4 +20,11 @@ public interface IEmailService {
      * @param rol            Rol asignado en el sistema LogiTrack.
      */
     void enviarCorreoBienvenida(String nombreCompleto, String email, RolUsuario rol);
+
+    /**
+     * Envía una notificación por correo al Super Admin informando del registro de un nuevo usuario.
+     *
+     * @param nuevoUsuario Entidad del usuario que acaba de registrarse.
+     */
+    void notificarRegistroASuperAdmin(Usuario nuevoUsuario);
 }

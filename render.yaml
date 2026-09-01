@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: logitrack-wms
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: DB_URL
+        fromDatabase:
+          name: logitrack-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: logitrack-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: logitrack-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: APP_MAIL_ENABLED
+        value: "false"
+
+databases:
+  - name: logitrack-db
+    databaseName: logitrack_db
+    user: postgres
+    plan: free
+    region: oregon

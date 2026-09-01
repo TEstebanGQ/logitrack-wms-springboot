@@ -61,16 +61,16 @@ Se instaló el binario oficial de **Docker Compose v2** (`/usr/local/bin/docker-
 Se creó el archivo `.env` en la raíz del proyecto en el servidor con la siguiente parametrización:
 
 ```env
-DB_URL=jdbc:postgresql://ep-summer-sun-a41t40j4.us-east-1.aws.neon.tech/neondb?sslmode=require
-DB_USERNAME=neondb_owner
+DB_URL=
+DB_USERNAME=
 DB_PASSWORD=********
-JWT_SECRET=LogiTrackSecretKeyWMS2026MasterEnterpriseSuperSecureJWT256BitsKey!
-GOOGLE_CLIENT_ID=134514735180-itup9unjaso8pr7lk8vvq9hk0bl81avm.apps.googleusercontent.com
+JWT_SECRET=!
+GOOGLE_CLIENT_ID=
 SPRING_MAIL_HOST=smtp.gmail.com
 SPRING_MAIL_PORT=587
-SPRING_MAIL_USERNAME=tomasestebangonzalezquintero@gmail.com
-SPRING_MAIL_PASSWORD=aheolaiytleojsul
-CORS_ALLOWED_ORIGINS=https://logitrack.34.70.8.165.sslip.io,https://34.70.8.165.sslip.io
+SPRING_MAIL_USERNAME=
+SPRING_MAIL_PASSWORD=
+CORS_ALLOWED_ORIGINS=
 PORT=8081
 ```
 

@@ -25,6 +25,68 @@ public class ReporteController {
 
     private final IReporteService reporteService;
     private final IReporteExportService reporteExportService;
+    private final com.proyecto.proyectoSpringBoot.repository.UsuarioRepository usuarioRepository;
+    private final com.proyecto.proyectoSpringBoot.repository.AlertaStockRepository alertaStockRepository;
+    private final com.proyecto.proyectoSpringBoot.repository.ConteoCiclicoRepository conteoCiclicoRepository;
+    private final com.proyecto.proyectoSpringBoot.service.interfaces.IEmailService emailService;
+
+    @PostMapping("/enviar-diario")
+    @Operation(summary = "Enviar el reporte ejecutivo del día por correo electrónico a Super Admins, Admins y Gerentes")
+    public ResponseEntity<?> enviarReporteDiarioPorCorreo() {
+        List<com.proyecto.proyectoSpringBoot.model.entity.Usuario> destinatarios = usuarioRepository.findAll().stream()
+                .filter(u -> u.getActivo() != null && u.getActivo())
+                .filter(u -> u.getRol() == com.proyecto.proyectoSpringBoot.model.enums.RolUsuario.SUPER_ADMIN ||
+                             u.getRol() == com.proyecto.proyectoSpringBoot.model.enums.RolUsuario.ADMIN ||
+                             u.getRol() == com.proyecto.proyectoSpringBoot.model.enums.RolUsuario.GERENTE_LOGISTICA)
+                .toList();
+
+        if (destinatarios.isEmpty()) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "No hay administradores ni gerentes activos para recibir el reporte."));
+        }
+
+        java.time.LocalDateTime inicioHoy = LocalDate.now().atStartOfDay();
+        java.time.LocalDateTime finHoy = java.time.LocalDateTime.now();
+
+        var movsHoy = reporteService.consultarMovimientosFiltrados(null, null, null, inicioHoy, finHoy);
+
+        long entradas = movsHoy.stream().filter(m -> "ENTRADA".equalsIgnoreCase(m.getTipoMovimiento())).count();
+        long salidas = movsHoy.stream().filter(m -> "SALIDA".equalsIgnoreCase(m.getTipoMovimiento())).count();
+        long transferencias = movsHoy.stream().filter(m -> "TRANSFERENCIA".equalsIgnoreCase(m.getTipoMovimiento())).count();
+
+        long alertas = alertaStockRepository.count();
+        long conteos = conteoCiclicoRepository.count();
+
+        var detallesResumen = movsHoy.stream().map(m ->
+            com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO.MovimientoResumen.builder()
+                .fechaHora(m.getFechaHora() != null ? m.getFechaHora().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) : "")
+                .usuarioNombre(m.getUsuarioNombre())
+                .usuarioEmail(m.getUsuarioEmail())
+                .tipoMovimiento(m.getTipoMovimiento())
+                .productoNombre(m.getProductoNombre())
+                .cantidad(m.getCantidad())
+                .bodegaNombre(m.getBodegaNombre())
+                .observaciones(m.getObservaciones())
+                .build()
+        ).toList();
+
+        var dto = com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO.builder()
+                .fechaGeneracion(java.time.LocalDateTime.now())
+                .totalMovimientosHoy(movsHoy.size())
+                .totalEntradas(entradas)
+                .totalSalidas(salidas)
+                .totalTransferencias(transferencias)
+                .totalAlertasStockBajo(alertas)
+                .totalConteosRealizados(conteos)
+                .movimientos(detallesResumen)
+                .build();
+
+        emailService.enviarReporteDiario(destinatarios, dto);
+
+        return ResponseEntity.ok(java.util.Map.of(
+            "mensaje", "Reporte ejecutivo diario enviado exitosamente por correo a " + destinatarios.size() + " destinatario(s).",
+            "destinatariosContador", destinatarios.size()
+        ));
+    }
 
     @GetMapping({"/general", "/resumen"})
     @Operation(summary = "Reporte general: stock por bodega y productos más movidos")

@@ -539,4 +539,152 @@ public class EmailTemplateBuilder {
             currentYear
         );
     }
+
+    public String buildDailyReportEmailHtml(String nombreDestinatario, com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO r) {
+        int currentYear = Year.now().getValue();
+        String fechaHoyStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        StringBuilder movRows = new StringBuilder();
+        if (r.getMovimientos() == null || r.getMovimientos().isEmpty()) {
+            movRows.append("<tr><td colspan='6' style='padding:12px; text-align:center; color:#8b949e;'>No se registraron movimientos físicos el día de hoy.</td></tr>");
+        } else {
+            for (var m : r.getMovimientos()) {
+                String badgeClass = "#33d6a6"; // green/teal for ENTRADA
+                if ("SALIDA".equalsIgnoreCase(m.getTipoMovimiento())) badgeClass = "#e11d48"; // red
+                if ("TRANSFERENCIA".equalsIgnoreCase(m.getTipoMovimiento())) badgeClass = "#4ea1ff"; // blue
+
+                movRows.append("""
+                    <tr style="border-bottom: 1px solid #30363d;">
+                        <td style="padding: 10px; font-size: 12.5px; color:#8b949e;">%s</td>
+                        <td style="padding: 10px; font-size: 13px; font-weight:600; color:#ffffff;">%s</td>
+                        <td style="padding: 10px;"><span style="background:%s; color:#ffffff; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">%s</span></td>
+                        <td style="padding: 10px; font-size: 13px; color:#c9d1d9;">%s</td>
+                        <td style="padding: 10px; font-size: 13px; font-weight:700; color:#ffffff; text-align:center;">%d u.</td>
+                        <td style="padding: 10px; font-size: 12.5px; color:#8b949e;">%s</td>
+                    </tr>
+                """.formatted(
+                    m.getFechaHora() != null ? m.getFechaHora() : "--:--",
+                    m.getUsuarioNombre() != null ? m.getUsuarioNombre() : "Sistema",
+                    badgeClass,
+                    m.getTipoMovimiento(),
+                    m.getProductoNombre() != null ? m.getProductoNombre() : "Producto",
+                    m.getCantidad() != null ? m.getCantidad() : 0,
+                    m.getBodegaNombre() != null ? m.getBodegaNombre() : "General"
+                ));
+            }
+        }
+
+        return """
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Reporte Ejecutivo Diario - LogiTrack S.A.</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+                body { margin:0; padding:0; background-color:#0d1117; font-family:'Inter', sans-serif; color:#e2e8f0; }
+                .container { max-width: 680px; margin: 24px auto; background: #161b22; border-radius: 14px; overflow: hidden; border: 1px solid #30363d; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4); }
+                .header { background: linear-gradient(180deg, #12161d 0%%, #161b22 100%%); padding: 28px 36px; text-align: center; border-bottom: 1px solid #30363d; }
+                .logo-title { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #ffffff; text-transform: uppercase; margin: 0; }
+                .subtitle { font-size: 12px; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; font-weight:600; }
+                .content { padding: 32px 36px; }
+                .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+                .kpi-card { background: #21262d; border-radius: 8px; padding: 14px; text-align: center; border: 1px solid #30363d; }
+                .kpi-val { font-size: 22px; font-weight: 700; color: #ffffff; margin-top: 4px; }
+                .kpi-lbl { font-size: 11px; text-transform: uppercase; color: #8b949e; letter-spacing: 0.5px; }
+                .section-title { font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 14px; border-left: 3px solid #58a6ff; padding-left: 10px; }
+                .data-table { width: 100%%; border-collapse: collapse; background: #161b22; border-radius: 8px; overflow: hidden; border: 1px solid #30363d; margin-bottom: 24px; }
+                .data-table th { background: #21262d; color: #8b949e; font-size: 11.5px; text-transform: uppercase; text-align: left; padding: 10px; font-weight: 600; }
+                .footer { background-color: #0d1117; padding: 20px 36px; text-align: center; border-top: 1px solid #30363d; font-size: 12px; color: #8b949e; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <div class="logo-title">LOGITRACK S.A.</div>
+                    <div class="subtitle">📊 REPORTE EJECUTIVO DIARIO DE BODEGA — %s</div>
+                </div>
+                <div class="content">
+                    <div style="font-size:16px; font-weight:600; color:#ffffff; margin-bottom:18px;">
+                        Estimado/a %s,
+                    </div>
+                    <div style="font-size:14px; color:#c9d1d9; line-height:1.6; margin-bottom:24px;">
+                        A continuación se presenta el informe detallado de operaciones, trazabilidad de movimientos y estado de auditoría registrado durante la jornada de hoy.
+                    </div>
+
+                    <!-- Grid KPIs -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-lbl">Total Movimientos</div>
+                            <div class="kpi-val" style="color:#58a6ff;">%d</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-lbl">Entradas / Recepciones</div>
+                            <div class="kpi-val" style="color:#33d6a6;">%d</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-lbl">Salidas / Despachos</div>
+                            <div class="kpi-val" style="color:#e11d48;">%d</div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-grid" style="margin-top:-16px;">
+                        <div class="kpi-card">
+                            <div class="kpi-lbl">Transferencias</div>
+                            <div class="kpi-val" style="color:#ffb020;">%d</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-lbl">Alertas Stock Bajo</div>
+                            <div class="kpi-val" style="color:#f87171;">%d</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-lbl">Conteos Cíclicos</div>
+                            <div class="kpi-val" style="color:#a78bfa;">%d</div>
+                        </div>
+                    </div>
+
+                    <!-- Detalle de Movimientos -->
+                    <div class="section-title">📦 Movimientos Registrados por Empleados Hoy</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Usuario</th>
+                                <th>Tipo</th>
+                                <th>Producto</th>
+                                <th style="text-align:center;">Cant.</th>
+                                <th>Bodega</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            %s
+                        </tbody>
+                    </table>
+
+                    <div style="text-align:center; margin-top:24px;">
+                        <a href="https://logitrack.34.70.8.165.sslip.io/#/reportes" style="background:#238636; color:#ffffff; text-decoration:none; padding:12px 28px; border-radius:6px; font-weight:700; font-size:14px; display:inline-block;">
+                            Ver Panel de Control y Reportes en Vivo
+                        </a>
+                    </div>
+                </div>
+                <div class="footer">
+                    &copy; %d LogiTrack S.A. | Informe Automático Generado bajo Demanda.
+                </div>
+            </div>
+        </body>
+        </html>
+        """.formatted(
+            fechaHoyStr,
+            nombreDestinatario,
+            r.getTotalMovimientosHoy(),
+            r.getTotalEntradas(),
+            r.getTotalSalidas(),
+            r.getTotalTransferencias(),
+            r.getTotalAlertasStockBajo(),
+            r.getTotalConteosRealizados(),
+            movRows.toString(),
+            currentYear
+        );
+    }
 }

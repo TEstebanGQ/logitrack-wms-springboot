@@ -137,6 +137,30 @@ const ReporteModuleController = {
 
         const btnExcelMov = document.getElementById('btn-export-excel-mov');
         if (btnExcelMov) btnExcelMov.onclick = (e) => { e.preventDefault(); ExportService.exportarMovimientosExcel(); };
+    },
+
+    async enviarReporteDiarioPorCorreo() {
+        const confirmed = await ConfirmDialog.show({
+            title: 'Enviar Reporte Ejecutivo Diario por Correo',
+            message: '¿Deseas generar y enviar el reporte consolidado de operaciones y auditorías de hoy por correo a todos los Administradores y Gerentes?',
+            confirmText: 'Sí, Enviar Reporte',
+            cancelText: 'Cancelar',
+            type: 'primary'
+        });
+
+        if (!confirmed) return;
+
+        try {
+            Toast.info('Generando informe y enviando correos...');
+            const res = await ReporteService.enviarReporteDiarioEmail();
+            if (res && res.mensaje) {
+                Toast.success(res.mensaje);
+            } else {
+                Toast.success('Reporte diario enviado exitosamente por correo.');
+            }
+        } catch (err) {
+            Toast.error(err.message || 'Error al enviar el reporte por correo.');
+        }
     }
 };
 

@@ -161,4 +161,37 @@ public class EmailServiceImpl implements IEmailService {
             log.error("[EmailService] Error enviando correo de cambio de rol a {}: {}", usuario.getEmail(), e.getMessage());
         }
     }
+
+    @Override
+    @Async("mailTaskExecutor")
+    public void enviarReporteDiario(List<Usuario> destinatarios, com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO resumen) {
+        if (!mailEnabled || destinatarios == null || destinatarios.isEmpty() || mailSender == null) {
+            return;
+        }
+
+        for (Usuario u : destinatarios) {
+            try {
+                if (u.getEmail() == null || u.getEmail().isBlank()) continue;
+                String nombreCompleto = ((u.getNombre() != null ? u.getNombre() : "") + " " +
+                        (u.getApellido() != null ? u.getApellido() : "")).trim();
+                if (nombreCompleto.isBlank()) nombreCompleto = u.getEmail();
+
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+                String remitente = (smtpUsername != null && !smtpUsername.isBlank()) ? smtpUsername : mailFrom;
+                helper.setFrom(remitente, "LogiTrack S.A. | Reporte Ejecutivo");
+                helper.setTo(u.getEmail());
+                helper.setSubject("📊 Reporte Ejecutivo Diario de Operaciones y Auditoría - LogiTrack S.A.");
+
+                String htmlBody = templateBuilder.buildDailyReportEmailHtml(nombreCompleto, resumen);
+                helper.setText(htmlBody, true);
+
+                mailSender.send(message);
+                log.info("[EmailService] Reporte diario enviado exitosamente a: {}", u.getEmail());
+            } catch (Exception e) {
+                log.error("[EmailService] Error enviando reporte diario a {}: {}", u.getEmail(), e.getMessage());
+            }
+        }
+    }
 }

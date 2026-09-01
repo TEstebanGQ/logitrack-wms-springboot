@@ -17,7 +17,7 @@ const DespachoRenderer = {
         if (badgeHistorial) badgeHistorial.innerText = `${entregadas.length} entregadas`;
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canDeliver = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+        const canDeliver = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO' || currentUser.rol === 'SUPER_ADMIN');
 
         // 1. Render Guías en Ruta (Activas)
         const tbodyActivas = document.getElementById('tabla-guias-activas-body');

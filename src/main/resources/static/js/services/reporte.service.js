@@ -30,6 +30,10 @@ const ReporteService = {
 
     getClasificacionAbc() {
         return ApiService.get('/reportes/clasificacion-abc');
+    },
+
+    enviarReporteDiarioEmail() {
+        return ApiService.post('/reportes/enviar-diario');
     }
 };
 

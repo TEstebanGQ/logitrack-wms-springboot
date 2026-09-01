@@ -36,4 +36,12 @@ public interface IEmailService {
      * @param nuevoRol    Nuevo rol asignado por el administrador.
      */
     void notificarCambioRol(Usuario usuario, RolUsuario rolAnterior, RolUsuario nuevoRol);
+
+    /**
+     * Envía el reporte ejecutivo diario por correo electrónico a la lista de administradores/gerentes.
+     *
+     * @param destinatarios Lista de usuarios que recibirán el reporte.
+     * @param resumen       DTO con el resumen consolidado de operaciones y auditorías del día.
+     */
+    void enviarReporteDiario(java.util.List<Usuario> destinatarios, com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO resumen);
 }

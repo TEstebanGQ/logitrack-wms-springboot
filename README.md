@@ -1,5 +1,5 @@
 ---
-title: LogiTrack WMS
+title: LogiTrack WMS Enterprise
 emoji: 📦
 colorFrom: blue
 colorTo: indigo
@@ -8,206 +8,104 @@ app_port: 8081
 pinned: false
 ---
 
-# LogiTrack S.A. - Sistema Backend de Gestión y Auditoría de Bodegas
+# 📦 LogiTrack S.A. — WMS & Sistema de Gestión de Bodegas e Inventario
 
-![Java](https://img.shields.io/badge/Java-17-orange.svg)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-brightgreen.svg)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue.svg)
-![JWT](https://img.shields.io/badge/Security-JWT-red.svg)
-![Swagger](https://img.shields.io/badge/API_Docs-OpenAPI_3-green.svg)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 📌 Descripción del Proyecto
-
-**LogiTrack S.A.** es una solución backend centralizada construida con **Spring Boot** para la gestión integral de bodegas, control de inventario de productos, registro de movimientos (Entradas, Salidas y Transferencias) y auditoría automática de cambios en tiempo real.
-
-El proyecto cuenta con protección mediante **Spring Security + JWT**, soporte completo para **PostgreSQL**, documentación interactiva **Swagger/OpenAPI 3** y un cliente web frontend modular en HTML5/CSS3/JavaScript Vanilla.
-
-> 📚 **¿Quieres entender toda la lógica del negocio de principio a fin de forma sencilla y didáctica?**
-> Consulta el documento dedicado: [**EXPLICACION_LOGICA_NEGOCIO.md**](./EXPLICACION_LOGICA_NEGOCIO.md).
+**LogiTrack S.A.** es un sistema de gestión de almacenes e inventarios de clase empresarial (**Warehouse Management System - WMS**). Diseñado para garantizar **trazabilidad del 100%** en tiempo real de todos los productos, entradas, salidas, movimientos internos y auditorías físicas de mercancía.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 🏢 Lógica de Negocio y Dominio Logístico
 
-- **Lenguaje**: Java 17
-- **Framework**: Spring Boot 3.3.0
-- **Persistencia**: Spring Data JPA / Hibernate
-- **Base de Datos**: PostgreSQL / Supabase
-- **Seguridad**: Spring Security + io.jsonwebtoken (JWT 0.11.5)
-- **Documentación**: Springdoc OpenAPI UI 2.5.0
-- **Herramienta de Construcción**: Apache Maven
-- **Frontend**: HTML5, CSS3 Vanilla (Dark Theme / Glassmorphism), JavaScript (ES6+ Modular)
+LogiTrack S.A. resuelve la complejidad logística de empresas con múltiples bodegas, garantizando el control riguroso de mercancía mediante los siguientes ejes operacionales:
+
+### 1. 📦 Gestión de Inventarios y Bodegas Multisitio
+- **Multi-Bodega & Ubicaciones:** Control de stock distribuido por bodegas físicas, pasillos, estantes, racks y gavetas.
+- **Trazabilidad de Movimientos:** Cada ingreso (**ENTRADA**), egreso (**SALIDA**) o traslado (**TRANSFERENCIA**) queda registrado de forma inmutable con fecha, hora, usuario operador, cantidad y bodega de origen/destino.
+- **Números de Serie Físicos:** Trazabilidad unitaria para productos tecnológicos o de alto valor.
+
+### 2. ⏳ Control de Lotes, Vencimientos y Cuarentena
+- **Gestión por Lotes:** Registro de fecha de fabricación y fecha de caducidad para insumos perecederos o farmacéuticos.
+- **Estados de Lote:** `DISPONIBLE`, `CUARENTENA` (inspección de calidad), `AGOTADO` y `VENCIDO`.
+- **Alertas de Caducidad:** Notificación automática cuando un lote se aproxima a su fecha de vencimiento.
+
+### 3. 🔍 Conteos Cíclicos y Auditoría Físico vs. Sistema
+- **Auditorías de Stock:** Creación de ordenes de conteo físico parciales o totales en bodega.
+- **Conciliación de Diferencias:** Comparación automática entre el stock registrado en sistema y el conteo físico en estantería.
+- **Ajustes Justificados:** Registro de sobrantes o faltantes con justificación de auditoría.
+
+### 4. 📈 Clasificación ABC & Valorización de Inventario
+- **Análisis de Pareto (80-15-5):** Clasificación automática de productos según su valor e impacto financiero:
+  - **Tipo A (80% valor):** Productos críticos de alta valorización y control estricto.
+  - **Tipo B (15% valor):** Productos de rotación y valor intermedio.
+  - **Tipo C (5% valor):** Insumos de menor impacto monetario.
+
+### 5. 🚚 Pedidos, Picking y Guías de Despacho
+- **Flujo Comercial Integrado:** Creación de pedidos de cliente, asignación de tareas de recolección (**Picking**) paso a paso en bodega y generación de **Guías de Despacho** oficiales vinculadas a empresas de transporte.
+
+### 6. 📧 Servicio de Notificaciones Automáticas por Correo (Gmail SMTP)
+- **Bienvenida Adaptada:** Correo formateado según el rol asignado al registrarse.
+- **Alertas de Stock Bajo:** Notificación inmediata a administradores cuando un producto cae por debajo de su umbral mínimo.
+- **Notificación de Cambio de Rol:** Correo automático enviado al usuario cuando un Administrador modifica sus permisos.
+- **Reporte Ejecutivo Diario bajo Demanda:** Generación y envío por correo a todos los directivos (`SUPER_ADMIN`, `ADMIN`, `GERENTE_LOGISTICA`) con el resumen de movimientos del día.
+
+### 7. 🔑 Autenticación Dual (JWT Local + OAuth2 Google Sign-In)
+- **Inicio de Sesión Local:** Autenticación mediante credenciales protegidas con `BCrypt` y tokens `JWT` de 256 bits.
+- **Acceder con Google:** Autenticación mediante Google Identity Services. Si es un usuario nuevo, le solicita definir obligatoriamente su contraseña personal y lo registra automáticamente con el rol **`EMPLEADO`**.
 
 ---
 
-## 🚀 Instalación y Ejecución
+## 👑 Matriz de Roles y Jerarquía de Seguridad
 
-### 1. Requisitos Previos
-- JDK 17 o superior instalado.
-- Servidor PostgreSQL en ejecución (Local o Supabase) con una base de datos llamada `logitrack_db`.
+La plataforma implementa **Jerarquía de Roles de Spring Security 6** (`RoleHierarchy`), garantizando que los roles superiores hereden todos los permisos de los roles inferiores:
 
-### 2. Configuración de Base de Datos
-Edita el archivo `src/main/resources/application.properties` si deseas ajustar la conexión a tu servidor PostgreSQL:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/logitrack_db
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-spring.datasource.driver-class-name=org.postgresql.Driver
+```text
+ROLE_SUPER_ADMIN > ROLE_ADMIN > ROLE_GERENTE_LOGISTICA > ROLE_SUPERVISOR > ROLE_JEFE_COMPRAS > ROLE_EMPLEADO
 ```
 
-### 3. Compilación y Ejecución Backend
-
-#### Opción A: Con Docker Compose (Recomendado - Todo el Stack)
-Si tienes Docker instalado, puedes iniciar todo el sistema (PostgreSQL + Spring Boot) con un solo comando sin necesidad de instalar Java ni PostgreSQL:
-
-```bash
-docker compose up --build
-```
-
-#### Opción B: Solo Base de Datos en Docker + Ejecución Local
-Si deseas programar y depurar desde tu IDE o terminal:
-
-1. Iniciar el contenedor de PostgreSQL:
-   ```bash
-   docker compose up -d postgres
-   ```
-2. Ejecutar la aplicación Spring Boot:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-#### Detener y Limpiar Contenedores
-```bash
-docker compose down
-```
-*(Para eliminar también los datos de la base de datos, agrega `-v`: `docker compose down -v`)*
+| Rol | Atribuciones y Alcance en el Sistema |
+| :--- | :--- |
+| **`SUPER_ADMIN`** | **Super Administrador Global.** Acceso total sin restricciones a toda la plataforma, reportes directivos, auditoría global y gestión de otros administradores. |
+| **`ADMIN`** | **Administrador del Sistema.** Creación de usuarios, gestión de bodegas, parametrización de catálogo y configuración general. |
+| **`GERENTE_LOGISTICA`** | **Gerencia Logística.** Emisión de guías de despacho, reportes ejecutivos, análisis ABC, notificaciones directivas y supervisión de pedidos. |
+| **`SUPERVISOR`** | **Supervisión de Operaciones.** Planificación de conteos cíclicos, conciliación de inventario, aprobación de lotes y control de calidad. |
+| **`JEFE_COMPRAS`** | **Jefatura de Abastecimiento.** Creación y aprobación de órdenes de compra a proveedores y recepción de mercancía. |
+| **`EMPLEADO`** | **Operador de Bodega.** Registro de entradas, salidas, transferencias físicas entre pasillos y ejecución de tareas de picking. |
 
 ---
 
-## 📖 Documentación Swagger / OpenAPI 3
+## 🔑 Credenciales Predeterminadas del Sistema
 
-Una vez iniciada la aplicación, la documentación interactiva estará disponible en:
-- **Swagger UI**: [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
-- **API Docs (JSON)**: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+Al iniciar por primera vez, el sistema precarga las siguientes cuentas de prueba:
 
-> **Nota para probar endpoints protegidos en Swagger**:
-> 1. Realizar una petición a POST `/auth/login`.
-> 2. Copiar el valor del campo `token`.
-> 3. Hacer clic en el botón **Authorize** en la esquina superior de Swagger UI e ingresar `Bearer <tu_token>`.
-
----
-
-## 🌐 Uso del Frontend Web Integrado
-
-El cliente web modular está integrado directamente en la ubicación estándar de Spring Boot `src/main/resources/static/`.
-
-Para utilizarlo:
-1. Inicia la aplicación backend en Spring Boot (`./mvnw spring-boot:run`).
-2. Accede en tu navegador a: [http://localhost:8081/](http://localhost:8081/)
-3. Inicia sesión con las credenciales por defecto:
-   - **Email**: `admin@logitrack.com`
-   - **Contraseña**: `admin123`
+| Rol | Correo Electrónico | Contraseña |
+| :--- | :--- | :--- |
+| **Super Administrador** | `tomasestebangonzalezquintero@gmail.com` | `admin123` *(o botón **Acceder con Google**)* |
+| **Administrador** | `admin@logitrack.com` | `admin123` |
+| **Supervisor** | `laura@logitrack.com` | `empleado123` |
+| **Gerente Logística** | `sofia@logitrack.com` | `empleado123` |
+| **Jefe de Compras** | `pedro@logitrack.com` | `empleado123` |
+| **Empleado Operativo** | `carlos@logitrack.com` | `empleado123` |
 
 ---
 
-## 🔑 Credenciales de Prueba por Defecto (`data.sql`)
+## 🛠️ Arquitectura Técnica
 
-| Rol | Usuario | Correo Electrónico | Contraseña | Permisos y Alcance |
-| :--- | :--- | :--- | :--- | :--- |
-| 🔑 **`ADMIN`** | Admin Sistema | `admin@logitrack.com` | `admin123` | Control Total + Gestión Usuarios + API Docs |
-| 📊 **`GERENTE_LOGISTICA`** | Sofía Ramírez | `sofia@logitrack.com` | `empleado123` | Dashboard + Auditoría + Reportes Excel/PDF (Vista Ejecutiva) |
-| 🕵️ **`SUPERVISOR`** | Laura Pérez | `laura@logitrack.com` | `empleado123` | Dashboard + Auditoría + Reportes + Edición/Eliminación Bodegas/Productos |
-| 🛍️ **`JEFE_COMPRAS`** | Pedro Sánchez | `pedro@logitrack.com` | `empleado123` | Dashboard + Alta/Edición Productos + Movimientos (Entradas, Salidas, Transferencias) |
-| 👤 **`EMPLEADO`** | Carlos González | `carlos@logitrack.com` | `empleado123` | Dashboard + Operación (Entradas/Salidas/Transferencias). Modo Lectura |
+- **Backend:** Java 17, Spring Boot 3.3.0, Spring Data JPA, Spring Security 6, JJWT 0.11.5.
+- **Base de Datos:** PostgreSQL 16 / Neon Serverless Postgres.
+- **Frontend:** HTML5, CSS3 modular (Modo Oscuro Empresarial), JavaScript Vanilla (ES6+), Chart.js 4.4.
+- **Seguridad:** HTTPS SSL/TLS (Caddy + Let's Encrypt), CORS restringido por patrones, BCrypt, JWT Tokens.
+- **Contenedorización:** Docker Multi-stage build (`eclipse-temurin:17-jre-alpine`) + Docker Compose v2.
 
 ---
 
-## 🔗 Catálogo de Endpoints Principal
+## 🚀 Despliegue en la Nube
 
-### 1. Autenticación (`/auth`)
-- `POST /auth/login`: Autenticación de usuarios y obtención de Token JWT.
-- `POST /auth/register`: Registro de nuevos usuarios.
+Para consultar la guía detallada paso a paso sobre la infraestructura en **Google Cloud Platform (GCP)**, **Caddy Reverse Proxy** y la configuración del entorno, consulta el archivo:
 
-### 2. Bodegas (`/bodegas`)
-- `GET /bodegas`: Listar todas las bodegas.
-- `GET /bodegas/{id}`: Obtener bodega por ID.
-- `POST /bodegas`: Crear nueva bodega (`ADMIN`).
-- `PUT /bodegas/{id}`: Actualizar bodega existente (`ADMIN`).
-- `DELETE /bodegas/{id}`: Desactivar/Eliminar bodega (`ADMIN`).
-
-### 3. Productos (`/productos`)
-- `GET /productos`: Listar productos.
-- `GET /productos/bajo-stock`: Consultar productos con stock menor a 10 unidades.
-- `POST /productos`: Crear producto.
-- `PUT /productos/{id}`: Editar producto.
-- `DELETE /productos/{id}`: Eliminar producto.
-
-### 4. Movimientos (`/movimientos`)
-- `GET /movimientos`: Consultar historial de movimientos (con filtros de fecha y tipo).
-- `POST /movimientos`: Registrar movimiento (ENTRADA, SALIDA, TRANSFERENCIA).
-
-### 5. Clientes y Proveedores (`/api/clientes`, `/api/proveedores`)
-- `GET /api/clientes`, `POST /api/clientes`, `PUT /api/clientes/{id}`, `DELETE /api/clientes/{id}`
-- `GET /api/proveedores`, `POST /api/proveedores`, `PUT /api/proveedores/{id}`, `DELETE /api/proveedores/{id}`
-
-### 6. Órdenes de Compra (`/api/ordenes-compra`)
-- `POST /api/ordenes-compra`: Emitir orden de compra a un proveedor en estado PENDIENTE.
-- `PUT /api/ordenes-compra/{id}/aprobar`: Aprobar formalmente una orden de compra.
-- `PUT /api/ordenes-compra/{id}/recibir`: Recepción física en almacén que incrementa automáticamente el inventario.
-- `PUT /api/ordenes-compra/{id}/cancelar`: Anulación justificada de pedido.
-
-### 7. Ajustes de Inventario y Control de Mermas (`/api/ajustes`)
-- `POST /api/ajustes`: Registrar ajuste por Merma, Avería, Vencimiento o Conteo Físico.
-- `GET /api/ajustes`: Listar histórico de ajustes y descuadres con justificación.
-
-### 8. Lotes y Trazabilidad FEFO (`/api/lotes`)
-- `POST /api/lotes`: Registrar lote de producto con fechas de fabricación y caducidad.
-- `GET /api/lotes/fefo`: Listar lotes ordenados por vencimiento para rotación First Expired, First Out.
-- `GET /api/lotes/proximos-vencer`: Alerta de lotes con caducidad cercana.
-
-### 9. Ubicaciones Físicas en Bodegas (`/api/ubicaciones`)
-- `POST /api/ubicaciones`: Registrar pasillos, racks y niveles en almacenes.
-- `GET /api/ubicaciones/bodega/{bodegaId}`: Consultar mapa físico de bodega.
-
-### 10. Auditorías (`/api/auditorias`)
-- `GET /api/auditorias`: Consultar registros automáticos de auditoría (filtrar por usuario u operación).
-
-### 11. Reportes y Clasificación ABC (`/api/reportes`)
-- `GET /api/reportes/resumen`: Obtener reporte general de existencias y productos más movidos.
-- `GET /api/reportes/clasificacion-abc`: Matriz de clasificación ABC según valorización del inventario.
-- `GET /api/reportes/exportar/excel`, `GET /api/reportes/exportar/pdf`: Descarga de reportes ejecutivos.
-
----
-
-## 📧 Configuración de Correo Electrónico (Gmail SMTP)
-
-LogiTrack envía un correo electrónico de bienvenida profesional en formato HTML adaptado al rol del usuario (`ADMIN`, `SUPERVISOR`, `GERENTE_LOGISTICA`, `JEFE_COMPRAS`, `EMPLEADO`) al completar su registro.
-
-### Pasos para configurar Gmail con Contraseña de Aplicación:
-
-1. Ve a la [Seguridad de tu Cuenta de Google](https://myaccount.google.com/security) y activa la **Verificación en 2 pasos**.
-2. Ingresa a [Contraseñas de Aplicación](https://myaccount.google.com/apppasswords).
-3. En el nombre de la app escribe `LogiTrack` y haz clic en **Crear**.
-4. Copia la contraseña de 16 caracteres generada (ej: `xxxx xxxx xxxx xxxx`).
-5. Configura las variables en tu archivo `.env` o en las variables de entorno:
-
-```env
-SPRING_MAIL_HOST=smtp.gmail.com
-SPRING_MAIL_PORT=587
-SPRING_MAIL_USERNAME=tu_cuenta@gmail.com
-SPRING_MAIL_PASSWORD=tu_contraseña_de_aplicación_16_caracteres
-APP_MAIL_ENABLED=true
-APP_MAIL_FROM=no-reply@logitrack.com
-```
-
-> **Nota:** Si no se configuran las variables de correo en desarrollo, el sistema funcionará normalmente registrando los usuarios sin interrumpir el flujo.
-
----
-
-## 🧪 Pruebas Automatizadas
-El sistema incluye una suite de pruebas unitarias y de integración completas:
-```bash
-./mvnw test
-```
-
+👉 **[Guía Completa de Despliegue en la Nube (DEPLOYMENT.md)](DEPLOYMENT.md)**

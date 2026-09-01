@@ -63,14 +63,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "El email ya está en uso"));
         }
 
+        // [H-003 FIX] Por seguridad, cualquier registro público DEBE tener rol EMPLEADO
+        // para prevenir escalamiento de privilegios. Los roles administrativos se asignan desde /api/usuarios.
         RolUsuario rolAsignado = RolUsuario.EMPLEADO;
-        if (request.getRol() != null && !request.getRol().trim().isEmpty()) {
-            try {
-                rolAsignado = RolUsuario.valueOf(request.getRol().trim().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                rolAsignado = RolUsuario.EMPLEADO;
-            }
-        }
 
         Usuario usuario = Usuario.builder()
                 .nombre(request.getNombre())

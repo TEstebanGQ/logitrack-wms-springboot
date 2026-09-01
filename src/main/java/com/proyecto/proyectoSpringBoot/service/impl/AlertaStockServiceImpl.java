@@ -68,16 +68,14 @@ public class AlertaStockServiceImpl implements IAlertaStockService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<AlertaStockResponse> listarTodas() {
-        escanearYGenerarAlertas();
         return repository.findAll().stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<AlertaStockResponse> listarPendientes() {
-        escanearYGenerarAlertas();
         return repository.findByEstado(EstadoAlerta.PENDIENTE).stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 

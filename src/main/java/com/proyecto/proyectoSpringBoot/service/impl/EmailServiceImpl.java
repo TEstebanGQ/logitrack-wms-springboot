@@ -131,4 +131,34 @@ public class EmailServiceImpl implements IEmailService {
             }
         }
     }
+
+    @Override
+    @Async("mailTaskExecutor")
+    public void notificarCambioRol(Usuario usuario, RolUsuario rolAnterior, RolUsuario nuevoRol) {
+        if (!mailEnabled || usuario == null || usuario.getEmail() == null || usuario.getEmail().isBlank() || mailSender == null) {
+            return;
+        }
+
+        try {
+            String nombreCompleto = ((usuario.getNombre() != null ? usuario.getNombre() : "") + " " +
+                    (usuario.getApellido() != null ? usuario.getApellido() : "")).trim();
+            if (nombreCompleto.isBlank()) nombreCompleto = usuario.getEmail();
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+
+            String remitente = (smtpUsername != null && !smtpUsername.isBlank()) ? smtpUsername : mailFrom;
+            helper.setFrom(remitente, "LogiTrack S.A. | Gestión de Usuarios");
+            helper.setTo(usuario.getEmail());
+            helper.setSubject("🔰 Actualización de Permisos: Tu rol ha sido cambiado a " + templateBuilder.getRoleDisplayName(nuevoRol));
+
+            String htmlBody = templateBuilder.buildRoleChangeEmailHtml(nombreCompleto, usuario.getEmail(), rolAnterior, nuevoRol);
+            helper.setText(htmlBody, true);
+
+            mailSender.send(message);
+            log.info("[EmailService] Notificación de cambio de rol enviada exitosamente a: {} ({} -> {})", usuario.getEmail(), rolAnterior, nuevoRol);
+        } catch (Exception e) {
+            log.error("[EmailService] Error enviando correo de cambio de rol a {}: {}", usuario.getEmail(), e.getMessage());
+        }
+    }
 }

@@ -45,7 +45,7 @@ const Router = {
         const role = user ? user.rol : 'EMPLEADO';
 
         if (viewId === 'usuarios') {
-            if (role !== 'ADMIN') {
+            if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
                 Toast.error('Acceso denegado: Se requiere rol de Administrador');
                 this.navigate('dashboard');
                 return;
@@ -53,7 +53,7 @@ const Router = {
         }
 
         if (viewId === 'auditorias' || viewId === 'reportes') {
-            if (role !== 'ADMIN' && role !== 'SUPERVISOR' && role !== 'GERENTE_LOGISTICA') {
+            if (role !== 'ADMIN' && role !== 'SUPERVISOR' && role !== 'GERENTE_LOGISTICA' && role !== 'SUPER_ADMIN') {
                 Toast.error('Acceso denegado: Se requiere rol de Administrador, Supervisor o Gerente');
                 this.navigate('dashboard');
                 return;

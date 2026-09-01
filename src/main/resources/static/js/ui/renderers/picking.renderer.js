@@ -17,7 +17,7 @@ const PickingRenderer = {
         if (badgeHistorial) badgeHistorial.innerText = `${historial.length} finalizadas`;
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canPick = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+        const canPick = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO' || currentUser.rol === 'SUPER_ADMIN');
 
         // 1. Render Activas
         const tbodyActivas = document.getElementById('tabla-picking-activas-body');

@@ -44,4 +44,13 @@ public interface IEmailService {
      * @param resumen       DTO con el resumen consolidado de operaciones y auditorías del día.
      */
     void enviarReporteDiario(java.util.List<Usuario> destinatarios, com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO resumen);
+
+    /**
+     * Envía una alerta por correo electrónico cuando el stock de un producto está por debajo del mínimo.
+     *
+     * @param producto    Entidad del producto afectado.
+     * @param bodega      Bodega donde se detectó el stock bajo.
+     * @param stockActual Cantidad actual en inventario.
+     */
+    void notificarStockBajo(com.proyecto.proyectoSpringBoot.model.entity.Producto producto, com.proyecto.proyectoSpringBoot.model.entity.Bodega bodega, Integer stockActual);
 }

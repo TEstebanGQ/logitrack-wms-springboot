@@ -28,6 +28,7 @@ public class AlertaStockServiceImpl implements IAlertaStockService {
     private final INotificacionService notificacionService;
     private final UsuarioRepository usuarioRepository;
     private final com.proyecto.proyectoSpringBoot.repository.InventarioBodegaRepository inventarioBodegaRepository;
+    private final com.proyecto.proyectoSpringBoot.service.interfaces.IEmailService emailService;
 
     @Override
     @Transactional
@@ -43,6 +44,7 @@ public class AlertaStockServiceImpl implements IAlertaStockService {
             repository.save(alerta);
             String mensaje = "El stock del producto " + producto.getNombre() + " en la bodega " + bodega.getNombre() + " está por debajo del mínimo (" + stockActual + " / " + producto.getStockMinimo() + ").";
             notificacionService.enviarATodosLosAdmins("⚠️ Stock bajo: " + producto.getNombre(), mensaje, TipoNotificacion.ALERTA);
+            emailService.notificarStockBajo(producto, bodega, stockActual);
         }
     }
 

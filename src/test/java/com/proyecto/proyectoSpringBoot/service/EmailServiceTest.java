@@ -33,6 +33,9 @@ class EmailServiceTest {
     @Mock
     private com.proyecto.proyectoSpringBoot.repository.UsuarioRepository usuarioRepository;
 
+    @Mock
+    private com.proyecto.proyectoSpringBoot.service.interfaces.INotificacionService notificacionService;
+
     private EmailTemplateBuilder templateBuilder;
     private EmailServiceImpl emailService;
 
@@ -40,7 +43,7 @@ class EmailServiceTest {
     void setUp() {
         templateBuilder = new EmailTemplateBuilder();
         when(mailSenderProvider.getIfAvailable()).thenReturn(mailSender);
-        emailService = new EmailServiceImpl(mailSenderProvider, templateBuilder, usuarioRepository);
+        emailService = new EmailServiceImpl(mailSenderProvider, templateBuilder, usuarioRepository, notificacionService);
         ReflectionTestUtils.setField(emailService, "mailEnabled", true);
         ReflectionTestUtils.setField(emailService, "mailFrom", "no-reply@logitrack.com");
         ReflectionTestUtils.setField(emailService, "smtpUsername", "soporte@logitrack.com");

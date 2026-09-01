@@ -27,4 +27,13 @@ public interface IEmailService {
      * @param nuevoUsuario Entidad del usuario que acaba de registrarse.
      */
     void notificarRegistroASuperAdmin(Usuario nuevoUsuario);
+
+    /**
+     * Envía una notificación por correo al usuario informándole que su rol ha sido actualizado.
+     *
+     * @param usuario     Entidad del usuario afectado.
+     * @param rolAnterior Rol que poseía anteriormente.
+     * @param nuevoRol    Nuevo rol asignado por el administrador.
+     */
+    void notificarCambioRol(Usuario usuario, RolUsuario rolAnterior, RolUsuario nuevoRol);
 }

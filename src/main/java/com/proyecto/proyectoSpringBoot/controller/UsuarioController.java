@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 @Tag(name = "Usuarios", description = "Gestión de usuarios (Solo Admin)")
 @PreAuthorize("hasRole('ADMIN')")
 public class UsuarioController {
-
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.proyecto.proyectoSpringBoot.service.interfaces.IEmailService emailService;
 
     @GetMapping
     @Operation(summary = "Listar todos los usuarios")
@@ -63,7 +63,11 @@ public class UsuarioController {
                 .rol(rolAsignado)
                 .activo(request.getActivo() != null ? request.getActivo() : true)
                 .build();
+
         Usuario guardado = usuarioRepository.save(u);
+        emailService.enviarCorreoBienvenida(guardado);
+        emailService.notificarRegistroASuperAdmin(guardado);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(guardado));
     }
 
@@ -72,6 +76,9 @@ public class UsuarioController {
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody UsuarioRequest request) {
         Usuario u = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        RolUsuario rolAnterior = u.getRol();
+        boolean cambioRol = false;
 
         if (request.getNombre() != null) u.setNombre(request.getNombre());
         if (request.getApellido() != null) u.setApellido(request.getApellido());
@@ -90,6 +97,9 @@ public class UsuarioController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(java.util.Map.of("mensaje", "Acceso denegado: Únicamente un Super Administrador (SUPER_ADMIN) puede otorgar o modificar el rol SUPER_ADMIN."));
             }
+            if (nuevoRol != rolAnterior) {
+                cambioRol = true;
+            }
             u.setRol(nuevoRol);
         }
         if (request.getActivo() != null) {
@@ -101,6 +111,9 @@ public class UsuarioController {
         }
 
         Usuario guardado = usuarioRepository.save(u);
+        if (cambioRol) {
+            emailService.notificarCambioRol(guardado, rolAnterior, guardado.getRol());
+        }
         return ResponseEntity.ok(toResponse(guardado));
     }
 

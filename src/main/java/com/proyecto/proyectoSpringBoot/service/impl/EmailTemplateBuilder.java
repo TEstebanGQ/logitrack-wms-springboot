@@ -427,4 +427,116 @@ public class EmailTemplateBuilder {
             """;
         };
     }
+
+    public String buildRoleChangeEmailHtml(String nombreCompleto, String email, RolUsuario rolAnterior, RolUsuario nuevoRol) {
+        String oldRoleName = getRoleDisplayName(rolAnterior);
+        String newRoleName = getRoleDisplayName(nuevoRol);
+        String newBadgeColor = getRoleBadgeColor(nuevoRol);
+        String newRoleIcon = getRoleIcon(nuevoRol);
+        String newRoleDescription = getRoleDescription(nuevoRol);
+        String newRoleDutiesHtml = getRoleDutiesHtml(nuevoRol);
+        int currentYear = Year.now().getValue();
+
+        return """
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Actualización de Rol - LogiTrack S.A.</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+                body {
+                    margin: 0; padding: 0; background-color: #0d1117;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    color: #e2e8f0;
+                }
+                .container {
+                    max-width: 620px; margin: 28px auto; background: #161b22;
+                    border-radius: 14px; overflow: hidden;
+                    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4); border: 1px solid #30363d;
+                }
+                .header {
+                    background: linear-gradient(180deg, #12161d 0%%, #161b22 100%%);
+                    padding: 32px 40px; text-align: center; border-bottom: 1px solid #30363d;
+                }
+                .logo-title {
+                    font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 700;
+                    letter-spacing: 2px; color: #ffffff; text-transform: uppercase; margin: 0;
+                }
+                .subtitle {
+                    font-size: 13px; color: #8b949e; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 6px;
+                }
+                .content { padding: 36px 40px; }
+                .greeting { font-size: 18px; font-weight: 600; color: #ffffff; margin-bottom: 16px; }
+                .text { font-size: 14.5px; line-height: 1.6; color: #c9d1d9; margin-bottom: 24px; }
+                .role-card {
+                    background: #21262d; border-radius: 10px; padding: 22px; margin-bottom: 28px;
+                    border-left: 4px solid %s; border: 1px solid #30363d;
+                }
+                .role-header { display: flex; align-items: center; margin-bottom: 12px; }
+                .role-icon { font-size: 24px; margin-right: 12px; }
+                .role-badge {
+                    display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px;
+                    font-weight: 700; text-transform: uppercase; color: #ffffff; background-color: %s;
+                }
+                .change-summary {
+                    background: #0d1117; padding: 12px 16px; border-radius: 6px; font-size: 13px;
+                    color: #8b949e; margin-bottom: 12px; border: 1px solid #30363d;
+                }
+                .footer {
+                    background-color: #0d1117; padding: 24px 40px; text-align: center;
+                    border-top: 1px solid #30363d; font-size: 12px; color: #8b949e;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <div class="logo-title">LOGITRACK S.A.</div>
+                    <div class="subtitle">SISTEMA DE GESTIÓN Y AUDITORÍA DE BODEGAS</div>
+                </div>
+                <div class="content">
+                    <div class="greeting">Hola, %s</div>
+                    <div class="text">
+                        Te informamos que un Administrador de la plataforma ha actualizado tu nivel de acceso y responsabilidades en el sistema.
+                    </div>
+                    <div class="role-card">
+                        <div class="change-summary">
+                            <strong>Cambio de Rol:</strong> %s ➔ <span style="color:#58a6ff; font-weight:700;">%s</span>
+                        </div>
+                        <div class="role-header">
+                            <span class="role-icon">%s</span>
+                            <span class="role-badge">%s</span>
+                        </div>
+                        <div style="font-size: 13.5px; color: #c9d1d9; line-height: 1.5;">
+                            %s
+                        </div>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-bottom: 10px;">
+                        Tus nuevas atribuciones en la plataforma:
+                    </div>
+                    <ul style="padding-left: 20px; font-size: 13.5px; color: #c9d1d9; line-height: 1.6; margin-bottom: 28px;">
+                        %s
+                    </ul>
+                </div>
+                <div class="footer">
+                    &copy; %d LogiTrack S.A. Todos los derechos reservados.
+                </div>
+            </div>
+        </body>
+        </html>
+        """.formatted(
+            newBadgeColor,
+            newBadgeColor,
+            nombreCompleto,
+            oldRoleName,
+            newRoleName,
+            newRoleIcon,
+            newRoleName,
+            newRoleDescription,
+            newRoleDutiesHtml,
+            currentYear
+        );
+    }
 }

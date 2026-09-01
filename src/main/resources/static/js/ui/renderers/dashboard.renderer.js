@@ -13,7 +13,7 @@ const DashboardRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'SUPER_ADMIN');
 
         const html = bodegas.slice(0, 3).map((b, idx) => {
             const capTotal = b.capacidad || 2000;
@@ -139,7 +139,7 @@ const DashboardRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'SUPER_ADMIN');
 
         const rows = productos.slice(0, 5).map(p => `
             <div class="alert-row" style="display: flex; justify-content: space-between; align-items: center;">

@@ -49,7 +49,7 @@ const ConteoRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canConciliar = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+        const canConciliar = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'SUPER_ADMIN');
 
         if (btnConciliar) {
             btnConciliar.style.display = (conteo.estado !== 'CERRADO' && canConciliar) ? 'inline-block' : 'none';
@@ -66,7 +66,7 @@ const ConteoRenderer = {
             const diffClass = d.diferencia === 0 ? 'color:var(--success);' : (d.diferencia < 0 ? 'color:var(--danger); font-weight:700;' : 'color:var(--warning); font-weight:700;');
             const isClosed = conteo.estado === 'CERRADO';
 
-            const canCount = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+            const canCount = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO' || currentUser.rol === 'SUPER_ADMIN');
 
             return `
                 <tr>

@@ -27,7 +27,7 @@ const LoteRenderer = {
             }
 
             const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-            const canChangeStatus = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR');
+            const canChangeStatus = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'SUPER_ADMIN');
 
             return `
                 <tr>

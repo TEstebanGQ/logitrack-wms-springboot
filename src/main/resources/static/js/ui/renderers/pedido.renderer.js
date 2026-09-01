@@ -17,7 +17,7 @@ const PedidoRenderer = {
         if (badgeHistorial) badgeHistorial.innerText = `${historial.length} despachados`;
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canOperate = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO');
+        const canOperate = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO' || currentUser.rol === 'SUPER_ADMIN');
 
         // 1. Render Pedidos Activos en Proceso
         const tbodyActivos = document.getElementById('tabla-pedidos-activos-body');

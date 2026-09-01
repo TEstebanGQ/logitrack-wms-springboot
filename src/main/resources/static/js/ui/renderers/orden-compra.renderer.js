@@ -47,7 +47,7 @@ const OrdenCompraRenderer = {
         if (o.estado === 'CANCELADA') estadoBadge = '<span class="badge badge-danger">CANCELADA</span>';
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManagePurchases = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS');
+        const canManagePurchases = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS' || currentUser.rol === 'SUPER_ADMIN');
 
         let acciones = '';
         if (canManagePurchases) {

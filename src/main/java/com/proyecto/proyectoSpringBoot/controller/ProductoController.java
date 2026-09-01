@@ -28,7 +28,7 @@ public class ProductoController {
     private final IBodegaService bodegaService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     @Operation(summary = "Crear nuevo producto")
     public ResponseEntity<ProductoResponse> crear(@Valid @RequestBody CrearProductoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.crear(request));
@@ -66,7 +66,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     @Operation(summary = "Actualizar producto")
     public ResponseEntity<ProductoResponse> actualizar(@PathVariable Long id,
                                                         @Valid @RequestBody CrearProductoRequest request) {

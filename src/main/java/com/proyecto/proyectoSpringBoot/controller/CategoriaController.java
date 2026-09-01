@@ -25,7 +25,7 @@ public class CategoriaController {
     private final ICategoriaService categoriaService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     @Operation(summary = "Crear nueva categoría")
     public ResponseEntity<CategoriaResponse> crear(@Valid @RequestBody CrearCategoriaRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.crear(request));
@@ -44,7 +44,7 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
     @Operation(summary = "Actualizar categoría")
     public ResponseEntity<CategoriaResponse> actualizar(@PathVariable Long id,
                                                          @Valid @RequestBody CrearCategoriaRequest request) {

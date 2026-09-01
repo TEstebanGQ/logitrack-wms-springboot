@@ -14,6 +14,7 @@ public class ProductoResponse {
     private String nombre;
     private Long categoriaId;
     private String categoriaNombre;
+    private Long bodegaId;
     private String bodegaNombre;
     private Integer stock;
     private Integer stockMinimo;

@@ -18,6 +18,7 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long>,
     List<Movimiento> findByUsuarioId(Long usuarioId);
     List<Movimiento> findByTipoMovimiento(TipoMovimiento tipo);
     List<Movimiento> findByFechaBetween(LocalDateTime inicio, LocalDateTime fin);
+    long countByFechaBetween(LocalDateTime inicio, LocalDateTime fin);
 
     @Query("SELECT m FROM Movimiento m WHERE m.bodegaOrigen.id = :bodegaId OR m.bodegaDestino.id = :bodegaId")
     List<Movimiento> findByBodegaId(@Param("bodegaId") Long bodegaId);

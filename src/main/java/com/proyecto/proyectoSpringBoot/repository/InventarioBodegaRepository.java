@@ -17,4 +17,7 @@ public interface InventarioBodegaRepository extends JpaRepository<InventarioBode
     @Query("SELECT ib.bodega.id, ib.bodega.nombre, SUM(ib.stockActual) " +
            "FROM InventarioBodega ib GROUP BY ib.bodega.id, ib.bodega.nombre")
     List<Object[]> findStockTotalPorBodega();
+
+    @Query("SELECT ib FROM InventarioBodega ib WHERE ib.stockActual < ib.producto.stockMinimo")
+    List<InventarioBodega> findInventariosConStockBajo();
 }

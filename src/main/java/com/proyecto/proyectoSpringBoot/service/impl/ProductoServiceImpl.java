@@ -43,8 +43,25 @@ public class ProductoServiceImpl implements IProductoService {
         Producto guardado = productoRepository.save(producto);
         ProductoResponse resp = productoMapper.toResponse(guardado);
 
-        // Asignar el stock inicial a la bodega elegida (o a la primera bodega activa)
-        if (guardado.getStock() > 0) {
+        // Asignar el stock inicial por bodegas (si viene mapa) o a la bodega elegida
+        if (request.getStockPorBodega() != null && !request.getStockPorBodega().isEmpty()) {
+            int totalCalculado = 0;
+            for (java.util.Map.Entry<Long, Integer> entry : request.getStockPorBodega().entrySet()) {
+                Long bId = entry.getKey();
+                Integer cant = entry.getValue() != null ? Math.max(0, entry.getValue()) : 0;
+                Bodega b = bodegaRepository.findById(bId).orElse(null);
+                if (b != null) {
+                    inventarioRepository.save(InventarioBodega.builder()
+                            .bodega(b)
+                            .producto(guardado)
+                            .stockActual(cant)
+                            .build());
+                    totalCalculado += cant;
+                }
+            }
+            guardado.setStock(totalCalculado);
+            guardado = productoRepository.save(guardado);
+        } else if (guardado.getStock() > 0) {
             Bodega targetBodega = null;
             if (request.getBodegaId() != null) {
                 targetBodega = bodegaRepository.findById(request.getBodegaId()).orElse(null);
@@ -115,14 +132,45 @@ public class ProductoServiceImpl implements IProductoService {
         producto.setCategoria(categoria);
         Producto actualizado = productoRepository.save(producto);
 
-        // Sincronizar la diferencia de stock (delta) en la bodega explícitamente seleccionada
-        if (delta != 0) {
+        // Sincronizar la distribución de stock por bodega (si viene mapa) o la diferencia (delta)
+        final Producto targetProd = actualizado;
+        if (request.getStockPorBodega() != null) {
+            // Eliminar registros de inventario para bodegas que ya no están asignadas al producto
+            List<InventarioBodega> invsExistentes = inventarioRepository.findByProductoId(targetProd.getId());
+            for (InventarioBodega invExisting : invsExistentes) {
+                if (!request.getStockPorBodega().containsKey(invExisting.getBodega().getId())) {
+                    inventarioRepository.delete(invExisting);
+                }
+            }
+
+            int totalCalculado = 0;
+            for (java.util.Map.Entry<Long, Integer> entry : request.getStockPorBodega().entrySet()) {
+                Long bId = entry.getKey();
+                Integer cant = entry.getValue() != null ? Math.max(0, entry.getValue()) : 0;
+                Bodega b = bodegaRepository.findById(bId).orElse(null);
+                if (b != null) {
+                    final Bodega finalBodega = b;
+                    InventarioBodega inv = inventarioRepository
+                            .findByBodegaIdAndProductoId(finalBodega.getId(), targetProd.getId())
+                            .orElseGet(() -> InventarioBodega.builder()
+                                    .bodega(finalBodega)
+                                    .producto(targetProd)
+                                    .stockActual(0)
+                                    .build());
+                    inv.setStockActual(cant);
+                    inventarioRepository.save(inv);
+                    totalCalculado += cant;
+                }
+            }
+            actualizado.setStock(totalCalculado);
+            actualizado = productoRepository.save(actualizado);
+        } else if (delta != 0) {
             Bodega targetBodega = null;
             if (request.getBodegaId() != null) {
                 targetBodega = bodegaRepository.findById(request.getBodegaId()).orElse(null);
             }
             if (targetBodega == null) {
-                targetBodega = inventarioRepository.findByProductoId(actualizado.getId()).stream()
+                targetBodega = inventarioRepository.findByProductoId(targetProd.getId()).stream()
                         .map(InventarioBodega::getBodega)
                         .filter(Bodega::isActivo)
                         .findFirst()
@@ -135,10 +183,10 @@ public class ProductoServiceImpl implements IProductoService {
             if (targetBodega != null) {
                 final Bodega finalBodega = targetBodega;
                 InventarioBodega inv = inventarioRepository
-                        .findByBodegaIdAndProductoId(finalBodega.getId(), actualizado.getId())
+                        .findByBodegaIdAndProductoId(finalBodega.getId(), targetProd.getId())
                         .orElseGet(() -> InventarioBodega.builder()
                                 .bodega(finalBodega)
-                                .producto(actualizado)
+                                .producto(targetProd)
                                 .stockActual(0)
                                 .build());
                 inv.setStockActual(Math.max(0, inv.getStockActual() + delta));
@@ -178,6 +226,7 @@ public class ProductoServiceImpl implements IProductoService {
                     .map(inv -> inv.getBodega().getNombre() + " (" + inv.getStockActual() + " u.)")
                     .collect(Collectors.joining(", "));
             resp.setBodegaNombre(bodegaStr);
+            resp.setBodegaId(invs.get(0).getBodega().getId());
         } else {
             resp.setBodegaNombre("Sin asignar");
         }

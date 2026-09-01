@@ -42,6 +42,12 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.UNAUTHORIZED, "Credenciales inválidas: correo o contraseña incorrectos", req.getRequestURI(), null);
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthException(org.springframework.security.core.AuthenticationException ex,
+                                                              HttpServletRequest req) {
+        return build(HttpStatus.UNAUTHORIZED, "Error de autenticación: correo o contraseña incorrectos", req.getRequestURI(), null);
+    }
+
     @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
     public ResponseEntity<ErrorResponse> handleDisabled(org.springframework.security.authentication.DisabledException ex,
                                                          HttpServletRequest req) {
@@ -62,8 +68,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex, HttpServletRequest req) {
+        ex.printStackTrace();
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor",
-                req.getRequestURI(), List.of(ex.getMessage()));
+                req.getRequestURI(), List.of(ex.getMessage() != null ? ex.getMessage() : "Excepción no controlada"));
     }
 
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String message,

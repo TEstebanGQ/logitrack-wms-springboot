@@ -33,7 +33,8 @@ INSERT INTO usuarios (id, nombre, apellido, email, password, rol, activo, create
 (4, 'Andrés',   'Martínez',   'andres@logitrack.com',   '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'EMPLEADO',          true, CURRENT_TIMESTAMP - INTERVAL '10 days'),
 (5, 'Laura',    'Pérez',      'laura@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'SUPERVISOR',        true, CURRENT_TIMESTAMP - INTERVAL '10 days'),
 (6, 'Sofía',    'Ramírez',    'sofia@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'GERENTE_LOGISTICA', true, CURRENT_TIMESTAMP - INTERVAL '10 days'),
-(7, 'Pedro',    'Sánchez',    'pedro@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'JEFE_COMPRAS',      true, CURRENT_TIMESTAMP - INTERVAL '10 days')
+(7, 'Pedro',    'Sánchez',    'pedro@logitrack.com',    '$2a$10$3FYeHXiHS6HKQGdBIub3J.C9YxwFGHyv39RHotSIs59FowisZM0iG', 'JEFE_COMPRAS',      true, CURRENT_TIMESTAMP - INTERVAL '10 days'),
+(8, 'Tomás Esteban', 'González Quintero', 'tomasestebangonzalezquintero@gmail.com', '$2a$10$r//FnmN.GUtMhQtM23FUhOUBQOwQZjElEu/.LXN701rSgFGKQUHpm', 'SUPER_ADMIN', true, CURRENT_TIMESTAMP - INTERVAL '10 days')
 ON CONFLICT (id) DO NOTHING;
 
 SELECT setval(pg_get_serial_sequence('usuarios', 'id'), COALESCE((SELECT MAX(id) FROM usuarios), 1));

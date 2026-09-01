@@ -19,9 +19,15 @@ public class CrearProductoRequest {
 
     private Long bodegaId;
 
+    private java.util.Map<Long, Integer> stockPorBodega;
+
     @Builder.Default
     @Min(value = 0, message = "El stock inicial no puede ser negativo")
     private Integer stock = 0;
+
+    @Builder.Default
+    @Min(value = 1, message = "El stock mínimo debe ser al menos 1")
+    private Integer stockMinimo = 10;
 
     @NotNull(message = "El precio es obligatorio")
     @DecimalMin(value = "0.0", message = "El precio no puede ser negativo")

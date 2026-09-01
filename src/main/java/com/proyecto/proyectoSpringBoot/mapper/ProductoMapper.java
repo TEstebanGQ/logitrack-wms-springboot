@@ -13,6 +13,7 @@ public class ProductoMapper {
                 .nombre(req.getNombre())
                 // .categoria(req.getCategoriaId()) // will be set in service
                 .stock(req.getStock() != null ? req.getStock() : 0)
+                .stockMinimo(req.getStockMinimo() != null ? req.getStockMinimo() : 10)
                 .precio(req.getPrecio())
                 .descripcion(req.getDescripcion())
                 .activo(true)
@@ -37,6 +38,9 @@ public class ProductoMapper {
     public void updateEntity(Producto producto, CrearProductoRequest req) {
         producto.setNombre(req.getNombre());
         producto.setStock(req.getStock() != null ? req.getStock() : producto.getStock());
+        if (req.getStockMinimo() != null) {
+            producto.setStockMinimo(req.getStockMinimo());
+        }
         producto.setPrecio(req.getPrecio());
         producto.setDescripcion(req.getDescripcion());
     }

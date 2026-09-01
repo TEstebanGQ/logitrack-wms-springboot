@@ -45,7 +45,11 @@ public class NotificacionServiceImpl implements INotificacionService {
     @Transactional
     public void enviarATodosLosAdmins(String titulo, String mensaje, TipoNotificacion tipo) {
         List<Usuario> destinatarios = usuarioRepository.findAll().stream()
-                .filter(u -> u.getRol() == RolUsuario.ADMIN || u.getRol() == RolUsuario.SUPERVISOR || u.getRol() == RolUsuario.GERENTE_LOGISTICA)
+                .filter(u -> u.getRol() == RolUsuario.SUPER_ADMIN || 
+                             u.getRol() == RolUsuario.ADMIN || 
+                             u.getRol() == RolUsuario.SUPERVISOR || 
+                             u.getRol() == RolUsuario.GERENTE_LOGISTICA || 
+                             u.getRol() == RolUsuario.JEFE_COMPRAS)
                 .collect(Collectors.toList());
         for (Usuario u : destinatarios) {
             enviar(u.getId(), titulo, mensaje, tipo);

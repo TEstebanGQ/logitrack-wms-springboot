@@ -687,4 +687,85 @@ public class EmailTemplateBuilder {
             currentYear
         );
     }
+
+    public String buildLowStockEmailHtml(com.proyecto.proyectoSpringBoot.model.entity.Producto producto, com.proyecto.proyectoSpringBoot.model.entity.Bodega bodega, Integer stockActual) {
+        int currentYear = Year.now().getValue();
+        String prodNombre = producto != null ? producto.getNombre() : "Producto";
+        String prodSku = producto != null && producto.getId() != null ? "#PROD-" + producto.getId() : "N/A";
+        int stockMin = producto != null && producto.getStockMinimo() != null ? producto.getStockMinimo() : 0;
+        String bodegaNombre = bodega != null ? bodega.getNombre() : "General";
+
+        return """
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Alerta de Stock Bajo - LogiTrack S.A.</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+                body { margin:0; padding:0; background-color:#0d1117; font-family:'Inter', sans-serif; color:#e2e8f0; }
+                .container { max-width: 620px; margin: 28px auto; background: #161b22; border-radius: 14px; overflow: hidden; border: 1px solid #30363d; box-shadow: 0 16px 36px rgba(0,0,0,0.4); }
+                .header { background: linear-gradient(180deg, #12161d 0%%, #161b22 100%%); padding: 32px; text-align: center; border-bottom: 3px solid #ef4444; }
+                .logo-title { font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin: 0; }
+                .logo-title span { color: #ef4444; }
+                .content { padding: 32px; }
+                .alert-card { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-left: 4px solid #ef4444; border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+                .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #30363d; font-size: 13.5px; }
+                .footer { background-color: #0d1117; border-top: 1px solid #30363d; padding: 20px; text-align: center; font-size: 12px; color: #8b949e; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1 class="logo-title">Logi<span>Track</span> S.A.</h1>
+                    <p style="font-size:11px; text-transform:uppercase; letter-spacing:2px; color:#ef4444; margin:6px 0 0; font-weight:700;">⚠️ Alerta Crítica de Inventario</p>
+                </div>
+                <div class="content">
+                    <h2 style="font-size:18px; color:#ffffff; margin-top:0;">Stock Insuficiente Detectado</h2>
+                    <p style="font-size:14px; color:#c9d1d9; line-height:1.6;">
+                        El sistema de monitoreo automatizado ha detectado que el inventario del producto <strong>%s</strong> ha descendido por debajo del límite mínimo parametrizado.
+                    </p>
+                    <div class="alert-card">
+                        <div class="detail-row">
+                            <span style="color:#8b949e;">Producto:</span>
+                            <strong style="color:#ffffff;">%s</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span style="color:#8b949e;">SKU / Código:</span>
+                            <code style="background:#21262d; color:#ffb020; padding:2px 6px; border-radius:4px;">%s</code>
+                        </div>
+                        <div class="detail-row">
+                            <span style="color:#8b949e;">Bodega:</span>
+                            <strong style="color:#ffffff;">%s</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span style="color:#8b949e;">Stock Actual:</span>
+                            <strong style="color:#ef4444; font-size:15px;">%d unidades</strong>
+                        </div>
+                        <div class="detail-row" style="border-bottom:none;">
+                            <span style="color:#8b949e;">Stock Mínimo Requerido:</span>
+                            <strong style="color:#38bdf8;">%d unidades</strong>
+                        </div>
+                    </div>
+                    <p style="font-size:13px; color:#8b949e;">
+                        💡 <em>Se requiere emisión de orden de compra o reabastecimiento urgente a través de la jefatura de compras o administración.</em>
+                    </p>
+                </div>
+                <div class="footer">
+                    &copy; %d LogiTrack S.A. | Alerta Automática de Reorden de Inventario.
+                </div>
+            </div>
+        </body>
+        </html>
+        """.formatted(
+            prodNombre,
+            prodNombre,
+            prodSku,
+            bodegaNombre,
+            stockActual != null ? stockActual : 0,
+            stockMin,
+            currentYear
+        );
+    }
 }

@@ -34,7 +34,7 @@ public class ReporteController {
     @Operation(summary = "Enviar el reporte ejecutivo del día por correo electrónico a Super Admins, Admins y Gerentes")
     public ResponseEntity<?> enviarReporteDiarioPorCorreo() {
         List<com.proyecto.proyectoSpringBoot.model.entity.Usuario> destinatarios = usuarioRepository.findAll().stream()
-                .filter(u -> u.getActivo() != null && u.getActivo())
+                .filter(u -> u.isActivo())
                 .filter(u -> u.getRol() == com.proyecto.proyectoSpringBoot.model.enums.RolUsuario.SUPER_ADMIN ||
                              u.getRol() == com.proyecto.proyectoSpringBoot.model.enums.RolUsuario.ADMIN ||
                              u.getRol() == com.proyecto.proyectoSpringBoot.model.enums.RolUsuario.GERENTE_LOGISTICA)
@@ -49,25 +49,29 @@ public class ReporteController {
 
         var movsHoy = reporteService.consultarMovimientosFiltrados(null, null, null, inicioHoy, finHoy);
 
-        long entradas = movsHoy.stream().filter(m -> "ENTRADA".equalsIgnoreCase(m.getTipoMovimiento())).count();
-        long salidas = movsHoy.stream().filter(m -> "SALIDA".equalsIgnoreCase(m.getTipoMovimiento())).count();
-        long transferencias = movsHoy.stream().filter(m -> "TRANSFERENCIA".equalsIgnoreCase(m.getTipoMovimiento())).count();
+        long entradas = movsHoy.stream().filter(m -> m.getTipoMovimiento() == com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento.ENTRADA).count();
+        long salidas = movsHoy.stream().filter(m -> m.getTipoMovimiento() == com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento.SALIDA).count();
+        long transferencias = movsHoy.stream().filter(m -> m.getTipoMovimiento() == com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento.TRANSFERENCIA).count();
 
         long alertas = alertaStockRepository.count();
         long conteos = conteoCiclicoRepository.count();
 
-        var detallesResumen = movsHoy.stream().map(m ->
-            com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO.MovimientoResumen.builder()
-                .fechaHora(m.getFechaHora() != null ? m.getFechaHora().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) : "")
-                .usuarioNombre(m.getUsuarioNombre())
-                .usuarioEmail(m.getUsuarioEmail())
-                .tipoMovimiento(m.getTipoMovimiento())
-                .productoNombre(m.getProductoNombre())
-                .cantidad(m.getCantidad())
-                .bodegaNombre(m.getBodegaNombre())
+        List<com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO.MovimientoResumen> detallesResumen = movsHoy.stream().map(m -> {
+            String prodNombre = (m.getDetalles() != null && !m.getDetalles().isEmpty()) ? m.getDetalles().get(0).getProductoNombre() : "N/A";
+            Integer cant = (m.getDetalles() != null && !m.getDetalles().isEmpty()) ? m.getDetalles().get(0).getCantidad() : 0;
+            String bodega = m.getBodegaDestino() != null ? m.getBodegaDestino() : (m.getBodegaOrigen() != null ? m.getBodegaOrigen() : "General");
+
+            return com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO.MovimientoResumen.builder()
+                .fechaHora(m.getFecha() != null ? m.getFecha().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) : "")
+                .usuarioNombre(m.getUsuarioNombre() != null ? m.getUsuarioNombre() : "Sistema")
+                .usuarioEmail(m.getUsuarioNombre())
+                .tipoMovimiento(m.getTipoMovimiento() != null ? m.getTipoMovimiento().name() : "")
+                .productoNombre(prodNombre)
+                .cantidad(cant)
+                .bodegaNombre(bodega)
                 .observaciones(m.getObservaciones())
-                .build()
-        ).toList();
+                .build();
+        }).collect(java.util.stream.Collectors.toList());
 
         var dto = com.proyecto.proyectoSpringBoot.dto.response.ReporteDiarioDTO.builder()
                 .fechaGeneracion(java.time.LocalDateTime.now())

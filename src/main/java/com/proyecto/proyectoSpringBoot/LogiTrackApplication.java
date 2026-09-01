@@ -17,7 +17,9 @@ public class LogiTrackApplication {
     public static void main(String[] args) {
         String dbUrl = System.getenv("DB_URL");
         if (dbUrl != null) {
-            if (dbUrl.startsWith("postgresql://")) {
+            if (dbUrl.contains("@")) {
+                dbUrl = "jdbc:postgresql://" + dbUrl.substring(dbUrl.indexOf("@") + 1);
+            } else if (dbUrl.startsWith("postgresql://")) {
                 dbUrl = "jdbc:" + dbUrl;
             }
             System.setProperty("spring.datasource.url", dbUrl);

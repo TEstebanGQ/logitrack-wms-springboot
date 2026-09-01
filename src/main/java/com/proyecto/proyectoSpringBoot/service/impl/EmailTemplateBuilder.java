@@ -332,7 +332,7 @@ public class EmailTemplateBuilder {
         );
     }
 
-    private String getRoleDisplayName(RolUsuario rol) {
+    public String getRoleDisplayName(RolUsuario rol) {
         if (rol == null) return "Usuario Registrado";
         return switch (rol) {
             case SUPER_ADMIN -> "Super Administrador Global";
@@ -344,7 +344,7 @@ public class EmailTemplateBuilder {
         };
     }
 
-    private String getRoleBadgeColor(RolUsuario rol) {
+    public String getRoleBadgeColor(RolUsuario rol) {
         if (rol == null) return "#8993a8";
         return switch (rol) {
             case SUPER_ADMIN -> "#e11d48";       // Crimson Red

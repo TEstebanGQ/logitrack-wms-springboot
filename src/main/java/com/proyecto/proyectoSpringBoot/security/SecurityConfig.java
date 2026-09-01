@@ -45,6 +45,20 @@ public class SecurityConfig {
     }
 
     @Bean
+    public org.springframework.security.access.hierarchicalroles.RoleHierarchy roleHierarchy() {
+        org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl hierarchy = new org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl();
+        hierarchy.setHierarchy(
+            "ROLE_SUPER_ADMIN > ROLE_ADMIN\n" +
+            "ROLE_ADMIN > ROLE_GERENTE_LOGISTICA\n" +
+            "ROLE_ADMIN > ROLE_SUPERVISOR\n" +
+            "ROLE_GERENTE_LOGISTICA > ROLE_SUPERVISOR\n" +
+            "ROLE_SUPERVISOR > ROLE_JEFE_COMPRAS\n" +
+            "ROLE_JEFE_COMPRAS > ROLE_EMPLEADO"
+        );
+        return hierarchy;
+    }
+
+    @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);

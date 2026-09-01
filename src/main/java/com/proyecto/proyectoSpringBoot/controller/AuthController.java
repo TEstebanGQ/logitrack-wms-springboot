@@ -36,17 +36,23 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         UserDetails userDetails = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new com.proyecto.proyectoSpringBoot.exception.ResourceNotFoundException("Usuario no encontrado con email: " + request.getEmail()));
         String token = jwtUtil.generateToken(userDetails);
         Usuario usuario = (Usuario) userDetails;
+
+        String nombreCompleto = (usuario.getNombre() != null ? usuario.getNombre() : "") + 
+                                (usuario.getApellido() != null ? " " + usuario.getApellido() : "");
+        if (nombreCompleto.isBlank()) {
+            nombreCompleto = usuario.getEmail();
+        }
 
         return ResponseEntity.ok(JwtResponse.builder()
                 .token(token)
                 .tipo("Bearer")
                 .id(usuario.getId())
-                .nombre(usuario.getNombre() + " " + usuario.getApellido())
+                .nombre(nombreCompleto.trim())
                 .email(usuario.getEmail())
-                .rol(usuario.getRol().name())
+                .rol(usuario.getRol() != null ? usuario.getRol().name() : "EMPLEADO")
                 .build());
     }
 
@@ -76,8 +82,9 @@ public class AuthController {
                 .build();
         Usuario guardado = usuarioRepository.save(usuario);
 
-        // Envío asíncrono del correo corporativo de bienvenida según el rol
+        // Envío asíncrono del correo corporativo de bienvenida y alerta al Super Admin
         emailService.enviarCorreoBienvenida(guardado);
+        emailService.notificarRegistroASuperAdmin(guardado);
 
         return ResponseEntity.ok(java.util.Map.of("mensaje", "Usuario registrado exitosamente"));
     }

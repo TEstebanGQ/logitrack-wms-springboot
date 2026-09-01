@@ -79,27 +79,37 @@ const AuthService = {
 
     hasRole(...roles) {
         const rol = this.getRol();
+        if (rol === 'SUPER_ADMIN') return true;
         return roles.includes(rol);
     },
 
+    isSuperAdmin() {
+        return this.getRol() === 'SUPER_ADMIN';
+    },
+
     isAdmin() {
-        return this.getRol() === 'ADMIN';
+        const rol = this.getRol();
+        return rol === 'ADMIN' || rol === 'SUPER_ADMIN';
     },
 
     isSupervisor() {
-        return this.getRol() === 'SUPERVISOR';
+        const rol = this.getRol();
+        return rol === 'SUPERVISOR' || rol === 'SUPER_ADMIN';
     },
 
     isEmpleado() {
-        return this.getRol() === 'EMPLEADO';
+        const rol = this.getRol();
+        return rol === 'EMPLEADO' || rol === 'SUPER_ADMIN';
     },
 
     isCompras() {
-        return this.getRol() === 'JEFE_COMPRAS';
+        const rol = this.getRol();
+        return rol === 'JEFE_COMPRAS' || rol === 'SUPER_ADMIN';
     },
 
     isGerente() {
-        return this.getRol() === 'GERENTE_LOGISTICA';
+        const rol = this.getRol();
+        return rol === 'GERENTE_LOGISTICA' || rol === 'SUPER_ADMIN';
     },
 
     isAuthenticated() {

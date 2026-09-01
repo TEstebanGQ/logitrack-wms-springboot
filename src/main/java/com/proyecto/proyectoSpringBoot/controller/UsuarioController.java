@@ -48,12 +48,19 @@ public class UsuarioController {
         if (request.getPassword() == null || request.getPassword().isBlank()) {
             return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "La contraseña es obligatoria para nuevos usuarios"));
         }
+
+        RolUsuario rolAsignado = request.getRol() != null ? RolUsuario.valueOf(request.getRol().toUpperCase()) : RolUsuario.EMPLEADO;
+        if (rolAsignado == RolUsuario.SUPER_ADMIN && !esSuperAdminActual()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(java.util.Map.of("mensaje", "Acceso denegado: Únicamente un Super Administrador (SUPER_ADMIN) puede asignar el rol SUPER_ADMIN."));
+        }
+
         Usuario u = Usuario.builder()
                 .nombre(request.getNombre())
                 .apellido(request.getApellido())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .rol(request.getRol() != null ? RolUsuario.valueOf(request.getRol().toUpperCase()) : RolUsuario.EMPLEADO)
+                .rol(rolAsignado)
                 .activo(request.getActivo() != null ? request.getActivo() : true)
                 .build();
         Usuario guardado = usuarioRepository.save(u);
@@ -78,9 +85,18 @@ public class UsuarioController {
             u.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         if (request.getRol() != null) {
-            u.setRol(RolUsuario.valueOf(request.getRol().toUpperCase()));
+            RolUsuario nuevoRol = RolUsuario.valueOf(request.getRol().toUpperCase());
+            if ((nuevoRol == RolUsuario.SUPER_ADMIN || u.getRol() == RolUsuario.SUPER_ADMIN) && !esSuperAdminActual()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(java.util.Map.of("mensaje", "Acceso denegado: Únicamente un Super Administrador (SUPER_ADMIN) puede otorgar o modificar el rol SUPER_ADMIN."));
+            }
+            u.setRol(nuevoRol);
         }
         if (request.getActivo() != null) {
+            if (u.getRol() == RolUsuario.SUPER_ADMIN && !esSuperAdminActual()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(java.util.Map.of("mensaje", "Acceso denegado: Únicamente un Super Administrador puede modificar el estado de otro Super Administrador."));
+            }
             u.setActivo(request.getActivo());
         }
 
@@ -93,6 +109,12 @@ public class UsuarioController {
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Usuario u = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (u.getRol() == RolUsuario.SUPER_ADMIN && !esSuperAdminActual()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(java.util.Map.of("mensaje", "Acceso denegado: Únicamente un Super Administrador puede eliminar a un Super Administrador."));
+        }
+
         try {
             usuarioRepository.delete(u);
             return ResponseEntity.noContent().build();
@@ -101,6 +123,13 @@ public class UsuarioController {
             usuarioRepository.save(u);
             return ResponseEntity.ok(java.util.Map.of("mensaje", "El usuario posee registros asociados (movimientos, etc.). Se ha desactivado en su lugar."));
         }
+    }
+
+    private boolean esSuperAdminActual() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return false;
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_SUPER_ADMIN"));
     }
 
     private UsuarioResponse toResponse(Usuario u) {

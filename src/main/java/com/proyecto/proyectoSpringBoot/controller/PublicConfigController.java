@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
 @RestController
@@ -42,11 +45,17 @@ public class PublicConfigController {
     public ResponseEntity<Map<String, Object>> getHeroStats() {
         long bodegas = bodegaRepository.count();
         long movimientos = movimientoRepository.count();
+
+        LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
+        LocalDateTime finDia = LocalDate.now().atTime(LocalTime.MAX);
+        long movimientosHoy = movimientoRepository.countByFechaBetween(inicioDia, finDia);
+
         long auditorias = auditoriaRepository.count();
 
         return ResponseEntity.ok(Map.of(
                 "bodegasActivas", bodegas,
                 "totalMovimientos", movimientos,
+                "movimientosHoy", movimientosHoy,
                 "totalAuditorias", auditorias,
                 "auditoriaCoverage", "100%"
         ));

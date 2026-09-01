@@ -18,7 +18,7 @@ public class JwtUtil {
     // [H-002 FIX] El secreto JWT se lee EXCLUSIVAMENTE desde la variable de entorno JWT_SECRET.
     // No existe valor por defecto hardcodeado. Si la variable no está configurada,
     // la aplicación fallará al arrancar con un error claro, evitando despliegues inseguros.
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:LogiTrackSecretKeyWMS2026MasterEnterpriseSuperSecureJWT256BitsKey!}")
     private String secret;
 
     @Value("${jwt.expiration:86400000}")

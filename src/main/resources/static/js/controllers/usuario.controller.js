@@ -15,9 +15,37 @@ const UsuarioModuleController = {
         }
     },
 
+    adjustRoleOptions() {
+        const select = document.getElementById('usuario-rol');
+        if (!select) return;
+        const currentUser = AuthService.getCurrentUser();
+        const isSuperAdmin = currentUser && currentUser.rol === 'SUPER_ADMIN';
+
+        let superOpt = select.querySelector('option[value="SUPER_ADMIN"]');
+        if (isSuperAdmin) {
+            if (!superOpt) {
+                superOpt = document.createElement('option');
+                superOpt.value = 'SUPER_ADMIN';
+                superOpt.textContent = 'SUPER ADMINISTRADOR GLOBAL 👑';
+                select.appendChild(superOpt);
+            }
+            superOpt.style.display = '';
+            superOpt.disabled = false;
+        } else {
+            if (superOpt) {
+                superOpt.style.display = 'none';
+                superOpt.disabled = true;
+            }
+            if (select.value === 'SUPER_ADMIN') {
+                select.value = 'ADMIN';
+            }
+        }
+    },
+
     openCreateModal() {
         const form = document.getElementById('form-usuario');
         if (form) form.reset();
+        this.adjustRoleOptions();
         document.getElementById('usuario-id').value = '';
         document.getElementById('usuario-pass-group').style.display = 'block';
         document.getElementById('usuario-password').required = true;
@@ -32,6 +60,7 @@ const UsuarioModuleController = {
             return;
         }
 
+        this.adjustRoleOptions();
         document.getElementById('usuario-id').value = usuario.id;
         document.getElementById('usuario-nombre').value = usuario.nombre;
         document.getElementById('usuario-apellido').value = usuario.apellido;

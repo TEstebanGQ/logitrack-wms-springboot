@@ -52,6 +52,7 @@ class GoogleAuthIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.bodegasActivas").isNumber())
                 .andExpect(jsonPath("$.totalMovimientos").isNumber())
+                .andExpect(jsonPath("$.movimientosHoy").isNumber())
                 .andExpect(jsonPath("$.totalAuditorias").isNumber())
                 .andExpect(jsonPath("$.auditoriaCoverage").value("100%"));
     }

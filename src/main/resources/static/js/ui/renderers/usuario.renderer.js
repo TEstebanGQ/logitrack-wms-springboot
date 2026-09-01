@@ -20,7 +20,7 @@ const UsuarioRenderer = {
 
         const rows = list.map(u => {
             const isSelf = (currentUserId && u.id === currentUserId) || (currentUserEmail && u.email === currentUserEmail);
-            const rolBadge = u.rol === 'ADMIN' ? 'badge-danger' : 'badge-info';
+            const rolBadge = this.getRoleBadgeClass(u.rol);
             const estadoBadge = u.activo ? 'badge-success' : 'badge-warning';
 
             return `
@@ -61,6 +61,17 @@ const UsuarioRenderer = {
                 </table>
             </div>
         `;
+    },
+    getRoleBadgeClass(rol) {
+        switch (rol) {
+            case 'SUPER_ADMIN': return 'badge-super-admin';
+            case 'ADMIN': return 'badge-admin';
+            case 'SUPERVISOR': return 'badge-supervisor';
+            case 'GERENTE_LOGISTICA': return 'badge-gerente';
+            case 'JEFE_COMPRAS': return 'badge-compras';
+            case 'EMPLEADO': return 'badge-empleado';
+            default: return 'badge-info';
+        }
     }
 };
 

@@ -15,7 +15,7 @@ const BodegaRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManage = currentUser && currentUser.rol === 'ADMIN';
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPER_ADMIN');
 
         const rows = list.map(b => `
             <tr>

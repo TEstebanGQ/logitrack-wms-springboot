@@ -27,10 +27,11 @@ const App = {
                 if (bodEl && stats.bodegasActivas !== undefined) {
                     bodEl.innerHTML = `${stats.bodegasActivas} <span>bod</span>`;
                 }
-                if (movEl && stats.totalMovimientos !== undefined) {
-                    const movCount = stats.totalMovimientos >= 1000
-                        ? (stats.totalMovimientos / 1000).toFixed(1).replace('.', ',') + ' <span>K</span>'
-                        : `${stats.totalMovimientos} <span>mov</span>`;
+                if (movEl && (stats.movimientosHoy !== undefined || stats.totalMovimientos !== undefined)) {
+                    const count = stats.movimientosHoy !== undefined ? stats.movimientosHoy : stats.totalMovimientos;
+                    const movCount = count >= 1000
+                        ? (count / 1000).toFixed(1).replace('.', ',') + ' <span>K</span>'
+                        : `${count} <span>mov</span>`;
                     movEl.innerHTML = movCount;
                 }
                 if (audEl && stats.auditoriaCoverage) {
@@ -410,12 +411,22 @@ const App = {
             else if (normCat.includes('papel')) catBadgeClass = 'badge-cat-papeleria';
 
             let bodegasHtml = '';
+            const reqMinimo = p.stockMinimo || 10;
             if (inventario && inventario.length > 0) {
-                bodegasHtml = inventario.map(inv => `
-                    <span class="badge badge-bodega">
-                        <span class="status-indicator completed" style="margin-right:4px;"></span> ${inv.bodegaNombre}: <strong>${inv.stockActual} u.</strong>
-                    </span>
-                `).join('');
+                bodegasHtml = inventario.map(inv => {
+                    const low = inv.stockActual < reqMinimo;
+                    return `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid ${low ? 'rgba(239,68,68,0.35)' : 'var(--border-color)'}; border-radius:8px; margin-bottom:8px;">
+                            <div>
+                                <strong style="font-size:12.5px; color:var(--text-color);">${inv.bodegaNombre}</strong>
+                                <div style="font-size:11px; color:var(--text-muted);">Stock Mínimo Requerido: <strong>${reqMinimo} u.</strong></div>
+                            </div>
+                            <span class="badge ${low ? 'badge-danger' : 'badge-success'}" style="font-size:11.5px; font-weight:700;">
+                                ${inv.stockActual} u. ${low ? '⚠️ BAJO' : '✓ OK'}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
             } else if (p.bodegaNombre && p.bodegaNombre !== 'Sin asignar') {
                 bodegasHtml = `<span class="badge badge-bodega"><span class="status-indicator completed" style="margin-right:4px;"></span> ${p.bodegaNombre}</span>`;
             } else {
@@ -526,8 +537,8 @@ const App = {
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const pass = document.getElementById('login-password').value;
+                const email = document.getElementById('login-email')?.value || '';
+                const pass = document.getElementById('login-password')?.value || '';
                 try {
                     await AuthService.login(email, pass);
                     Toast.success('¡Bienvenido a LogiTrack S.A.!');
@@ -544,11 +555,11 @@ const App = {
         if (regForm) {
             regForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const nombre = document.getElementById('reg-nombre').value;
-                const apellido = document.getElementById('reg-apellido').value;
-                const email = document.getElementById('reg-email').value;
-                const pass = document.getElementById('reg-password').value;
-                const rol = document.getElementById('reg-rol').value;
+                const nombre = document.getElementById('reg-nombre')?.value || '';
+                const apellido = document.getElementById('reg-apellido')?.value || '';
+                const email = document.getElementById('reg-email')?.value || '';
+                const pass = document.getElementById('reg-password')?.value || '';
+                const rol = document.getElementById('reg-rol')?.value || 'EMPLEADO';
 
                 try {
                     await AuthService.register(nombre, apellido, email, pass, rol);
@@ -574,11 +585,11 @@ const App = {
         if (googleCompleteForm) {
             googleCompleteForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('google-complete-email').value;
-                const nombre = document.getElementById('google-complete-nombre').value;
-                const apellido = document.getElementById('google-complete-apellido').value;
-                const rol = document.getElementById('google-complete-rol').value;
-                const pass = document.getElementById('google-complete-password').value;
+                const email = document.getElementById('google-complete-email')?.value || '';
+                const nombre = document.getElementById('google-complete-nombre')?.value || '';
+                const apellido = document.getElementById('google-complete-apellido')?.value || '';
+                const rol = document.getElementById('google-complete-rol')?.value || 'EMPLEADO';
+                const pass = document.getElementById('google-complete-password')?.value || '';
 
                 try {
                     await AuthService.register(nombre, apellido, email, pass, rol);
@@ -748,27 +759,36 @@ const App = {
             });
         }
 
-        // Formulario Orden de Compra Modal
+        // Formulario Orden de Compra Modal Multi-Producto
         const ocForm = document.getElementById('form-orden-compra');
         if (ocForm) {
             ocForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 try {
+                    const detalles = [];
+                    document.querySelectorAll('#oc-detalles-container .oc-item-row').forEach(row => {
+                        const prodId = parseInt(row.querySelector('.oc-prod-select').value);
+                        const cant = parseInt(row.querySelector('.oc-cant-input').value);
+                        const precio = parseFloat(row.querySelector('.oc-precio-input').value);
+                        if (prodId && cant > 0 && precio > 0) {
+                            detalles.push({ productoId: prodId, cantidad: cant, precioUnitario: precio });
+                        }
+                    });
+
+                    if (detalles.length === 0) {
+                        Toast.warning('Debes incluir al menos un producto válido en la orden');
+                        return;
+                    }
+
                     const data = {
                         proveedorId: parseInt(document.getElementById('oc-proveedor').value),
                         bodegaDestinoId: parseInt(document.getElementById('oc-bodega').value),
                         fechaEntregaEsperada: document.getElementById('oc-fecha-entrega').value || null,
                         observaciones: document.getElementById('oc-observaciones').value,
-                        detalles: [
-                            {
-                                productoId: parseInt(document.getElementById('oc-producto').value),
-                                cantidad: parseInt(document.getElementById('oc-cantidad').value),
-                                precioUnitario: parseFloat(document.getElementById('oc-precio').value)
-                            }
-                        ]
+                        detalles: detalles
                     };
                     await ApiService.post('/ordenes-compra', data);
-                    Toast.success('Orden de compra generada exitosamente');
+                    Toast.success('Orden de compra multi-producto generada exitosamente');
                     App.closeModal('modal-orden-compra');
                     if (typeof OrdenCompraController !== 'undefined') OrdenCompraController.init();
                     else if (typeof ordenCompraController !== 'undefined') ordenCompraController.init();
@@ -826,10 +846,15 @@ const App = {
                 ]);
                 const selPr = document.getElementById('oc-proveedor');
                 const selB = document.getElementById('oc-bodega');
-                const selP = document.getElementById('oc-producto');
                 if (selPr) selPr.innerHTML = proveedores.map(pr => `<option value="${pr.id}">${pr.nombre}</option>`).join('');
                 if (selB) selB.innerHTML = bodegas.map(b => `<option value="${b.id}">${b.nombre}</option>`).join('');
-                if (selP) selP.innerHTML = productos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
+
+                App.ocProductosCache = productos;
+                const container = document.getElementById('oc-detalles-container');
+                if (container) {
+                    container.innerHTML = '';
+                    await App.agregarFilaProductoOC();
+                }
                 App.openModal('modal-orden-compra');
             }
 
@@ -898,11 +923,12 @@ const App = {
         }
 
         const role = user ? user.rol : 'EMPLEADO';
-        const isAdmin = role === 'ADMIN';
-        const isGerente = role === 'GERENTE_LOGISTICA';
-        const isSupervisor = role === 'SUPERVISOR';
-        const isCompras = role === 'JEFE_COMPRAS';
-        const isEmpleado = role === 'EMPLEADO';
+        const isSuperAdmin = role === 'SUPER_ADMIN';
+        const isAdmin = role === 'ADMIN' || isSuperAdmin;
+        const isGerente = role === 'GERENTE_LOGISTICA' || isSuperAdmin;
+        const isSupervisor = role === 'SUPERVISOR' || isSuperAdmin;
+        const isCompras = role === 'JEFE_COMPRAS' || isSuperAdmin;
+        const isEmpleado = role === 'EMPLEADO' || isSuperAdmin;
 
         // 1. Grupo Administración (Usuarios) -> Solo ADMIN
         document.querySelectorAll('.nav-admin-only, .btn-admin-only, #btn-nuevo-usuario').forEach(el => {
@@ -914,9 +940,12 @@ const App = {
             el.style.display = (isAdmin || isSupervisor || isGerente) ? '' : 'none';
         });
 
-        // 3. Catálogo Base (+ Nueva Bodega, + Nuevo Producto, + Nueva Categoría) -> Solo ADMIN
-        document.querySelectorAll('.btn-manage-only, #btn-nueva-bodega, #btn-nuevo-producto, #btn-nueva-categoria').forEach(el => {
+        // 3. Catálogo Base (+ Nueva Bodega -> ADMIN, + Nuevo Producto y + Nueva Categoría -> ADMIN o SUPERVISOR)
+        document.querySelectorAll('#btn-nueva-bodega').forEach(el => {
             el.style.display = isAdmin ? '' : 'none';
+        });
+        document.querySelectorAll('.btn-manage-only, #btn-nuevo-producto, #btn-nueva-categoria').forEach(el => {
+            el.style.display = (isAdmin || isSupervisor) ? '' : 'none';
         });
 
         // 4. Órdenes de Compra (+ Nueva Orden de Compra) -> ADMIN, SUPERVISOR, JEFE_COMPRAS
@@ -1032,11 +1061,18 @@ const App = {
             const totalBodegasEl = document.getElementById('metric-total-bodegas');
             if (totalBodegasEl) totalBodegasEl.innerText = String(bodegasActivas.length || 0).padStart(2, '0');
 
+            // Filtrar únicamente los movimientos registrados EL DÍA DE HOY
+            const hoyLocalStr = new Date().toLocaleDateString('sv-SE'); // "YYYY-MM-DD" en formato local
+            const movimientosHoyCount = movimientos.filter(m => {
+                if (!m.fecha) return false;
+                const mFechaStr = typeof m.fecha === 'string'
+                    ? m.fecha.split('T')[0]
+                    : new Date(m.fecha).toLocaleDateString('sv-SE');
+                return mFechaStr === hoyLocalStr;
+            }).length;
+
             const totalMovimientosEl = document.getElementById('metric-total-movimientos');
-            const totalMovs = (movimientosRaw && typeof movimientosRaw.totalElements === 'number')
-                ? movimientosRaw.totalElements
-                : movimientos.length;
-            if (totalMovimientosEl) totalMovimientosEl.innerText = totalMovs || 0;
+            if (totalMovimientosEl) totalMovimientosEl.innerText = movimientosHoyCount;
 
             // Calcular el inventario disponible EXCLUSIVAMENTE en bodegas activas
             const inventariosActivos = await Promise.all(
@@ -1133,24 +1169,35 @@ const App = {
                 return;
             }
             container.innerHTML = notifs.map(n => {
-                let icon = 'ℹ️';
-                if (n.tipo === 'ALERTA') icon = '[ALERTA]';
-                else if (n.tipo === 'EXITO') icon = '[OK]';
-                else if (n.tipo === 'ERROR') icon = '[ERROR]';
+                let iconSvg = '';
+                let badgeStyle = '';
+                if (n.tipo === 'ALERTA') {
+                    iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+                    badgeStyle = 'background: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444;';
+                } else if (n.tipo === 'EXITO') {
+                    iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+                    badgeStyle = 'background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981;';
+                } else {
+                    iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+                    badgeStyle = 'background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6;';
+                }
 
-                const hora = n.fechaCreacion ? new Date(n.fechaCreacion).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                const fechaStr = n.fechaCreacion 
+                    ? new Date(n.fechaCreacion).toLocaleDateString([], {month:'short', day:'numeric'}) + ' ' + new Date(n.fechaCreacion).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    : '';
+
                 return `
-                    <div style="padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; align-items: flex-start; ${n.leida ? 'opacity: 0.55;' : 'background: rgba(255,255,255,0.03);'}">
-                        <span style="font-size: 14px; line-height: 1.2;">${icon}</span>
+                    <div style="padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 12px; align-items: flex-start; transition: background 0.2s ease; ${badgeStyle} ${n.leida ? 'opacity: 0.5; filter: grayscale(30%);' : ''}">
+                        <div style="margin-top: 2px;">${iconSvg}</div>
                         <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px;">
-                                <strong style="font-size: 12px; color: var(--text-color);">${n.titulo}</strong>
-                                <small style="font-size: 10px; color: var(--text-dim);">${hora}</small>
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px;">
+                                <strong style="font-size: 12px; color: var(--text-color); font-weight: 600;">${n.titulo}</strong>
+                                <small style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">${fechaStr}</small>
                             </div>
-                            <p style="font-size: 11px; color: var(--text-muted); margin: 0; line-height: 1.3;">${n.mensaje}</p>
+                            <p style="font-size: 11px; color: var(--text-muted); margin: 0 0 6px 0; line-height: 1.4;">${n.mensaje}</p>
                             ${!n.leida ? `
-                                <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
-                                    <button class="btn btn-secondary btn-sm" style="padding: 1px 6px; font-size: 9px;" onclick="App.marcarNotificacionLeida(${n.id}, event)">Marcar leída</button>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 10px; height: auto;" onclick="App.marcarNotificacionLeida(${n.id}, event)">✓ Marcar leída</button>
                                 </div>
                             ` : ''}
                         </div>
@@ -1262,6 +1309,105 @@ const App = {
 
     openProductoModal() {
         ProductoModuleController.openCreateModal();
+    },
+
+    ocProductosCache: [],
+
+    async agregarFilaProductoOC(productoDefectoId = null, cantDefecto = 10, precioDefecto = null) {
+        const container = document.getElementById('oc-detalles-container');
+        if (!container) return;
+
+        if (!this.ocProductosCache || this.ocProductosCache.length === 0) {
+            try {
+                this.ocProductosCache = await ProductoService.getAll().catch(() => []);
+            } catch (e) {
+                this.ocProductosCache = [];
+            }
+        }
+
+        const rowId = 'oc-row-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+        const optionsHtml = this.ocProductosCache.map(p => 
+            `<option value="${p.id}" data-precio="${p.precio || 0}">${p.nombre} (Stock Total: ${p.stockTotal || 0} u.)</option>`
+        ).join('');
+
+        const row = document.createElement('div');
+        row.className = 'oc-item-row';
+        row.id = rowId;
+        row.style.cssText = 'display:grid; grid-template-columns: 2fr 1fr 1fr auto auto; gap:8px; align-items:center; background:rgba(255,255,255,0.03); padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);';
+
+        const initialPrice = precioDefecto || (this.ocProductosCache[0]?.precio || 50000);
+
+        row.innerHTML = `
+            <div>
+                <select class="form-input oc-prod-select" required style="font-size:12px; padding:6px; width:100%;">
+                    ${optionsHtml}
+                </select>
+            </div>
+            <div>
+                <input type="number" class="form-input oc-cant-input" min="1" value="${cantDefecto}" required style="font-size:12px; padding:6px; width:100%;" placeholder="Cant.">
+            </div>
+            <div>
+                <input type="number" class="form-input oc-precio-input" step="0.01" min="0.01" value="${initialPrice}" required style="font-size:12px; padding:6px; width:100%;" placeholder="Precio">
+            </div>
+            <div style="font-size:11px; font-weight:700; color:var(--success); min-width:65px; text-align:right;" class="oc-subtotal-text">
+                $0
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" style="padding:2px 7px; font-size:11px; margin-left:4px;" title="Quitar producto" onclick="App.eliminarFilaProductoOC('${rowId}')">✕</button>
+        `;
+
+        container.appendChild(row);
+
+        const prodSelect = row.querySelector('.oc-prod-select');
+        const cantInput = row.querySelector('.oc-cant-input');
+        const precioInput = row.querySelector('.oc-precio-input');
+
+        if (productoDefectoId) {
+            prodSelect.value = productoDefectoId;
+        }
+
+        const updateRowSubtotal = () => {
+            const cant = parseFloat(cantInput.value) || 0;
+            const precio = parseFloat(precioInput.value) || 0;
+            const sub = cant * precio;
+            row.querySelector('.oc-subtotal-text').textContent = '$' + sub.toLocaleString('es-CO');
+            this.recalcularTotalOC();
+        };
+
+        prodSelect.addEventListener('change', () => {
+            const selectedOpt = prodSelect.options[prodSelect.selectedIndex];
+            const precio = parseFloat(selectedOpt?.getAttribute('data-precio')) || 0;
+            if (precio > 0) precioInput.value = precio;
+            updateRowSubtotal();
+        });
+
+        cantInput.addEventListener('input', updateRowSubtotal);
+        precioInput.addEventListener('input', updateRowSubtotal);
+
+        updateRowSubtotal();
+    },
+
+    eliminarFilaProductoOC(rowId) {
+        const row = document.getElementById(rowId);
+        if (row) {
+            const container = document.getElementById('oc-detalles-container');
+            if (container && container.querySelectorAll('.oc-item-row').length <= 1) {
+                Toast.warning('La orden de compra debe incluir al menos un producto');
+                return;
+            }
+            row.remove();
+            this.recalcularTotalOC();
+        }
+    },
+
+    recalcularTotalOC() {
+        let total = 0;
+        document.querySelectorAll('#oc-detalles-container .oc-item-row').forEach(row => {
+            const cant = parseFloat(row.querySelector('.oc-cant-input')?.value) || 0;
+            const precio = parseFloat(row.querySelector('.oc-precio-input')?.value) || 0;
+            total += (cant * precio);
+        });
+        const badge = document.getElementById('oc-total-badge');
+        if (badge) badge.textContent = 'Total: $' + total.toLocaleString('es-CO');
     }
 };
 

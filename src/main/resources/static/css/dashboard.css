@@ -582,11 +582,13 @@
     height: 56px;
     padding: 0 12px;
     border-bottom: 1px solid var(--border);
-    background: rgba(18, 22, 29, 0.95);
-    backdrop-filter: blur(12px);
-    position: sticky;
-    top: 0;
-    z-index: 90;
+    background: rgba(18, 22, 29, 0.96) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .page-title,
@@ -991,6 +993,9 @@
     .topbar {
         padding: 0 40px;
         height: 64px;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
     }
 
     .topbar-meta #clock,

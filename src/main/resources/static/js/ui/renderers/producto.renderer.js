@@ -15,7 +15,8 @@ const ProductoRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManage = currentUser && currentUser.rol === 'ADMIN';
+        const isAdmin = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPER_ADMIN');
+        const canEdit = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'SUPER_ADMIN');
 
 
         const getCatClass = (cat) => {
@@ -46,10 +47,9 @@ const ProductoRenderer = {
                     <td><strong style="color:var(--accent); font-family:var(--font-mono);">$${Number(p.precio).toLocaleString('es-CO')}</strong></td>
                     <td>${p.descripcion || '-'}</td>
                     <td onclick="event.stopPropagation();">
-                        ${canManage ? `
-                            <button class="btn btn-secondary btn-sm" onclick="ProductoModuleController.edit(${p.id})">Editar</button>
-                            <button class="btn btn-danger btn-sm" onclick="ProductoModuleController.delete(${p.id})">Eliminar</button>
-                        ` : '<span style="color:var(--text-muted); font-size:11px;">Lectura</span>'}
+                        ${canEdit ? `<button class="btn btn-secondary btn-sm" onclick="ProductoModuleController.edit(${p.id})">Editar</button>` : ''}
+                        ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="ProductoModuleController.delete(${p.id})">Eliminar</button>` : ''}
+                        ${(!canEdit && !isAdmin) ? '<span style="color:var(--text-muted); font-size:11px;">Lectura</span>' : ''}
                     </td>
                 </tr>
             `;

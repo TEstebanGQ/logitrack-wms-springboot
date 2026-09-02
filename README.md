@@ -1,13 +1,3 @@
----
-title: LogiTrack WMS Enterprise
-emoji: 📦
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-app_port: 8081
-pinned: false
----
-
 # 📦 LogiTrack S.A. — Sistema WMS & Gestión Completa de Bodegas e Inventario
 
 > 🌐 **Plataforma en Vivo (Entorno de Producción HTTPS):**  

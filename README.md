@@ -10,6 +10,9 @@ pinned: false
 
 # 📦 LogiTrack S.A. — Sistema WMS & Gestión Completa de Bodegas e Inventario
 
+> 🌐 **Plataforma en Vivo (Entorno de Producción HTTPS):**  
+> 👉 **[https://logitrack.34.70.8.165.sslip.io](https://logitrack.34.70.8.165.sslip.io)**
+
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
@@ -317,8 +320,6 @@ Con la aplicación corriendo, la documentación interactiva OpenAPI 3 está disp
 
 - **Manual de Pruebas Interactivo End-to-End:**
   👉 **[Manual de Pruebas Interactivo (TESTING.md)](TESTING.md)**
-
-También existe soporte listo para desplegar en **Render** mediante `render.yaml` (Docker + base de datos Postgres gestionada).
 
 ---
 

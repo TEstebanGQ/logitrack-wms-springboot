@@ -20,7 +20,6 @@ pinned: false
 
 Proyecto académico desarrollado por **Tomas Esteban González Quintero** (Campuslands) como sistema backend completo con frontend integrado, evolucionado hasta un WMS de alcance empresarial.
 
----
 
 ## 📑 Tabla de Contenido
 
@@ -308,11 +307,16 @@ Con la aplicación corriendo, la documentación interactiva OpenAPI 3 está disp
 
 ---
 
-## 🚀 Despliegue en la Nube (Google Cloud Platform)
+## 🚀 Despliegue en la Nube & Protocolo de Pruebas
 
-Para consultar la guía detallada paso a paso sobre la infraestructura en **Google Cloud Platform (GCP)**, **Caddy Reverse Proxy** y la configuración del servidor, consulta:
+- **Guía Completa de Despliegue en la Nube (GCP, Caddy, Docker):**
+  👉 **[Guía de Despliegue en la Nube (DEPLOYMENT.md)](DEPLOYMENT.md)**
 
-👉 **[Guía Completa de Despliegue en la Nube (DEPLOYMENT.md)](DEPLOYMENT.md)**
+- **Protocolo y Matriz de Pruebas de QA (Quality Assurance):**
+  👉 **[Plan y Protocolo de Pruebas de QA (QA_TESTING_PLAN.md)](QA_TESTING_PLAN.md)**
+
+- **Manual de Pruebas Interactivo End-to-End:**
+  👉 **[Manual de Pruebas Interactivo (TESTING.md)](TESTING.md)**
 
 También existe soporte listo para desplegar en **Render** mediante `render.yaml` (Docker + base de datos Postgres gestionada).
 

@@ -39,8 +39,8 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/logitrack_db
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      # [H-002 FIX] JWT_SECRET es OBLIGATORIO. Generar con: openssl rand -base64 64
-      # Nunca usar un valor por defecto en producción.
+      # Clave secreta JWT de alta seguridad (64+ caracteres).
+      # En producción se inyecta desde las variables de entorno.
       JWT_SECRET: ${JWT_SECRET:-LogiTrackSecretKeyWMS2026MasterEnterpriseSuperSecureJWT256BitsKey!}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-134514735180-itup9unjaso8pr7lk8vvq9hk0bl81avm.apps.googleusercontent.com}

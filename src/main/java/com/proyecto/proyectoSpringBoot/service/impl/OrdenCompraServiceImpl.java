@@ -219,13 +219,7 @@ public class OrdenCompraServiceImpl implements IOrdenCompraService {
     }
 
     /**
-     * [H-005 FIX] Genera un código de orden de compra usando una SECUENCIA de PostgreSQL.
-     * Esto reemplaza el uso de new Random() que tenía condición de carrera bajo concurrencia:
-     * dos peticiones simultáneas podían generar el mismo número aleatorio y pasar la
-     * validación de existsByCodigoOrden() al mismo tiempo, creando duplicados.
-     *
-     * nextval('orden_compra_seq') es atómico a nivel de base de datos y garantiza
-     * unicidad absoluta sin necesidad de bucles de reintento.
+     * Genera un código de orden de compra utilizando la secuencia oficial de la base de datos de forma atómica.
      */
     private String generarCodigoOrden() {
         String fechaStr = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));

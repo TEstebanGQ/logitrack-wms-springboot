@@ -38,7 +38,7 @@ public class PublicConfigController {
     }
 
     /**
-     * [H-014 FIX] Retorna estadísticas reales calculadas de la base de datos para el hero de autenticación.
+     * Retorna las estadísticas operativas agregadas desde la base de datos para la presentación del portal.
      */
     @GetMapping("/stats")
     @Operation(summary = "Obtener estadísticas reales del sistema para el hero de autenticación")

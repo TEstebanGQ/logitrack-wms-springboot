@@ -15,7 +15,7 @@ const App = {
         this.initNotifications();
     },
 
-    // Carga de estadísticas en tiempo real para el hero del login [H-014]
+    // Carga de estadísticas operativas en tiempo real para el portal de acceso
     async loadHeroStats() {
         try {
             const stats = await ApiService.get('/config/stats');

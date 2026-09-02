@@ -164,8 +164,7 @@ ALTER TABLE movimientos ADD COLUMN IF NOT EXISTS cliente_id BIGINT REFERENCES cl
 -- El valor de la secuencia es único a nivel de base de datos y no puede colisionar.
 CREATE SEQUENCE IF NOT EXISTS orden_compra_seq START WITH 1 INCREMENT BY 1;
 
--- [H-012 FIX] Índices en claves foráneas de alta frecuencia de consulta.
--- Previenen full table scan en queries por usuario, bodega y producto.
+-- Índices optimizados en claves foráneas de alta frecuencia para acelerar el tiempo de consulta.
 CREATE INDEX IF NOT EXISTS idx_movimientos_usuario_id   ON movimientos(usuario_id);
 CREATE INDEX IF NOT EXISTS idx_movimientos_origen_id    ON movimientos(bodega_origen_id);
 CREATE INDEX IF NOT EXISTS idx_movimientos_destino_id   ON movimientos(bodega_destino_id);

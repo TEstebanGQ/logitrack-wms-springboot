@@ -30,10 +30,7 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
 
     /**
-     * [H-004 FIX] Lista de orígenes CORS permitidos, leída desde la variable de entorno
-     * CORS_ALLOWED_ORIGINS (separados por coma). En desarrollo se permite localhost por defecto.
-     * En producción se debe configurar con los dominios reales del frontend.
-     * Ejemplo: CORS_ALLOWED_ORIGINS=https://app.logitrack.com,https://admin.logitrack.com
+     * Lista de orígenes Cross-Origin Resource Sharing (CORS) autorizados para interactuar con la API RESTful.
      */
     @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:8081,http://localhost:8080}")
     private String corsAllowedOriginsRaw;

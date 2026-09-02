@@ -19,8 +19,7 @@ public interface OrdenCompraRepository extends JpaRepository<OrdenCompra, Long> 
     List<OrdenCompra> findAllByOrderByFechaSolicitudDesc();
 
     /**
-     * [H-005 FIX] Obtiene el siguiente valor de la secuencia de PostgreSQL de forma atómica.
-     * nextval() garantiza unicidad absoluta incluso bajo concurrencia máxima.
+     * Obtiene el siguiente valor consecutivo de la secuencia de base de datos para la generación atómica de códigos de orden.
      */
     @Query(value = "SELECT nextval('orden_compra_seq')", nativeQuery = true)
     Long nextOrdenCompraSeq();

@@ -15,9 +15,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // [H-002 FIX] El secreto JWT se lee EXCLUSIVAMENTE desde la variable de entorno JWT_SECRET.
-    // No existe valor por defecto hardcodeado. Si la variable no está configurada,
-    // la aplicación fallará al arrancar con un error claro, evitando despliegues inseguros.
+    // La clave secreta JWT es inyectada desde la configuración del entorno para garantizar la firma de los tokens.
     @Value("${jwt.secret:LogiTrackSecretKeyWMS2026MasterEnterpriseSuperSecureJWT256BitsKey!}")
     private String secret;
 

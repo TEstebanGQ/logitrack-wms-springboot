@@ -63,8 +63,8 @@ public class AuthController {
             return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "El email ya está en uso"));
         }
 
-        // [H-003 FIX] Por seguridad, cualquier registro público DEBE tener rol EMPLEADO
-        // para prevenir escalamiento de privilegios. Los roles administrativos se asignan desde /api/usuarios.
+        // Por principios de seguridad de la información, el auto-registro público asigna
+        // por defecto el rol EMPLEADO para prevenir la elevación no autorizada de privilegios.
         RolUsuario rolAsignado = RolUsuario.EMPLEADO;
 
         Usuario usuario = Usuario.builder()
@@ -149,15 +149,11 @@ public class AuthController {
     }
 
     /**
-     * [H-001 FIX] Verifica el token de Google EXCLUSIVAMENTE contra el endpoint oficial de tokeninfo
-     * de Google, que valida la firma RSA del token de forma criptográficamente segura.
+     * Verifica la autenticidad de un token de Google contra la API oficial de Google OAuth2,
+     * validando la firma RSA del token de forma criptográficamente segura.
      *
-     * El fallback de decodificación Base64 sin verificación de firma fue ELIMINADO porque
-     * permitía que un atacante construyera tokens falsos con cualquier email y el sistema
-     * los aceptara cuando Google estuviera inaccesible.
-     *
-     * Si Google no está disponible, se rechaza la autenticación. El usuario debe usar
-     * sus credenciales locales (email + contraseña) como alternativa.
+     * Si el servicio de validación de Google no responde o el token es inválido,
+     * la autenticación es denegada para garantizar la integridad de las identidades.
      */
     private java.util.Map<String, Object> verifyAndDecodeGoogleToken(String idToken) {
         try {
@@ -172,8 +168,7 @@ public class AuthController {
                 return googleUser;
             }
         } catch (Exception e) {
-            // [H-001 FIX] NO hay fallback. Si Google no responde, se rechaza la autenticación.
-            // Esto previene la forja de tokens sin firma RSA válida.
+            // El token fue rechazado o no se logró establecer conexión con los servidores de validación OAuth2.
             org.slf4j.LoggerFactory.getLogger(AuthController.class)
                     .warn("[Google Auth] Servicio de Google no disponible ({}). Autenticación rechazada por seguridad.", e.getMessage());
         }

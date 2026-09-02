@@ -11,8 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
- * [H-008, H-009, H-010 FIX] Helper compartido para centralizar la auditoría de eventos de negocio.
- * Inyecta ObjectMapper gestionado por el contenedor de Spring y registra logs de advertencia ante cualquier error.
+ * Componente de soporte encargado de centralizar el registro y publicación de eventos de auditoría del sistema.
+ * Utiliza el contenedor de eventos de Spring Boot para desacoplar el registro de auditoría de los flujos transaccionales.
  */
 @Slf4j
 @Component

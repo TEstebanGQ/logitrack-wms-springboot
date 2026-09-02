@@ -1134,10 +1134,10 @@ const App = {
     async loadNotificationCount() {
         if (typeof AuthService === 'undefined' || !AuthService.isAuthenticated || !AuthService.isAuthenticated()) return;
         try {
-            const data = await NotificacionService.getContadorNoLeidas().catch(() => null);
             const badge = document.getElementById('notification-badge');
+            const data = await NotificacionService.getContadorNoLeidas().catch(() => null);
             if (badge && data) {
-                const count = data.noLeidas || 0;
+                const count = (typeof data.contador !== 'undefined') ? data.contador : (data.noLeidas || 0);
                 badge.innerText = count > 99 ? '99+' : count;
                 badge.style.display = count > 0 ? 'inline-block' : 'none';
             }

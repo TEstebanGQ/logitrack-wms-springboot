@@ -45,7 +45,7 @@ const ApiService = {
             }
 
             if (!response.ok) {
-                if (response.status === 401) {
+                if (response.status === 401 || response.status === 403) {
                     if (endpoint.includes('/auth/')) {
                         const msg = data.mensaje || data.message || 'Correo o contraseña incorrectos';
                         throw new Error(msg);

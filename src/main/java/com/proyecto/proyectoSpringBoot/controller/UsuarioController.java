@@ -72,6 +72,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @org.springframework.cache.annotation.CacheEvict(value = "usuariosAuth", allEntries = true)
     @Operation(summary = "Actualizar un usuario existente")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody UsuarioRequest request) {
         Usuario u = usuarioRepository.findById(id)
@@ -118,6 +119,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.cache.annotation.CacheEvict(value = "usuariosAuth", allEntries = true)
     @Operation(summary = "Eliminar o desactivar usuario")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Usuario u = usuarioRepository.findById(id)

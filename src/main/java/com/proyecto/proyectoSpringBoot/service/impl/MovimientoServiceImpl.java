@@ -12,7 +12,9 @@ import com.proyecto.proyectoSpringBoot.model.enums.TipoOperacion;
 import com.proyecto.proyectoSpringBoot.repository.*;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IAlertaStockService;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IMovimientoService;
+import com.proyecto.proyectoSpringBoot.service.redis.RedisLockService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,8 +40,10 @@ public class MovimientoServiceImpl implements IMovimientoService {
     private final ClienteRepository clienteRepository;
     private final IAlertaStockService alertaStockService;
     private final AuditoriaHelper auditoriaHelper;
+    private final RedisLockService redisLockService;
 
     @Override
+    @CacheEvict(value = {"reporteStockGeneral", "reporteABC"}, allEntries = true)
     public MovimientoResponse registrar(MovimientoRequest request, String emailUsuario) {
         if (request.getTipoMovimiento() == null) {
             throw new IllegalArgumentException("El tipo de movimiento es obligatorio");
@@ -124,30 +128,44 @@ public class MovimientoServiceImpl implements IMovimientoService {
             throw new IllegalArgumentException("La cantidad debe ser mayor a cero");
         }
 
-        switch (tipo) {
-            case ENTRADA -> {
-                if (destino == null) throw new IllegalArgumentException("ENTRADA requiere especificar una bodega destino");
-                producto.setStock(producto.getStock() + cantidad);
-                ajustarInventarioBodega(destino, producto, cantidad);
-            }
-            case SALIDA -> {
-                if (origen == null) throw new IllegalArgumentException("SALIDA requiere especificar una bodega origen");
-                validarStockSuficiente(producto, origen, cantidad);
-                producto.setStock(producto.getStock() - cantidad);
-                InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
-                alertaStockService.verificarYGenerarAlerta(producto, origen, inv.getStockActual());
-            }
-            case TRANSFERENCIA -> {
-                if (origen == null || destino == null)
-                    throw new IllegalArgumentException("TRANSFERENCIA requiere especificar bodega origen y bodega destino");
-                if (origen.getId().equals(destino.getId()))
-                    throw new IllegalArgumentException("La bodega origen y la bodega destino no pueden ser la misma");
+        String lockKey;
+        if (tipo == TipoMovimiento.ENTRADA && destino != null) {
+            lockKey = "lock:stock:bodega:" + destino.getId() + ":prod:" + producto.getId();
+        } else if (tipo == TipoMovimiento.SALIDA && origen != null) {
+            lockKey = "lock:stock:bodega:" + origen.getId() + ":prod:" + producto.getId();
+        } else {
+            lockKey = "lock:stock:prod:" + producto.getId();
+        }
 
-                validarStockSuficiente(producto, origen, cantidad);
-                InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
-                ajustarInventarioBodega(destino, producto, cantidad);
-                alertaStockService.verificarYGenerarAlerta(producto, origen, inv.getStockActual());
+        String lockToken = redisLockService.acquireLock(lockKey, 3000, 5000);
+        try {
+            switch (tipo) {
+                case ENTRADA -> {
+                    if (destino == null) throw new IllegalArgumentException("ENTRADA requiere especificar una bodega destino");
+                    producto.setStock(producto.getStock() + cantidad);
+                    ajustarInventarioBodega(destino, producto, cantidad);
+                }
+                case SALIDA -> {
+                    if (origen == null) throw new IllegalArgumentException("SALIDA requiere especificar una bodega origen");
+                    validarStockSuficiente(producto, origen, cantidad);
+                    producto.setStock(producto.getStock() - cantidad);
+                    InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
+                    alertaStockService.verificarYGenerarAlerta(producto, origen, inv.getStockActual());
+                }
+                case TRANSFERENCIA -> {
+                    if (origen == null || destino == null)
+                        throw new IllegalArgumentException("TRANSFERENCIA requiere especificar bodega origen y bodega destino");
+                    if (origen.getId().equals(destino.getId()))
+                        throw new IllegalArgumentException("La bodega origen y la bodega destino no pueden ser la misma");
+
+                    validarStockSuficiente(producto, origen, cantidad);
+                    InventarioBodega inv = ajustarInventarioBodega(origen, producto, -cantidad);
+                    ajustarInventarioBodega(destino, producto, cantidad);
+                    alertaStockService.verificarYGenerarAlerta(producto, origen, inv.getStockActual());
+                }
             }
+        } finally {
+            redisLockService.releaseLock(lockKey, lockToken);
         }
     }
 

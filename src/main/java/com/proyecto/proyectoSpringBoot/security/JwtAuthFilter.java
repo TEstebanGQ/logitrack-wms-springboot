@@ -1,5 +1,6 @@
 package com.proyecto.proyectoSpringBoot.security;
 
+import com.proyecto.proyectoSpringBoot.service.interfaces.ITokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final ITokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,6 +31,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = parseJwt(request);
         try {
             if (token != null) {
+                if (tokenBlacklistService.isTokenBlacklisted(token)) {
+                    logger.warn("Intento de acceso bloqueado: token revocado en lista negra.");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 String username = jwtUtil.extractUsername(token);
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);

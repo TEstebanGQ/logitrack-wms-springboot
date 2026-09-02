@@ -8,6 +8,8 @@ import com.proyecto.proyectoSpringBoot.model.entity.TipoUbicacion;
 import com.proyecto.proyectoSpringBoot.repository.TipoUbicacionRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.ITipoUbicacionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class TipoUbicacionServiceImpl implements ITipoUbicacionService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "tiposUbicacion", key = "'all'")
     public List<TipoUbicacionResponse> listarTodas() {
         return tipoUbicacionRepository.findAll().stream()
                 .map(mapper::toResponse)
@@ -32,6 +35,7 @@ public class TipoUbicacionServiceImpl implements ITipoUbicacionService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "tiposUbicacion", key = "'activas'")
     public List<TipoUbicacionResponse> listarActivas() {
         return tipoUbicacionRepository.findByActivoTrue().stream()
                 .map(mapper::toResponse)
@@ -40,6 +44,7 @@ public class TipoUbicacionServiceImpl implements ITipoUbicacionService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "tiposUbicacion", key = "#id")
     public TipoUbicacionResponse obtenerPorId(Long id) {
         TipoUbicacion t = tipoUbicacionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de ubicación no encontrado con id: " + id));
@@ -47,6 +52,7 @@ public class TipoUbicacionServiceImpl implements ITipoUbicacionService {
     }
 
     @Override
+    @CacheEvict(value = "tiposUbicacion", allEntries = true)
     public TipoUbicacionResponse crear(TipoUbicacionRequest request) {
         if (tipoUbicacionRepository.existsByCodigo(request.getCodigo())) {
             throw new IllegalArgumentException("Ya existe un tipo de ubicación con el código: " + request.getCodigo());
@@ -65,6 +71,7 @@ public class TipoUbicacionServiceImpl implements ITipoUbicacionService {
     }
 
     @Override
+    @CacheEvict(value = "tiposUbicacion", allEntries = true)
     public TipoUbicacionResponse actualizar(Long id, TipoUbicacionRequest request) {
         TipoUbicacion t = tipoUbicacionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de ubicación no encontrado con id: " + id));
@@ -84,6 +91,7 @@ public class TipoUbicacionServiceImpl implements ITipoUbicacionService {
     }
 
     @Override
+    @CacheEvict(value = "tiposUbicacion", allEntries = true)
     public void eliminar(Long id) {
         TipoUbicacion t = tipoUbicacionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de ubicación no encontrado con id: " + id));

@@ -12,6 +12,8 @@ import com.proyecto.proyectoSpringBoot.repository.BodegaRepository;
 import com.proyecto.proyectoSpringBoot.repository.InventarioBodegaRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IBodegaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class BodegaServiceImpl implements IBodegaService {
     private final AuditoriaHelper auditoriaHelper;
 
     @Override
+    @CacheEvict(value = "bodegas", allEntries = true)
     public BodegaResponse crear(CrearBodegaRequest request) {
         Bodega bodega = bodegaMapper.toEntity(request);
         Bodega guardada = bodegaRepository.save(bodega);
@@ -42,12 +45,14 @@ public class BodegaServiceImpl implements IBodegaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "bodegas", key = "#id")
     public BodegaResponse obtenerPorId(Long id) {
         return bodegaMapper.toResponse(findById(id));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "bodegas", key = "'all'")
     public List<BodegaResponse> listarTodas() {
         return bodegaRepository.findAll().stream()
                 .map(bodegaMapper::toResponse).collect(Collectors.toList());
@@ -55,6 +60,7 @@ public class BodegaServiceImpl implements IBodegaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "bodegas", key = "'activas'")
     public List<BodegaResponse> listarActivas() {
         return bodegaRepository.findByActivoTrue().stream()
                 .map(bodegaMapper::toResponse).collect(Collectors.toList());
@@ -90,6 +96,7 @@ public class BodegaServiceImpl implements IBodegaService {
     }
 
     @Override
+    @CacheEvict(value = "bodegas", allEntries = true)
     public BodegaResponse actualizar(Long id, CrearBodegaRequest request) {
         Bodega bodega = findById(id);
         String valoresAnt = auditoriaHelper.toJson(bodegaMapper.toResponse(bodega));
@@ -104,6 +111,7 @@ public class BodegaServiceImpl implements IBodegaService {
     }
 
     @Override
+    @CacheEvict(value = "bodegas", allEntries = true)
     public void eliminar(Long id) {
         Bodega bodega = findById(id);
         String valoresAnt = auditoriaHelper.toJson(bodegaMapper.toResponse(bodega));

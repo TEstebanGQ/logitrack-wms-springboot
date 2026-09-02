@@ -11,6 +11,8 @@ import com.proyecto.proyectoSpringBoot.repository.BodegaRepository;
 import com.proyecto.proyectoSpringBoot.repository.ZonaBodegaRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IZonaBodegaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class ZonaBodegaServiceImpl implements IZonaBodegaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "zonas", key = "'all'")
     public List<ZonaBodegaResponse> listarTodas() {
         return zonaBodegaRepository.findAll().stream()
                 .map(mapper::toResponse)
@@ -36,6 +39,7 @@ public class ZonaBodegaServiceImpl implements IZonaBodegaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "zonas", key = "'bodega:' + #bodegaId")
     public List<ZonaBodegaResponse> listarPorBodega(Long bodegaId) {
         return zonaBodegaRepository.findByBodegaId(bodegaId).stream()
                 .map(mapper::toResponse)
@@ -52,6 +56,7 @@ public class ZonaBodegaServiceImpl implements IZonaBodegaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "zonas", key = "#id")
     public ZonaBodegaResponse obtenerPorId(Long id) {
         ZonaBodega z = zonaBodegaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Zona de bodega no encontrada con id: " + id));
@@ -59,6 +64,7 @@ public class ZonaBodegaServiceImpl implements IZonaBodegaService {
     }
 
     @Override
+    @CacheEvict(value = "zonas", allEntries = true)
     public ZonaBodegaResponse crear(ZonaBodegaRequest request) {
         Bodega bodega = bodegaRepository.findById(request.getBodegaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bodega no encontrada con id: " + request.getBodegaId()));
@@ -77,6 +83,7 @@ public class ZonaBodegaServiceImpl implements IZonaBodegaService {
     }
 
     @Override
+    @CacheEvict(value = "zonas", allEntries = true)
     public ZonaBodegaResponse actualizar(Long id, ZonaBodegaRequest request) {
         ZonaBodega z = zonaBodegaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Zona de bodega no encontrada con id: " + id));
@@ -98,6 +105,7 @@ public class ZonaBodegaServiceImpl implements IZonaBodegaService {
     }
 
     @Override
+    @CacheEvict(value = "zonas", allEntries = true)
     public void eliminar(Long id) {
         ZonaBodega z = zonaBodegaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Zona de bodega no encontrada con id: " + id));

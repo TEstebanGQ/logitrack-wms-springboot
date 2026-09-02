@@ -13,6 +13,7 @@ Este documento detalla la arquitectura de infraestructura, tecnologías utilizad
 | **Dominio & SSL/TLS** | **Caddy Server v2 + sslip.io** | Reverse Proxy con certificados SSL/TLS automáticos de Let's Encrypt para `https://logitrack.34.70.8.165.sslip.io`. |
 | **Contenedorización** | **Docker Compose v2.27.0** | Empaquetado multi-etapa (`eclipse-temurin:17-jre-alpine`) con aislamiento de servicios. |
 | **Base de Datos** | **Neon.tech Serverless Postgres** | PostgreSQL 16 alojado en Neon Cloud (con contenedor local PostgreSQL de respaldo). |
+| **Caché & Concurrencia** | **Redis 7 (Alpine Docker)** | Almacenamiento en memoria para Spring Cache, revocación de tokens JWT y locks de concurrencia de stock (Puerto 6379). |
 | **OAuth2 / Google Auth** | **Google Cloud Console API** | Credencial Client ID OAuth 2.0 configurada para autorizar orígenes web y redirecciones HTTPS. |
 | **Servicio de Correo** | **Gmail SMTP** | Autenticación con contraseña de aplicación (`smtp.gmail.com:587`). |
 
@@ -30,10 +31,10 @@ Este documento detalla la arquitectura de infraestructura, tecnologías utilizad
            │  Proxy Local (http://localhost:8081)
            ▼
 [ Contenedor Docker: logitrack_app (Puerto 8081) ]
-           │
-           │  Spring Boot 3.3 / Java 17
-           ▼
-[ Base de Datos PostgreSQL / Neon.tech (Puerto 5432 / 5435) ]
+           │                          │
+           │ (Caché / Locks / Auth)   │ (Persistencia Transaccional)
+           ▼                          ▼
+[ Redis 7 (Puerto 6379) ]    [ Base de Datos PostgreSQL / Neon.tech ]
 ```
 
 ---

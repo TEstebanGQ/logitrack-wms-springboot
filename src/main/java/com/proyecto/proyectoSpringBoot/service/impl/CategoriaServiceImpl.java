@@ -10,6 +10,8 @@ import com.proyecto.proyectoSpringBoot.model.enums.TipoOperacion;
 import com.proyecto.proyectoSpringBoot.repository.CategoriaRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.ICategoriaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -24,6 +26,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categorias", allEntries = true)
     public CategoriaResponse crear(CrearCategoriaRequest request) {
         if (repository.existsByNombreIgnoreCase(request.getNombre())) {
             throw new RuntimeException("Ya existe una categoría con este nombre");
@@ -40,18 +43,21 @@ public class CategoriaServiceImpl implements ICategoriaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categorias", key = "'all'")
     public List<CategoriaResponse> listar() {
         return repository.findByActivoTrue().stream().map(mapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categorias", key = "#id")
     public CategoriaResponse obtenerPorId(Long id) {
         return mapper.toResponse(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada")));
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "categorias", allEntries = true)
     public CategoriaResponse actualizar(Long id, CrearCategoriaRequest request) {
         Categoria c = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         String valoresAnt = auditoriaHelper.toJson(mapper.toResponse(c));
@@ -68,6 +74,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categorias", allEntries = true)
     public void eliminar(Long id) {
         Categoria c = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         String valoresAnt = auditoriaHelper.toJson(mapper.toResponse(c));

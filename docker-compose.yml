@@ -24,6 +24,27 @@ services:
       - logitrack_network
 
   # -------------------------------------------------------------
+  # Base de Datos en Memoria y Caché Redis
+  # -------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: logitrack_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - logitrack_network
+
+  # -------------------------------------------------------------
   # Aplicación Backend Spring Boot + Frontend Web
   # -------------------------------------------------------------
   app:
@@ -35,10 +56,16 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/logitrack_db
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
+      # Redis Config
+      SPRING_DATA_REDIS_HOST: ${REDIS_HOST:-redis}
+      SPRING_DATA_REDIS_PORT: ${REDIS_PORT:-6379}
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-}
       # Clave secreta JWT de alta seguridad (64+ caracteres).
       # En producción se inyecta desde las variables de entorno.
       JWT_SECRET: ${JWT_SECRET:-LogiTrackSecretKeyWMS2026MasterEnterpriseSuperSecureJWT256BitsKey!}
@@ -59,6 +86,8 @@ services:
 volumes:
   postgres_data:
     name: logitrack_postgres_data
+  redis_data:
+    name: logitrack_redis_data
 
 networks:
   logitrack_network:

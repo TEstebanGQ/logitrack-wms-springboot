@@ -17,6 +17,7 @@ import com.proyecto.proyectoSpringBoot.service.interfaces.IReporteService;
 import com.proyecto.proyectoSpringBoot.specification.AuditoriaSpecification;
 import com.proyecto.proyectoSpringBoot.specification.MovimientoSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class ReporteServiceImpl implements IReporteService {
     private final AuditoriaMapper auditoriaMapper;
 
     @Override
+    @Cacheable(value = "reporteStockGeneral", key = "'general'")
     public ReporteStockResponse generarReporteGeneral() {
         List<ReporteStockResponse.StockBodegaItem> stockPorBodega =
                 inventarioRepository.findStockTotalPorBodega().stream()
@@ -70,6 +72,7 @@ public class ReporteServiceImpl implements IReporteService {
     }
 
     @Override
+    @Cacheable(value = "reporteABC", key = "'general'")
     public ClasificacionAbcResponse calcularClasificacionABC() {
         List<com.proyecto.proyectoSpringBoot.model.entity.Producto> productos = productoRepository.findByActivoTrue();
 

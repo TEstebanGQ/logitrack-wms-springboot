@@ -56,6 +56,11 @@ const AuthService = {
         }
 
         if (confirmed) {
+            try {
+                await ApiService.post('/auth/logout', {});
+            } catch (e) {
+                // Silencioso si falla la conexión de red
+            }
             ApiService.removeToken();
             localStorage.clear();
             sessionStorage.clear();

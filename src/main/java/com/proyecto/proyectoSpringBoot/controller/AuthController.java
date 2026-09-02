@@ -28,6 +28,17 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final com.proyecto.proyectoSpringBoot.service.interfaces.IEmailService emailService;
+    private final com.proyecto.proyectoSpringBoot.service.interfaces.ITokenBlacklistService tokenBlacklistService;
+
+    @PostMapping("/logout")
+    @Operation(summary = "Cerrar sesión y revocar token JWT en Redis")
+    public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenBlacklistService.blacklistToken(token);
+        }
+        return ResponseEntity.ok(java.util.Map.of("mensaje", "Sesión cerrada y token revocado exitosamente"));
+    }
 
     @PostMapping("/login")
     @Operation(summary = "Iniciar sesión y obtener token JWT")

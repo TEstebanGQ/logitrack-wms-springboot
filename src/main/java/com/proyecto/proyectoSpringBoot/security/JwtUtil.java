@@ -50,6 +50,20 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public long getRemainingExpirationMs(String token) {
+        try {
+            Date exp = extractExpiration(token);
+            long diff = exp.getTime() - System.currentTimeMillis();
+            return Math.max(0, diff);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     private <T> T extractClaim(String token, Function<Claims, T> resolver) {
         return resolver.apply(Jwts.parserBuilder()
                 .setSigningKey(getSigningKey()).build()

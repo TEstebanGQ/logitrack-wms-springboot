@@ -8,6 +8,8 @@ import com.proyecto.proyectoSpringBoot.model.entity.UnidadMedida;
 import com.proyecto.proyectoSpringBoot.repository.UnidadMedidaRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IUnidadMedidaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class UnidadMedidaServiceImpl implements IUnidadMedidaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "unidadesMedida", key = "'all'")
     public List<UnidadMedidaResponse> listarTodas() {
         return unidadMedidaRepository.findAll().stream()
                 .map(mapper::toResponse)
@@ -32,6 +35,7 @@ public class UnidadMedidaServiceImpl implements IUnidadMedidaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "unidadesMedida", key = "'activas'")
     public List<UnidadMedidaResponse> listarActivas() {
         return unidadMedidaRepository.findByActivoTrue().stream()
                 .map(mapper::toResponse)
@@ -40,6 +44,7 @@ public class UnidadMedidaServiceImpl implements IUnidadMedidaService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "unidadesMedida", key = "#id")
     public UnidadMedidaResponse obtenerPorId(Long id) {
         UnidadMedida u = unidadMedidaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidad de medida no encontrada con id: " + id));
@@ -47,6 +52,7 @@ public class UnidadMedidaServiceImpl implements IUnidadMedidaService {
     }
 
     @Override
+    @CacheEvict(value = "unidadesMedida", allEntries = true)
     public UnidadMedidaResponse crear(UnidadMedidaRequest request) {
         if (unidadMedidaRepository.existsByCodigo(request.getCodigo())) {
             throw new IllegalArgumentException("Ya existe una unidad de medida con el código: " + request.getCodigo());
@@ -64,6 +70,7 @@ public class UnidadMedidaServiceImpl implements IUnidadMedidaService {
     }
 
     @Override
+    @CacheEvict(value = "unidadesMedida", allEntries = true)
     public UnidadMedidaResponse actualizar(Long id, UnidadMedidaRequest request) {
         UnidadMedida u = unidadMedidaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidad de medida no encontrada con id: " + id));
@@ -82,6 +89,7 @@ public class UnidadMedidaServiceImpl implements IUnidadMedidaService {
     }
 
     @Override
+    @CacheEvict(value = "unidadesMedida", allEntries = true)
     public void eliminar(Long id) {
         UnidadMedida u = unidadMedidaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidad de medida no encontrada con id: " + id));

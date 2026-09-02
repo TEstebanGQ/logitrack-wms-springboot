@@ -48,19 +48,18 @@ const OrdenCompraRenderer = {
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
         const canManagePurchases = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS' || currentUser.rol === 'SUPER_ADMIN');
+        const canReceiveGoods = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'JEFE_COMPRAS' || currentUser.rol === 'EMPLEADO' || currentUser.rol === 'SUPER_ADMIN');
 
         let acciones = '';
-        if (canManagePurchases) {
-            if (o.estado === 'PENDIENTE') {
-                acciones = `
-                    <button class="btn btn-sm btn-info" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.aprobar(${o.id})" title="Aprobar Orden">Aprobar</button>
-                    <button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.cancelar(${o.id})" title="Cancelar Orden">Cancelar</button>
-                `;
-            } else if (o.estado === 'APROBADA') {
-                acciones = `
-                    <button class="btn btn-sm btn-primary" style="padding: 3px 10px; font-size: 11px; background:var(--accent); border-color:var(--accent);" onclick="OrdenCompraController.recibir(${o.id})">Recibir Mercancía</button>
-                `;
-            }
+        if (o.estado === 'PENDIENTE' && canManagePurchases) {
+            acciones = `
+                <button class="btn btn-sm btn-info" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.aprobar(${o.id})" title="Aprobar Orden">Aprobar</button>
+                <button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" onclick="OrdenCompraController.cancelar(${o.id})" title="Cancelar Orden">Cancelar</button>
+            `;
+        } else if (o.estado === 'APROBADA' && canReceiveGoods) {
+            acciones = `
+                <button class="btn btn-sm btn-primary" style="padding: 3px 10px; font-size: 11px; background:var(--accent); border-color:var(--accent);" onclick="OrdenCompraController.recibir(${o.id})">Recibir Mercancía</button>
+            `;
         }
 
         acciones += `

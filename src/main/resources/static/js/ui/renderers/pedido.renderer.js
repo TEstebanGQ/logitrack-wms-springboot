@@ -18,6 +18,7 @@ const PedidoRenderer = {
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
         const canOperate = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'EMPLEADO' || currentUser.rol === 'SUPER_ADMIN');
+        const canCancel = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'SUPER_ADMIN');
 
         // 1. Render Pedidos Activos en Proceso
         const tbodyActivos = document.getElementById('tabla-pedidos-activos-body');
@@ -45,10 +46,9 @@ const PedidoRenderer = {
                             <td><span class="badge ${badgeClass}">${p.estado}</span></td>
                             <td>
                                 <div class="table-actions">
-                                    ${canOperate ? `
-                                        <button class="btn btn-sm btn-primary" style="padding: 3px 8px; font-size: 11px;" title="Despachar pedido" onclick="PedidoController.despachar(${p.id})">Despachar</button>
-                                        <button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" title="Cancelar pedido" onclick="PedidoController.cancelar(${p.id})">Cancelar</button>
-                                    ` : '<span style="color:var(--text-muted); font-size:11px;">Lectura</span>'}
+                                    ${canOperate ? `<button class="btn btn-sm btn-primary" style="padding: 3px 8px; font-size: 11px;" title="Despachar pedido" onclick="PedidoController.despachar(${p.id})">Despachar</button>` : ''}
+                                    ${canCancel ? `<button class="btn btn-sm btn-danger" style="padding: 3px 8px; font-size: 11px;" title="Cancelar pedido" onclick="PedidoController.cancelar(${p.id})">Cancelar</button>` : ''}
+                                    ${(!canOperate && !canCancel) ? '<span style="color:var(--text-muted); font-size:11px;">Lectura</span>' : ''}
                                 </div>
                             </td>
                         </tr>

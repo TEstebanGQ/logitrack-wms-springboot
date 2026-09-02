@@ -13,7 +13,7 @@ const DashboardRenderer = {
         }
 
         const currentUser = typeof AuthService !== 'undefined' ? AuthService.getCurrentUser() : null;
-        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPERVISOR' || currentUser.rol === 'SUPER_ADMIN');
+        const canManage = currentUser && (currentUser.rol === 'ADMIN' || currentUser.rol === 'SUPER_ADMIN');
 
         const html = bodegas.slice(0, 3).map((b, idx) => {
             const capTotal = b.capacidad || 2000;

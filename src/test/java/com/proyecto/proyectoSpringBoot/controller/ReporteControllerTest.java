@@ -62,4 +62,38 @@ class ReporteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.itemsA").isArray());
     }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("05. GET /api/reportes/inventario sin filtros debe retornar HTTP 200")
+    void testReporteInventarioSinFiltros() throws Exception {
+        mockMvc.perform(get("/api/reportes/inventario"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("06. GET /api/reportes/inventario con filtros por rango de stock debe retornar HTTP 200")
+    void testReporteInventarioConFiltros() throws Exception {
+        mockMvc.perform(get("/api/reportes/inventario")
+                .param("nombre", "Laptop")
+                .param("stockMin", "5")
+                .param("stockMax", "100"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("07. GET /api/reportes/movimientos con parámetros tipo, desde, hasta, productoId debe retornar HTTP 200")
+    void testReporteMovimientosNuevosParametros() throws Exception {
+        mockMvc.perform(get("/api/reportes/movimientos")
+                .param("tipo", "ENTRADA")
+                .param("desde", "2026-01-01")
+                .param("hasta", "2026-12-31")
+                .param("productoId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
 }

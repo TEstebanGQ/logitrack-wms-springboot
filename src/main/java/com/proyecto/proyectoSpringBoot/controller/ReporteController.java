@@ -98,20 +98,39 @@ public class ReporteController {
         return ResponseEntity.ok(reporteService.generarReporteGeneral());
     }
 
+    @GetMapping("/inventario")
+    @Operation(summary = "Reporte de inventario con filtros dinámicos mediante Specifications",
+               description = "Devuelve el inventario/productos filtrados opcionalmente por nombre y rango de stock")
+    public ResponseEntity<List<com.proyecto.proyectoSpringBoot.dto.response.ProductoResponse>> reporteInventario(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Integer stockMin,
+            @RequestParam(required = false) Integer stockMax) {
+        return ResponseEntity.ok(reporteService.consultarInventarioFiltrado(nombre, stockMin, stockMax));
+    }
+
     @GetMapping("/movimientos")
     @Operation(summary = "Reporte de movimientos de inventario con filtros avanzados",
                description = "Devuelve movimientos filtrados por bodega, producto, tipo y rango de fechas")
     public ResponseEntity<List<com.proyecto.proyectoSpringBoot.dto.response.MovimientoResponse>> reporteMovimientos(
             @RequestParam(required = false) Long bodega,
             @RequestParam(required = false) Long producto,
+            @RequestParam(required = false) Long productoId,
+            @RequestParam(required = false) com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento tipo,
             @RequestParam(required = false) com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento tipoMovimiento,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
 
-        java.time.LocalDateTime inicio = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
-        java.time.LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+        Long finalProducto = productoId != null ? productoId : producto;
+        com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento finalTipo = tipo != null ? tipo : tipoMovimiento;
+        LocalDate finalDesde = desde != null ? desde : fechaInicio;
+        LocalDate finalHasta = hasta != null ? hasta : fechaFin;
 
-        return ResponseEntity.ok(reporteService.consultarMovimientosFiltrados(bodega, producto, tipoMovimiento, inicio, fin));
+        java.time.LocalDateTime inicio = finalDesde != null ? finalDesde.atStartOfDay() : null;
+        java.time.LocalDateTime fin = finalHasta != null ? finalHasta.atTime(23, 59, 59) : null;
+
+        return ResponseEntity.ok(reporteService.consultarMovimientosFiltrados(bodega, finalProducto, finalTipo, inicio, fin));
     }
 
     @GetMapping("/auditoria")

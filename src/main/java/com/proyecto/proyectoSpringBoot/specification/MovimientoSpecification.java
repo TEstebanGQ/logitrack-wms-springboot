@@ -13,6 +13,10 @@ public class MovimientoSpecification {
                 tipo == null ? null : cb.equal(root.get("tipoMovimiento"), tipo);
     }
 
+    public static Specification<Movimiento> tipoEs(TipoMovimiento tipo) {
+        return porTipo(tipo);
+    }
+
     public static Specification<Movimiento> entFechas(LocalDateTime inicio, LocalDateTime fin) {
         return (root, query, cb) -> {
             if (inicio == null && fin == null) return null;
@@ -20,6 +24,10 @@ public class MovimientoSpecification {
             if (fin == null) return cb.greaterThanOrEqualTo(root.get("fecha"), inicio);
             return cb.between(root.get("fecha"), inicio, fin);
         };
+    }
+
+    public static Specification<Movimiento> fechaEntre(LocalDateTime desde, LocalDateTime hasta) {
+        return entFechas(desde, hasta);
     }
 
     public static Specification<Movimiento> porBodega(Long bodegaId) {

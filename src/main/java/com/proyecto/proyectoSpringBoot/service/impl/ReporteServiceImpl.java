@@ -6,8 +6,11 @@ import com.proyecto.proyectoSpringBoot.dto.response.MovimientoResponse;
 import com.proyecto.proyectoSpringBoot.dto.response.ReporteStockResponse;
 import com.proyecto.proyectoSpringBoot.mapper.AuditoriaMapper;
 import com.proyecto.proyectoSpringBoot.mapper.MovimientoMapper;
+import com.proyecto.proyectoSpringBoot.mapper.ProductoMapper;
+import com.proyecto.proyectoSpringBoot.dto.response.ProductoResponse;
 import com.proyecto.proyectoSpringBoot.model.entity.Auditoria;
 import com.proyecto.proyectoSpringBoot.model.entity.Movimiento;
+import com.proyecto.proyectoSpringBoot.model.entity.Producto;
 import com.proyecto.proyectoSpringBoot.model.enums.TipoMovimiento;
 import com.proyecto.proyectoSpringBoot.repository.AuditoriaRepository;
 import com.proyecto.proyectoSpringBoot.repository.InventarioBodegaRepository;
@@ -16,6 +19,7 @@ import com.proyecto.proyectoSpringBoot.repository.ProductoRepository;
 import com.proyecto.proyectoSpringBoot.service.interfaces.IReporteService;
 import com.proyecto.proyectoSpringBoot.specification.AuditoriaSpecification;
 import com.proyecto.proyectoSpringBoot.specification.MovimientoSpecification;
+import com.proyecto.proyectoSpringBoot.specification.ProductoSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,6 +41,7 @@ public class ReporteServiceImpl implements IReporteService {
     private final ProductoRepository productoRepository;
     private final MovimientoMapper movimientoMapper;
     private final AuditoriaMapper auditoriaMapper;
+    private final ProductoMapper productoMapper;
 
     @Override
     @Cacheable(value = "reporteStockGeneral", key = "'general'")
@@ -154,6 +159,16 @@ public class ReporteServiceImpl implements IReporteService {
 
         return auditoriaRepository.findAll(spec).stream()
                 .map(auditoriaMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductoResponse> consultarInventarioFiltrado(String nombre, Integer stockMin, Integer stockMax) {
+        Specification<Producto> spec = Specification.where(ProductoSpecification.nombreContiene(nombre))
+                .and(ProductoSpecification.stockEntre(stockMin, stockMax));
+
+        return productoRepository.findAll(spec).stream()
+                .map(productoMapper::toResponse)
                 .collect(Collectors.toList());
     }
 }

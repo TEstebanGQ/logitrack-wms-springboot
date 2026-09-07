@@ -316,3 +316,12 @@ Con la aplicación corriendo, la documentación interactiva OpenAPI 3 está disp
 ## 📄 Licencia
 
 Distribuido bajo licencia **MIT**. Proyecto académico desarrollado como parte del Técnico Laboral en Desarrollo de Software.
+
+---
+
+<div align="center">
+  <br/>
+  <img src="https://raw.githubusercontent.com/TEstebanGQ/TEstebanGQ/main/assets/logo-tegq.jpg" width="80" alt="TEGQ Brand Logo" />
+  <br/>
+  <sub><b>© Tomas Esteban González Quintero — TEGQ</b></sub>
+</div>

@@ -313,6 +313,17 @@ Con la aplicación corriendo, la documentación interactiva OpenAPI 3 está disp
 
 ---
 
+## 👨‍💻 Autor
+
+**Tomas Esteban Gonzalez Quintero** — *Desarrollador Full Stack*
+
+- 🌐 [Portafolio Web](https://portafolio-tegq.netlify.app/)
+- 🐙 [GitHub: @TEstebanGQ](https://github.com/TEstebanGQ)
+- 💼 [LinkedIn](https://www.linkedin.com/in/tomas-esteban-gonzalez-quintero/)
+- 📧 [Email](mailto:tomasestebangonzalezquintero@gmail.com)
+
+---
+
 ## 📄 Licencia
 
 Distribuido bajo licencia **MIT**. Proyecto académico desarrollado como parte del Técnico Laboral en Desarrollo de Software.
